@@ -38,39 +38,19 @@ namespace AdventOfCode2020
 
     class BoardingPass
     {
-        public int Row;
-        public int Column;
         public int SeatId;
 
         public BoardingPass(string rawData)
         {
-            string rawRow = rawData.Substring(0, 7);
-            string rawColumn = rawData.Substring(7, 3);
-
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 10; i++)
             {
-                Debug.Assert(rawRow[i] == 'F' || rawRow[i] == 'B');
-                Row <<= 1;
+                SeatId <<= 1;
 
-                if (rawRow[i] == 'B')
+                if (rawData[i] == 'B' || rawData[i] == 'R')
                 {
-                    Row |= 1;
+                    SeatId |= 1;
                 }
             }
-
-
-            for (int i = 0; i < 3; i++)
-            {
-                Debug.Assert(rawColumn[i] == 'L' || rawColumn[i] == 'R');
-                Column <<= 1;
-
-                if (rawColumn[i] == 'R')
-                {
-                    Column |= 1;
-                }
-            }
-
-            SeatId = Row * 8 + Column;
         }
     }
 }
