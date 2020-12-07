@@ -61,6 +61,8 @@ namespace AdventOfCode2020
                 }
             }
 
+            int result = visited.Count;
+
             Debugger.Break();
         }
 
@@ -73,11 +75,8 @@ namespace AdventOfCode2020
                 Match match = lineRegex.Match(line);
                 string outerColor = match.Groups["color"].Value;
 
-                if (!contentsByColor.TryGetValue(outerColor, out List<ColorCountPair> containedBags))
-                {
-                    containedBags = new List<ColorCountPair>();
-                    contentsByColor.Add(outerColor, containedBags);
-                }
+                List<ColorCountPair> containedBags = new List<ColorCountPair>();
+                contentsByColor.Add(outerColor, containedBags);
 
                 foreach (Match match2 in contentsRegex.Matches(match.Groups["contents"].Value))
                 {
