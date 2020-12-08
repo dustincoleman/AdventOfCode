@@ -12,7 +12,7 @@ namespace AdventOfCode2020
         public static void Part1()
         {
             Machine machine = new Machine(File.ReadAllLines("Day08Input.txt"));
-            int result = machine.Run(null, null, out bool completed);
+            bool completed = machine.TryRunToEnd(null, out int result);
 
             Debug.Assert(!completed);
             Debugger.Break();
@@ -24,11 +24,11 @@ namespace AdventOfCode2020
             Machine machine = new Machine(lines);
 
             bool completed = false;
-            int result = 0;
+            int result;
 
             for (int i = 0; i < lines.Length && !completed; i++)
             {
-                result = machine.Run(i, 10000, out completed);
+                completed = machine.TryRunToEnd(i, out result);
                 machine.Reset();
             }
             
@@ -73,54 +73,53 @@ namespace AdventOfCode2020
             accumulator = 0;
         }
 
-        public int Run(int? flipIndex, int? instructionsToRun, out bool completed)
+public bool TryRunToEnd(int? flipIndex, out int accumulator)
+{
+    while (true)
+    {
+        if (position == program.Length)
         {
-            int count = 0;
-
-            while (true)
-            {
-                if (position == program.Length)
-                {
-                    completed = true;
-                    return accumulator;
-                }
-
-                Instruction instruction = program[position];
-
-                if ((instruction.hasRun && instructionsToRun == null) || count == instructionsToRun)
-                {
-                    completed = false;
-                    return accumulator;
-                }
-
-                instruction.hasRun = true;
-
-                bool flip = (position == flipIndex);
-
-                switch (instruction.op)
-                {
-                    case OpCode.acc:
-                        accumulator += instruction.arg;
-                        position++;
-                        break;
-                    case OpCode.jmp:
-                        position += (flip) ? 1 : instruction.arg;
-                        break;
-                    case OpCode.nop:
-                        position += (flip) ? instruction.arg : 1;
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-
-                count++;
-            }
+            accumulator = this.accumulator;
+            return true;
         }
+
+        Instruction instruction = program[position];
+
+        if (instruction.hasRun)
+        {
+            accumulator = this.accumulator;
+            return false;
+        }
+
+        instruction.hasRun = true;
+
+        switch (instruction.op)
+        {
+            case OpCode.acc:
+                this.accumulator += instruction.arg;
+                position++;
+                break;
+            case OpCode.jmp:
+                position += (position == flipIndex) ? 1 : instruction.arg;
+                break;
+            case OpCode.nop:
+                position += (position == flipIndex) ? instruction.arg : 1;
+                break;
+            default:
+                throw new InvalidOperationException();
+        }
+    }
+}
 
         public void Reset()
         {
             position = 0;
             accumulator = 0;
+
+            foreach (Instruction i in program)
+            {
+                i.hasRun = false;
+            }
         }
     }
 }
