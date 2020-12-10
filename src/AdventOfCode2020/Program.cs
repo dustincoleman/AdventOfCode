@@ -26,6 +26,7 @@ namespace AdventOfCode2020
             //Day09.Part2();
             //Day10.Part1();
             Day10.Part2();
+            Day10.Part2DP();
         }
     }
 }

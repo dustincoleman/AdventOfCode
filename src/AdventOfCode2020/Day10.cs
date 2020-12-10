@@ -80,5 +80,29 @@ namespace AdventOfCode2020
 
             Debugger.Break();
         }
+
+        public static void Part2DP()
+        {
+            List<int> input = File.ReadAllLines("Day10Input.txt").Select(int.Parse).ToList();
+            input.Add(0);
+            input.Sort();
+
+            long[] combosToAdapter = new long[input.Count];
+            combosToAdapter[0] = 1;
+
+            for (int i = 1; i < input.Count; i++)
+            {
+                for (int j = 1; j <= 3 && i - j >= 0; j++)
+                {
+                    if (input[i] - input[i - j] <= 3)
+                    {
+                        combosToAdapter[i] += combosToAdapter[i - j];
+                    }
+                }
+            }
+
+            long result = combosToAdapter.Last();
+            Debugger.Break();
+        }
     }
 }
