@@ -34,49 +34,59 @@ namespace AdventOfCode2020
 
         public static void Part2()
         {
-            string[] lines = File.ReadAllLines("Day13Input.txt");
+            string rawBusRoutes = File.ReadAllLines("Day13Input.txt").Skip(1).First();
 
-            int estimatedDeparture = int.Parse(lines[0]);
-            int candidateDeparture = estimatedDeparture;
-            List<int> busses = lines[1].Split(',').Select(s => (s == "x") ? 0 : int.Parse(s)).ToList();
+            List<BusRoute> busRoutes = File.ReadAllLines("Day13Input.txt")
+                .Skip(1).First().Split(',')
+                .Select((rawRoute, index) => new BusRoute((rawRoute == "x") ? 0 : int.Parse(rawRoute), index))
+                .Where(route => route.Interval != 0)
+                .OrderBy(route => route.Interval)
+                .ToList();
 
-            List<Tuple<long, long>> busOffsets = new List<Tuple<long, long>>();
+            long increment = 1;
+            long startPosition = 0;
 
-            for (int i = 0; i < busses.Count; i++)
+            for (int i = 0; i < busRoutes.Count - 1; i++)
             {
-                if (busses[i] != 0)
-                {
-                    busOffsets.Add(new Tuple<long, long>(busses[i], i));
-                }
+                IEnumerable<BusRoute> busRoutesToSearch = busRoutes.Take(i);
+
+                long firstMatch = FindTimestamp(busRoutesToSearch, startPosition, increment);
+                long secondMatch = FindTimestamp(busRoutesToSearch, firstMatch + increment, increment);
+
+                startPosition = firstMatch;
+                increment = secondMatch - firstMatch;
             }
 
-            busOffsets.Sort((x, y) => y.Item1.CompareTo(x.Item1));
+            long result = FindTimestamp(busRoutes, startPosition, increment);
+            Debugger.Break();
+        }
 
-            // First match for first six busses
-            long l = 21252608;
+        private static long FindTimestamp(IEnumerable<BusRoute> busRoutesToSearch, long startPosition, long increment)
+        {
+            long position = startPosition;
+            List<BusRoute> routes = new List<BusRoute>(busRoutesToSearch.OrderByDescending(route => route.Interval));
 
             while (true)
             {
-                bool match = true;
-
-                foreach (Tuple<long, long> busOffset in busOffsets)
+                if (routes.All(route => ((position + route.StartTime) % route.Interval == 0)))
                 {
-                    if ((l + busOffset.Item2) % busOffset.Item1 != 0)
-                    {
-                        match = false;
-                        break;
-                    }
+                    return position;
                 }
 
-                if (match)
-                {
-                    long result = l;
-                    Debugger.Break();
-                }
-
-                // Gap between first and second match for first six busses
-                checked { l += 103627121; }
+                checked { position += increment; }
             }
+        }
+    }
+
+    class BusRoute
+    {
+        public readonly int Interval;
+        public readonly int StartTime;
+
+        public BusRoute(int interval, int startTime)
+        {
+            Interval = interval;
+            StartTime = startTime;
         }
     }
 }
