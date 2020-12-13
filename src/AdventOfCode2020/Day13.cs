@@ -34,8 +34,6 @@ namespace AdventOfCode2020
 
         public static void Part2()
         {
-            string rawBusRoutes = File.ReadAllLines("Day13Input.txt").Skip(1).First();
-
             List<BusRoute> busRoutes = File.ReadAllLines("Day13Input.txt")
                 .Skip(1).First().Split(',')
                 .Select((rawRoute, index) => new BusRoute((rawRoute == "x") ? 0 : int.Parse(rawRoute), index))
@@ -46,7 +44,7 @@ namespace AdventOfCode2020
             long increment = 1;
             long startPosition = 0;
 
-            for (int i = 0; i < busRoutes.Count - 1; i++)
+            for (int i = 2; i < busRoutes.Count - 1; i++)
             {
                 IEnumerable<BusRoute> busRoutesToSearch = busRoutes.Take(i);
 
