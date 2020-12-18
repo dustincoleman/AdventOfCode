@@ -40,7 +40,9 @@ namespace AdventOfCode2020
             //Day16.Part1();
             //Day16.Part2();
             //Day17.Part1();
-            Day17.Part2();
+            //Day17.Part2();
+            //Day18.Part1();
+            Day18.Part2();
         }
     }
 }
