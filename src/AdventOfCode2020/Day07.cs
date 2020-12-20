@@ -4,15 +4,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day07
+    public class Day07
     {
         private static Regex lineRegex = new Regex(@"^(?<color>.*)\sbags contain (?<contents>.*)$");
         private static Regex contentsRegex = new Regex(@"(?<count>[0-9]+)\s(?<color>[^,.]+)\sbags{0,1}");
 
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             Dictionary<string, HashSet<string>> containingColorsByColor = new Dictionary<string, HashSet<string>>();
 
@@ -63,10 +65,11 @@ namespace AdventOfCode2020
 
             int result = visited.Count;
 
-            Debug.Assert(result == 246);
+            Assert.Equal(246, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             Dictionary<string, List<ColorCountPair>> contentsByColor = new Dictionary<string, List<ColorCountPair>>();
 
@@ -88,7 +91,7 @@ namespace AdventOfCode2020
 
             int result = CountContents("shiny gold", contentsByColor);
 
-            Debug.Assert(result == 2976);
+            Assert.Equal(2976, result);
         }
 
         private static int CountContents(string color, Dictionary<string, List<ColorCountPair>> contentsByColor)

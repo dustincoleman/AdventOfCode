@@ -6,16 +6,18 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day18
+    public class Day18
     {
         private static Regex regex = new Regex(@"\((?<content>[^()]*)\)");
         private static Regex addRegex = new Regex(@"(?<a>[0-9]+) \+ (?<b>[0-9]+)");
         private static Regex multiplyRegex = new Regex(@"(?<a>[0-9]+) \* (?<b>[0-9]+)");
 
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             string[] lines = File.ReadAllLines("Day18Input.txt");
 
@@ -26,10 +28,11 @@ namespace AdventOfCode2020
                 result += CalculatePart1(line);
             }
 
-            Debug.Assert(result == 5019432542701);
+            Assert.Equal(5019432542701, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             string[] lines = File.ReadAllLines("Day18Input.txt");
 
@@ -40,7 +43,7 @@ namespace AdventOfCode2020
                 result += CalculatePart2(line);
             }
 
-            Debug.Assert(result == 70518821989947);
+            Assert.Equal(70518821989947, result);
         }
 
         private static long CalculatePart1(string line)

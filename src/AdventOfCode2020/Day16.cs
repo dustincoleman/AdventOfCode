@@ -5,12 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day16
+    public class Day16
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             List<Rule> rules = File.ReadAllLines("Day16Rules.txt").Select(input => new Rule(input)).ToList();
             HashSet<int> validNumbers = new HashSet<int>();
@@ -29,10 +31,12 @@ namespace AdventOfCode2020
 
             int[] fieldValues = File.ReadAllText("Day16OtherTickets.txt").Replace(Environment.NewLine, ",").Split(',').Select(int.Parse).ToArray();
             int result = fieldValues.Sum(i => !validNumbers.Contains(i) ? i : 0);
-            Debug.Assert(result == 23054);
+            
+            Assert.Equal(23054, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             List<Rule> rules = File.ReadAllLines("Day16Rules.txt").Select(input => new Rule(input)).ToList();
 
@@ -86,7 +90,7 @@ namespace AdventOfCode2020
                 result *= myTicket[rule.Column];
             }
 
-            Debug.Assert(result == 51240700105297);
+            Assert.Equal(51240700105297, result);
         }
     }
 

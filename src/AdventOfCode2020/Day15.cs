@@ -4,23 +4,26 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day15
+    public class Day15
     {
         public static int[] Input = new[] { 6, 19, 0, 5, 7, 13, 1 };
 
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             long result = Solve(Input, 2020);
-            Debug.Assert(result == 468);
+            Assert.Equal(468, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             long result = Solve(Input, 30000000);
-            Debug.Assert(result == 1801753);
+            Assert.Equal(1801753, result);
         }
 
         private static long Solve(int[] input, long turnToSolve)

@@ -5,12 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day20Rough
+    public class Day20Rough
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             string[] lines = File.ReadAllLines("Day20Input.txt").ToArray();
             List<Tile> tiles = new List<Tile>();
@@ -84,10 +86,11 @@ namespace AdventOfCode2020
                 result *= t.Id;
             }
 
-            Debug.Assert(result == 20913499394191);
+            Assert.Equal(20913499394191, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             string[] lines = File.ReadAllLines("Day20Input.txt").ToArray();
             List<Tile> tiles = new List<Tile>();
@@ -740,7 +743,7 @@ namespace AdventOfCode2020
 
             result -= (monsterCount * 15);
 
-            Debug.Assert(result == 2209);
+            Assert.Equal(2209, result);
         }
 
         class Tile

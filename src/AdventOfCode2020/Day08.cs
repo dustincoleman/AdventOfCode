@@ -4,20 +4,23 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day08
+    public class Day08
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             Machine machine = new Machine(ParseProgram("Day08Input.txt"));
             bool completed = machine.TryRunToEnd(null, out int result);
 
-            Debug.Assert(result == 1331);
+            Assert.Equal(1331, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             Instruction[] program = ParseProgram("Day08Input.txt");
 
@@ -28,8 +31,8 @@ namespace AdventOfCode2020
             {
                 completed = new Machine(program).TryRunToEnd(i, out result);
             }
-            
-            Debug.Assert(result == 1121);
+
+            Assert.Equal(1121, result);
         }
 
         private static Instruction[] ParseProgram(string filename)

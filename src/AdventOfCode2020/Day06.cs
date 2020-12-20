@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day06
+    public class Day06
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             HashSet<char> hashSet = new HashSet<char>();
             int result = 0;
@@ -31,10 +33,11 @@ namespace AdventOfCode2020
 
             result += hashSet.Count;
 
-            Debug.Assert(result == 6782);
+            Assert.Equal(6782, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             int result = 0;
 
@@ -69,7 +72,7 @@ namespace AdventOfCode2020
 
             result += groupAnswers.Count;
 
-            Debug.Assert(result == 3596);
+            Assert.Equal(3596, result);
         }
     }
 }

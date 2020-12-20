@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
@@ -15,9 +16,10 @@ namespace AdventOfCode2020
         Occupied // #
     }
 
-    static class Day11
+    public class Day11
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             FloorPlan floorPlan = new FloorPlan(File.ReadAllLines("Day11Input.txt"));
 
@@ -25,10 +27,11 @@ namespace AdventOfCode2020
 
             int result = floorPlan.CountOccupiedSeats();
 
-            Debug.Assert(result == 2472);
+            Assert.Equal(2472, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             FloorPlan floorPlan = new FloorPlan(File.ReadAllLines("Day11Input.txt"));
 
@@ -36,7 +39,7 @@ namespace AdventOfCode2020
 
             int result = floorPlan.CountOccupiedSeats();
 
-            Debug.Assert(result == 2197);
+            Assert.Equal(2197, result);
         }
     }
 

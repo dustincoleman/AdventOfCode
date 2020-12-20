@@ -5,24 +5,27 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day14
+    public class Day14
     {
         private static Regex s_maskRegex = new Regex(@"^mask\s=\s(?<mask>.*)$");
         private static Regex s_assignmentRegex = new Regex(@"^mem\[(?<address>[^\]]*)\]\s=\s(?<value>.*)$");
 
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             long result = RunMachine(new Part1Machine());
-            Debug.Assert(result == 12610010960049);
+            Assert.Equal(12610010960049, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             long result = RunMachine(new Part2Machine());
-            Debug.Assert(result == 3608464522781);
+            Assert.Equal(3608464522781, result);
         }
 
         private static long RunMachine(Machine machine)

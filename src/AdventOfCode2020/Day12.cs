@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day12
+    public class Day12
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             Ship ship = new Ship();
 
@@ -66,10 +68,11 @@ namespace AdventOfCode2020
 
             int result = Math.Abs(ship.X) + Math.Abs(ship.Y);
 
-            Debug.Assert(result == 879);
+            Assert.Equal(879, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             Ship ship = new Ship();
 
@@ -152,7 +155,7 @@ namespace AdventOfCode2020
 
             int result = Math.Abs(ship.X) + Math.Abs(ship.Y);
 
-            Debug.Assert(result == 18107);
+            Assert.Equal(18107, result);
         }
     }
 

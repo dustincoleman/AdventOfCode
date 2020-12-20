@@ -5,12 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day04
+    public class Day04
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             int result = File.ReadAllText("Day04Input.txt")
                 .Split(Environment.NewLine + Environment.NewLine)
@@ -18,10 +20,11 @@ namespace AdventOfCode2020
                 .Select(data => new Passport(data))
                 .Count(p => p.IsValidPart1());
 
-            Debug.Assert(result == 210);
+            Assert.Equal(210, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             int result = File.ReadAllText("Day04Input.txt")
                 .Split(Environment.NewLine + Environment.NewLine)
@@ -29,7 +32,7 @@ namespace AdventOfCode2020
                 .Select(data => new Passport(data))
                 .Count(p => p.IsValidPart2());
 
-            Debug.Assert(result == 131);
+            Assert.Equal(131, result);
         }
     }
 

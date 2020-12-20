@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day10
+    public class Day10
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             List<int> input = File.ReadAllLines("Day10Input.txt").Select(int.Parse).ToList();
             input.Add(0); // The port
@@ -37,10 +39,11 @@ namespace AdventOfCode2020
 
             int result = oneVoltCount * threeVoltCount;
 
-            Debug.Assert(result == 2400);
+            Assert.Equal(2400, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             List<int> input = File.ReadAllLines("Day10Input.txt").Select(int.Parse).ToList();
             input.Add(0);
@@ -79,10 +82,11 @@ namespace AdventOfCode2020
                 }
             }
 
-            Debug.Assert(result == 338510590509056);
+            Assert.Equal(338510590509056, result);
         }
 
-        public static void Part2DP()
+        [Fact]
+        public void Part2DP()
         {
             List<int> input = File.ReadAllLines("Day10Input.txt").Select(int.Parse).ToList();
             input.Add(0);
@@ -104,7 +108,7 @@ namespace AdventOfCode2020
 
             long result = combosToAdapter.Last();
 
-            Debug.Assert(result == 338510590509056);
+            Assert.Equal(338510590509056, result);
         }
     }
 }

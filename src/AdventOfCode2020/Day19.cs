@@ -5,11 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day19
+    public class Day19
     {
+        [Fact]
         public static void Part1()
         {
             int result = 0;
@@ -29,6 +31,7 @@ namespace AdventOfCode2020
             Debug.Assert(result == 136);
         }
 
+        [Fact]
         public static void Part2()
         {
             int result = 0;

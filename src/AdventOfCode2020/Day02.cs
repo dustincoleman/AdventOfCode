@@ -5,21 +5,24 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day02
+    public class Day02
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             int valid = File.ReadAllLines("Day02Input.txt").Select(line => new PasswordInfo(line)).Count(IsValidPart1);
-            Debug.Assert(valid == 580);
+            Assert.Equal(580, valid);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             int valid = File.ReadAllLines("Day02Input.txt").Select(line => new PasswordInfo(line)).Count(IsValidPart2);
-            Debug.Assert(valid == 611);
+            Assert.Equal(611, valid);
         }
 
         private static bool IsValidPart1(PasswordInfo passwordInfo)

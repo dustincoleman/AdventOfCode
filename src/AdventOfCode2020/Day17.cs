@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day17
+    public class Day17
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             const int size = 24;
             bool[,,] pocket = new bool[size, size, size];
@@ -56,10 +58,12 @@ namespace AdventOfCode2020
             }
 
             int result = CountActiveCells(pocket, size);
-            Debug.Assert(result == 322);
+
+            Assert.Equal(322, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             const int size = 24;
             bool[,,,] pocket = new bool[size, size, size, size];
@@ -108,7 +112,8 @@ namespace AdventOfCode2020
             }
 
             int result = CountActiveCells(pocket, size);
-            Debug.Assert(result == 2000);
+
+            Assert.Equal(2000, result);
         }
 
         private static int CountActiveCells(bool[,,] pocket, int size)

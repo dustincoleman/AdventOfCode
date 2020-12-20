@@ -4,22 +4,25 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day03
+    public class Day03
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             Puzzle puzzle = new Puzzle(File.ReadAllLines("Day03Input.txt"));
 
             // Right 3, down 1.
             long trees = puzzle.CountTrees(3, 1);
 
-            Debug.Assert(trees == 159);
+            Assert.Equal(159, trees);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             Puzzle puzzle = new Puzzle(File.ReadAllLines("Day03Input.txt"));
 
@@ -33,7 +36,7 @@ namespace AdventOfCode2020
                 .Select(pair => puzzle.CountTrees(pair.Item1, pair.Item2))
                 .Aggregate((x, y) => x * y);
 
-            Debug.Assert(answer == 6419669520);
+            Assert.Equal(6419669520, answer);
         }
     }
 

@@ -4,21 +4,24 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day05
+    public class Day05
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             int result = File.ReadAllLines("Day05Input.txt")
                 .Select(line => new BoardingPass(line))
                 .Max(pass => pass.SeatId);
 
-            Debug.Assert(result == 885);
+            Assert.Equal(885, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             int result = 0;
             List<int> seatIds = File.ReadAllLines("Day05Input.txt")
@@ -36,7 +39,7 @@ namespace AdventOfCode2020
                 }
             }
 
-            Debug.Assert(result == 623);
+            Assert.Equal(623, result);
         }
     }
 

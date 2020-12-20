@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day13
+    public class Day13
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             int result = 0;
             string[] lines = File.ReadAllLines("Day13Input.txt");
@@ -32,10 +34,11 @@ namespace AdventOfCode2020
                 checked { candidateDeparture++; }
             }
 
-            Debug.Assert(result == 136);
+            Assert.Equal(136, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             List<BusRoute> busRoutes = File.ReadAllLines("Day13Input.txt")
                 .Skip(1).First().Split(',')
@@ -60,7 +63,7 @@ namespace AdventOfCode2020
 
             long result = FindTimestamp(busRoutes, startPosition, increment);
 
-            Debug.Assert(result == 305068317272992);
+            Assert.Equal(305068317272992, result);
         }
 
         private static long FindTimestamp(IEnumerable<BusRoute> busRoutesToSearch, long startPosition, long increment)

@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace AdventOfCode2020
 {
-    static class Day09
+    public class Day09
     {
-        public static void Part1()
+        [Fact]
+        public void Part1()
         {
             long result = 0;
             long[] input = File.ReadAllLines("Day09Input.txt").Select(l => long.Parse(l)).ToArray();
@@ -37,10 +39,11 @@ namespace AdventOfCode2020
                 }
             }
 
-            Debug.Assert(result == 26134589);
+            Assert.Equal(26134589, result);
         }
 
-        public static void Part2()
+        [Fact]
+        public void Part2()
         {
             long result = 0;
             const long part1Result = 26134589;
@@ -59,7 +62,7 @@ namespace AdventOfCode2020
                 }
             }
 
-            Debug.Assert(result == 3535124);
+            Assert.Equal(3535124, result);
         }
     }
 }
