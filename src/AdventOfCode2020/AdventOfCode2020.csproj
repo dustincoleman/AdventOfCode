@@ -13,6 +13,10 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AdventOfCode.Common\AdventOfCode.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Day02Input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
