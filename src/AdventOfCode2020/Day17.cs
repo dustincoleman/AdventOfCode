@@ -56,7 +56,7 @@ namespace AdventOfCode2020
             }
 
             int result = CountActiveCells(pocket, size);
-            Debugger.Break();
+            Debug.Assert(result == 322);
         }
 
         public static void Part2()
@@ -108,7 +108,7 @@ namespace AdventOfCode2020
             }
 
             int result = CountActiveCells(pocket, size);
-            Debugger.Break();
+            Debug.Assert(result == 2000);
         }
 
         private static int CountActiveCells(bool[,,] pocket, int size)

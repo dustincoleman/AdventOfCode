@@ -26,7 +26,7 @@ namespace AdventOfCode2020
                 }
             }
 
-            Debugger.Break();
+            Debug.Assert(result == 136);
         }
 
         public static void Part2()
@@ -53,7 +53,7 @@ namespace AdventOfCode2020
                 }
             }
 
-            Debugger.Break();
+            Debug.Assert(result == 256);
         }
 
         private static string BuildRegex(int iRule, List<Rule> rules)

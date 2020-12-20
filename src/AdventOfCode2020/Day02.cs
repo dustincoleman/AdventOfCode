@@ -13,13 +13,13 @@ namespace AdventOfCode2020
         public static void Part1()
         {
             int valid = File.ReadAllLines("Day02Input.txt").Select(line => new PasswordInfo(line)).Count(IsValidPart1);
-            Debugger.Break();
+            Debug.Assert(valid == 580);
         }
 
         public static void Part2()
         {
             int valid = File.ReadAllLines("Day02Input.txt").Select(line => new PasswordInfo(line)).Count(IsValidPart2);
-            Debugger.Break();
+            Debug.Assert(valid == 611);
         }
 
         private static bool IsValidPart1(PasswordInfo passwordInfo)

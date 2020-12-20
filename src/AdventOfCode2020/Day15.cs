@@ -14,13 +14,13 @@ namespace AdventOfCode2020
         public static void Part1()
         {
             long result = Solve(Input, 2020);
-            Debugger.Break();
+            Debug.Assert(result == 468);
         }
 
         public static void Part2()
         {
             long result = Solve(Input, 30000000);
-            Debugger.Break();
+            Debug.Assert(result == 1801753);
         }
 
         private static long Solve(int[] input, long turnToSolve)

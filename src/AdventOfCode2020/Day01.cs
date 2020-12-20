@@ -11,6 +11,7 @@ namespace AdventOfCode2020
     
         public static void Part1()
         {
+            int result = 0;
             HashSet<int> hashSet = new HashSet<int>(Input);
 
             foreach (int i in Input)
@@ -18,28 +19,32 @@ namespace AdventOfCode2020
                 int other = 2020 - i;
                 if (hashSet.Contains(other))
                 {
-                    int result = i * other;
-                    Debugger.Break();
+                    result = i * other;
+                    break;
                 }
             }
+
+            Debug.Assert(result == 786811);
         }
 
         public static void Part2()
         {
+            int result = 0;
             HashSet<int> hashSet = new HashSet<int>(Input);
 
-            for (int i = 0; i < Input.Length; i++)
+            for (int i = 0; i < Input.Length && result == 0; i++)
             {
-                for (int j = i + 1; i < Input.Length; j++)
+                for (int j = i + 1; j < Input.Length && result == 0; j++)
                 {
                     int other = 2020 - Input[i] - Input[j];
                     if (hashSet.Contains(other))
                     {
-                        int result = other * Input[i] * Input[j];
-                        Debugger.Break();
+                        result = other * Input[i] * Input[j];
                     }
                 }
             }
+
+            Debug.Assert(result == 199068980);
         }
     }
 }

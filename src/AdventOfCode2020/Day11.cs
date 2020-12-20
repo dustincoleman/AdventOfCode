@@ -25,7 +25,7 @@ namespace AdventOfCode2020
 
             int result = floorPlan.CountOccupiedSeats();
 
-            Debugger.Break();
+            Debug.Assert(result == 2472);
         }
 
         public static void Part2()
@@ -36,7 +36,7 @@ namespace AdventOfCode2020
 
             int result = floorPlan.CountOccupiedSeats();
 
-            Debugger.Break();
+            Debug.Assert(result == 2197);
         }
     }
 

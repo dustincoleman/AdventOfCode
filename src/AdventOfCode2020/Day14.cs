@@ -16,13 +16,13 @@ namespace AdventOfCode2020
         public static void Part1()
         {
             long result = RunMachine(new Part1Machine());
-            Debugger.Break();
+            Debug.Assert(result == 12610010960049);
         }
 
         public static void Part2()
         {
             long result = RunMachine(new Part2Machine());
-            Debugger.Break();
+            Debug.Assert(result == 3608464522781);
         }
 
         private static long RunMachine(Machine machine)

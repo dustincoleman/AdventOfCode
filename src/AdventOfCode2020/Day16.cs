@@ -29,7 +29,7 @@ namespace AdventOfCode2020
 
             int[] fieldValues = File.ReadAllText("Day16OtherTickets.txt").Replace(Environment.NewLine, ",").Split(',').Select(int.Parse).ToArray();
             int result = fieldValues.Sum(i => !validNumbers.Contains(i) ? i : 0);
-            Debugger.Break();
+            Debug.Assert(result == 23054);
         }
 
         public static void Part2()
@@ -86,7 +86,7 @@ namespace AdventOfCode2020
                 result *= myTicket[rule.Column];
             }
 
-            Debugger.Break();
+            Debug.Assert(result == 51240700105297);
         }
     }
 

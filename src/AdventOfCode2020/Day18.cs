@@ -26,7 +26,7 @@ namespace AdventOfCode2020
                 result += CalculatePart1(line);
             }
 
-            Debugger.Break();
+            Debug.Assert(result == 5019432542701);
         }
 
         public static void Part2()
@@ -40,7 +40,7 @@ namespace AdventOfCode2020
                 result += CalculatePart2(line);
             }
 
-            Debugger.Break();
+            Debug.Assert(result == 70518821989947);
         }
 
         private static long CalculatePart1(string line)

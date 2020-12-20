@@ -14,11 +14,13 @@ namespace AdventOfCode2020
             int result = File.ReadAllLines("Day05Input.txt")
                 .Select(line => new BoardingPass(line))
                 .Max(pass => pass.SeatId);
-            Debugger.Break();
+
+            Debug.Assert(result == 885);
         }
 
         public static void Part2()
         {
+            int result = 0;
             List<int> seatIds = File.ReadAllLines("Day05Input.txt")
                 .Select(line => new BoardingPass(line).SeatId)
                 .ToList();
@@ -29,10 +31,12 @@ namespace AdventOfCode2020
             {
                 if (seatIds[i - 1] + 1 != seatIds[i])
                 {
-                    int result = seatIds[i - 1] + 1;
-                    Debugger.Break();
+                    result = seatIds[i - 1] + 1;
+                    break;
                 }
             }
+
+            Debug.Assert(result == 623);
         }
     }
 

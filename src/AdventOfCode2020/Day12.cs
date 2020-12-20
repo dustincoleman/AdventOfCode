@@ -65,7 +65,8 @@ namespace AdventOfCode2020
             }
 
             int result = Math.Abs(ship.X) + Math.Abs(ship.Y);
-            Debugger.Break();
+
+            Debug.Assert(result == 879);
         }
 
         public static void Part2()
@@ -150,7 +151,8 @@ namespace AdventOfCode2020
             }
 
             int result = Math.Abs(ship.X) + Math.Abs(ship.Y);
-            Debugger.Break();
+
+            Debug.Assert(result == 18107);
         }
     }
 

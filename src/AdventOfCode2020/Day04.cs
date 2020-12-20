@@ -17,7 +17,8 @@ namespace AdventOfCode2020
                 .Select(line => line.Replace(Environment.NewLine, " "))
                 .Select(data => new Passport(data))
                 .Count(p => p.IsValidPart1());
-            Debugger.Break();
+
+            Debug.Assert(result == 210);
         }
 
         public static void Part2()
@@ -27,7 +28,8 @@ namespace AdventOfCode2020
                 .Select(line => line.Replace(Environment.NewLine, " "))
                 .Select(data => new Passport(data))
                 .Count(p => p.IsValidPart2());
-            Debugger.Break();
+
+            Debug.Assert(result == 131);
         }
     }
 

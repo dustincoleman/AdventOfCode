@@ -16,7 +16,7 @@ namespace AdventOfCode2020
             // Right 3, down 1.
             long trees = puzzle.CountTrees(3, 1);
 
-            Debugger.Break();
+            Debug.Assert(trees == 159);
         }
 
         public static void Part2()
@@ -33,7 +33,7 @@ namespace AdventOfCode2020
                 .Select(pair => puzzle.CountTrees(pair.Item1, pair.Item2))
                 .Aggregate((x, y) => x * y);
 
-            Debugger.Break();
+            Debug.Assert(answer == 6419669520);
         }
     }
 

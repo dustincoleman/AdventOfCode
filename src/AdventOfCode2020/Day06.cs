@@ -31,7 +31,7 @@ namespace AdventOfCode2020
 
             result += hashSet.Count;
 
-            Debugger.Break();
+            Debug.Assert(result == 6782);
         }
 
         public static void Part2()
@@ -69,7 +69,7 @@ namespace AdventOfCode2020
 
             result += groupAnswers.Count;
 
-            Debugger.Break();
+            Debug.Assert(result == 3596);
         }
     }
 }

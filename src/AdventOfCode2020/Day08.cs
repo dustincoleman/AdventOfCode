@@ -14,8 +14,7 @@ namespace AdventOfCode2020
             Machine machine = new Machine(ParseProgram("Day08Input.txt"));
             bool completed = machine.TryRunToEnd(null, out int result);
 
-            Debug.Assert(!completed);
-            Debugger.Break();
+            Debug.Assert(result == 1331);
         }
 
         public static void Part2()
@@ -23,15 +22,14 @@ namespace AdventOfCode2020
             Instruction[] program = ParseProgram("Day08Input.txt");
 
             bool completed = false;
-            int result;
+            int result = 0;
 
             for (int i = 0; i < program.Length && !completed; i++)
             {
                 completed = new Machine(program).TryRunToEnd(i, out result);
             }
             
-            Debug.Assert(completed);
-            Debugger.Break();
+            Debug.Assert(result == 1121);
         }
 
         private static Instruction[] ParseProgram(string filename)

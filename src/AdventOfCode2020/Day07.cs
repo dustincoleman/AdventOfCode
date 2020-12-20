@@ -63,7 +63,7 @@ namespace AdventOfCode2020
 
             int result = visited.Count;
 
-            Debugger.Break();
+            Debug.Assert(result == 246);
         }
 
         public static void Part2()
@@ -88,7 +88,7 @@ namespace AdventOfCode2020
 
             int result = CountContents("shiny gold", contentsByColor);
 
-            Debugger.Break();
+            Debug.Assert(result == 2976);
         }
 
         private static int CountContents(string color, Dictionary<string, List<ColorCountPair>> contentsByColor)

@@ -11,25 +11,28 @@ namespace AdventOfCode2020
     {
         public static void Part1()
         {
+            int result = 0;
             string[] lines = File.ReadAllLines("Day13Input.txt");
 
             int estimatedDeparture = int.Parse(lines[0]);
             int candidateDeparture = estimatedDeparture;
             List<int> busses = lines[1].Split(',').Where(s => s != "x").Select(int.Parse).ToList();
 
-            while (true)
+            while (result == 0)
             {
                 foreach (int bus in busses)
                 {
                     if (candidateDeparture % bus == 0)
                     {
-                        int result = bus * (candidateDeparture - estimatedDeparture);
-                        Debugger.Break();
+                        result = bus * (candidateDeparture - estimatedDeparture);
+                        break;
                     }
                 }
 
                 checked { candidateDeparture++; }
             }
+
+            Debug.Assert(result == 136);
         }
 
         public static void Part2()
@@ -56,7 +59,8 @@ namespace AdventOfCode2020
             }
 
             long result = FindTimestamp(busRoutes, startPosition, increment);
-            Debugger.Break();
+
+            Debug.Assert(result == 305068317272992);
         }
 
         private static long FindTimestamp(IEnumerable<BusRoute> busRoutesToSearch, long startPosition, long increment)

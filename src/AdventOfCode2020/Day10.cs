@@ -36,7 +36,8 @@ namespace AdventOfCode2020
             }
 
             int result = oneVoltCount * threeVoltCount;
-            Debugger.Break();
+
+            Debug.Assert(result == 2400);
         }
 
         public static void Part2()
@@ -78,7 +79,7 @@ namespace AdventOfCode2020
                 }
             }
 
-            Debugger.Break();
+            Debug.Assert(result == 338510590509056);
         }
 
         public static void Part2DP()
@@ -102,7 +103,8 @@ namespace AdventOfCode2020
             }
 
             long result = combosToAdapter.Last();
-            Debugger.Break();
+
+            Debug.Assert(result == 338510590509056);
         }
     }
 }
