@@ -45,6 +45,8 @@ namespace AdventOfCode2020
             Day18.Part2();
             Day19.Part1();
             Day19.Part2();
+            Day20Rough.Part1();
+            Day20Rough.Part2();
 
             Console.WriteLine("Press any key to continue...");
             Console.Read();
