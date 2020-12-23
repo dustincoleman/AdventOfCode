@@ -126,9 +126,23 @@ namespace AdventOfCode2020
 
             private string ComputeHandString()
             {
-                string str = "P1:" + string.Join(",", player1.Select(i => i.ToString()));
-                str += "P2:" + string.Join(",", player2.Select(i => i.ToString()));
-                return str;
+                char[] chArr = new char[player1.Count + player2.Count + 1];
+
+                int i = 0;
+
+                foreach (int card in player1)
+                {
+                    chArr[i++] = (char)card;
+                }
+
+                chArr[i++] = '|';
+
+                foreach (int card in player2)
+                {
+                    chArr[i++] = (char)card;
+                }
+
+                return new string(chArr);
             }
         }
     }
