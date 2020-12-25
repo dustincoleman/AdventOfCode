@@ -86,7 +86,7 @@ namespace AdventOfCode2020
 
             internal void CycleTiles()
             {
-                foreach (Tile t in map.Values.ToArray())
+                foreach (Tile t in map.Values.Where(t => t.IsBlack).ToArray())
                 {
                     // Create any adjacent white tiles
                     _ = t.GetAdjacentTiles(create: true).ToArray();
