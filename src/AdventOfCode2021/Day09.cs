@@ -16,7 +16,7 @@ namespace AdventOfCode2021
             string[] input = File.ReadAllLines("Day09Input.txt");
 
             Point2 bounds = new Point2(input[0].Length, input.Length);
-            Grid2 grid = new Grid2(bounds);
+            Grid2<int> grid = new Grid2<int>(bounds);
 
             foreach (Point2 point in Point2.Quadrant(bounds))
             {
@@ -36,7 +36,7 @@ namespace AdventOfCode2021
             string[] input = File.ReadAllLines("Day09Input.txt");
 
             Point2 bounds = new Point2(input[0].Length, input.Length);
-            Grid2 grid = new Grid2(bounds);
+            Grid2<int> grid = new Grid2<int>(bounds);
 
             foreach (Point2 point in Point2.Quadrant(bounds))
             {
@@ -53,7 +53,7 @@ namespace AdventOfCode2021
             Assert.Equal(1397760, result);
         }
 
-        private int SizeOfBasin(Point2 point, Grid2 grid, bool[,] visited)
+        private int SizeOfBasin(Point2 point, Grid2<int> grid, bool[,] visited)
         {
             int size = 0;
 
