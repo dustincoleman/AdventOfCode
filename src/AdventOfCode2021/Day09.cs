@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdventOfCode.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,32 +15,18 @@ namespace AdventOfCode2021
         {
             string[] input = File.ReadAllLines("Day09Input.txt");
 
-            int width = input[0].Length;
-            int height = input.Length;
+            Point2 bounds = new Point2(input[0].Length, input.Length);
+            Grid2 grid = new Grid2(bounds);
 
-            int[,] map = new int[width, height];
-            List<int> lowPoints = new List<int>();
-
-            for (int y = 0; y < height; y++)
+            foreach (Point2 point in Point2.Quadrant(bounds))
             {
-                for (int x = 0; x < width; x++)
-                {
-                    map[x, y] = int.Parse(input[y][x].ToString());
-                }
+                grid[point] = input[point.X][point.Y] - '0';
             }
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    if (IsLowPoint(map, x, y, width, height))
-                    {
-                        lowPoints.Add(map[x, y]);
-                    }
-                }
-            }
-
-            long result = lowPoints.Sum(x => x + 1);
+            long result = Point2.Quadrant(bounds)
+                                .Where(point => grid.Adjacent(point).All(value => value > grid[point]))
+                                .Select(point => grid[point] + 1)
+                                .Sum();
 
             Assert.Equal(462, result);
         }
@@ -49,82 +36,33 @@ namespace AdventOfCode2021
         {
             string[] input = File.ReadAllLines("Day09Input.txt");
 
-            int width = input[0].Length;
-            int height = input.Length;
+            Point2 bounds = new Point2(input[0].Length, input.Length);
+            Grid2 grid = new Grid2(bounds);
 
-            int[,] map = new int[width, height];
-            List<long> basins = new List<long>();
-
-            for (int y = 0; y < height; y++)
+            foreach (Point2 point in Point2.Quadrant(bounds))
             {
-                for (int x = 0; x < width; x++)
-                {
-                    map[x, y] = int.Parse(input[y][x].ToString());
-                }
+                grid[point] = input[point.X][point.Y] - '0';
             }
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    if (IsLowPoint(map, x, y, width, height))
-                    {
-                        basins.Add(SizeOfBasin(map, x, y, width, height, new bool[width, height]));
-                    }
-                }
-            }
-
-            long result = basins.OrderByDescending(x => x).Take(3).Aggregate((x, y) => x * y);
+            long result = Point2.Quadrant(bounds)
+                                .Where(point => grid.Adjacent(point).All(value => value > grid[point]))
+                                .Select(point => SizeOfBasin(point, grid, new bool[bounds.X, bounds.Y]))
+                                .OrderByDescending(i => i)
+                                .Take(3)
+                                .Aggregate((x, y) => x * y);
 
             Assert.Equal(1397760, result);
         }
 
-        private bool IsLowPoint(int[,] map, int x, int y, int width, int height)
+        private int SizeOfBasin(Point2 point, Grid2 grid, bool[,] visited)
         {
-            int current = map[x, y];
+            int size = 0;
 
-            // left
-            if (x > 0 && map[x - 1, y] <= current)
+            if (grid[point] != 9 && !visited[point.X, point.Y])
             {
-                return false;
+                visited[point.X, point.Y] = true;
+                size = point.Adjacent(grid.Bounds).Sum(adj => SizeOfBasin(adj, grid, visited)) + 1;
             }
-
-            // right
-            if (x < width - 1 && map[x + 1, y] <= current)
-            {
-                return false;
-            }
-
-            // top
-            if (y > 0 && map[x, y - 1] <= current)
-            {
-                return false;
-            }
-
-            // bottom
-            if (y < height - 1 && map[x, y + 1] <= current)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private int SizeOfBasin(int[,] map, int x, int y, int width, int height, bool[,] visited)
-        {
-            if (x < 0 || x >= width || y < 0 || y >= height || map[x, y] == 9 || visited[x, y])
-            {
-                return 0;
-            }
-
-            visited[x, y] = true;
-
-            int size = 1;
-
-            size += SizeOfBasin(map, x - 1, y, width, height, visited);
-            size += SizeOfBasin(map, x + 1, y, width, height, visited);
-            size += SizeOfBasin(map, x, y - 1, width, height, visited);
-            size += SizeOfBasin(map, x, y + 1, width, height, visited);
 
             return size;
         }
