@@ -20,13 +20,12 @@ namespace AdventOfCode2021
 
             foreach (Point2 point in Point2.Quadrant(bounds))
             {
-                grid[point] = input[point.X][point.Y] - '0';
+                grid[point] = input[point.Y][point.X] - '0';
             }
 
             long result = Point2.Quadrant(bounds)
                                 .Where(point => grid.Adjacent(point).All(value => value > grid[point]))
-                                .Select(point => grid[point] + 1)
-                                .Sum();
+                                .Sum(point => grid[point] + 1);
 
             Assert.Equal(462, result);
         }
@@ -41,7 +40,7 @@ namespace AdventOfCode2021
 
             foreach (Point2 point in Point2.Quadrant(bounds))
             {
-                grid[point] = input[point.X][point.Y] - '0';
+                grid[point] = input[point.Y][point.X] - '0';
             }
 
             long result = Point2.Quadrant(bounds)
