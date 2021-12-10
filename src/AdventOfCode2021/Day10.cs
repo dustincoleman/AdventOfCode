@@ -40,18 +40,16 @@ namespace AdventOfCode2021
 
         private struct ParseResult
         {
-            public char FirstInvalidChar;
-            public IEnumerable<char> RestOfLine;
+            internal char FirstInvalidChar;
+            internal IEnumerable<char> RestOfLine;
         }
 
         private ParseResult Parse(string line)
         {
             Stack<char> stack = new Stack<char>();
 
-            for (int i = 0; i < line.Length; i++)
+            foreach (char ch in line)
             {
-                char ch = line[i];
-
                 if (closingChars.TryGetValue(ch, out char closingChar))
                 {
                     stack.Push(closingChar);
