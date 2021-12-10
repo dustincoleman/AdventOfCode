@@ -18,7 +18,7 @@ namespace AdventOfCode2021
         public void Part1()
         {
             long result = File.ReadAllLines("Day10Input.txt")
-                              .Sum(x => (long)invalidCharScores[GetFirstInvalidChar(x)]);
+                              .Sum(x => (long)invalidCharScores[Parse(x).FirstInvalidChar]);
 
             Assert.Equal(339411, result);
         }
@@ -27,8 +27,9 @@ namespace AdventOfCode2021
         public void Part2()
         {
             List<long> scores = File.ReadAllLines("Day10Input.txt")
-                                    .Where(x => GetFirstInvalidChar(x) == 0)
-                                    .Select(line => GetRestOfLine(line).Aggregate(0L, (score, ch) => (score * 5) + completionCharScores[ch]))
+                                    .Select(line => Parse(line))
+                                    .Where(result => result.FirstInvalidChar == 0)
+                                    .Select(result => result.RestOfLine.Aggregate(0L, (score, ch) => (score * 5) + completionCharScores[ch]))
                                     .OrderBy(x => x)
                                     .ToList();
 
@@ -37,7 +38,13 @@ namespace AdventOfCode2021
             Assert.Equal(2289754624, result);
         }
 
-        private char GetFirstInvalidChar(string line)
+        private struct ParseResult
+        {
+            public char FirstInvalidChar;
+            public IEnumerable<char> RestOfLine;
+        }
+
+        private ParseResult Parse(string line)
         {
             Stack<char> stack = new Stack<char>();
 
@@ -51,32 +58,11 @@ namespace AdventOfCode2021
                 }
                 else if (ch != stack.Pop())
                 {
-                    return ch;
+                    return new ParseResult() { FirstInvalidChar = ch };
                 }
             }
 
-            return (char)0;
-        }
-
-        private IEnumerable<char> GetRestOfLine(string line)
-        {
-            Stack<char> stack = new Stack<char>();
-
-            for (int i = 0; i < line.Length; i++)
-            {
-                char ch = line[i];
-
-                if (closingChars.TryGetValue(ch, out char closingChar))
-                {
-                    stack.Push(closingChar);
-                }
-                else
-                {
-                    stack.Pop();
-                }
-            }
-
-            return stack;
+            return new ParseResult() { RestOfLine = stack };
         }
     }
 }
