@@ -13,14 +13,7 @@ namespace AdventOfCode2021
         [Fact]
         public void Part1()
         {
-            string[] input = File.ReadAllLines("Day11Input.txt");
-            Grid2<Octopus> grid = new Grid2<Octopus>(new Point2(input[0].Length, input.Length));
-
-            foreach (Point2 point in Point2.Quadrant(grid.Bounds))
-            {
-                grid[point] = new Octopus(input[point.Y][point.X] - '0');
-            }
-
+            Grid2<Octopus> grid = LoadGrid();
             long result = 0;
 
             for (int i = 0; i < 100; i++)
@@ -34,14 +27,7 @@ namespace AdventOfCode2021
         [Fact]
         public void Part2()
         {
-            string[] input = File.ReadAllLines("Day11Input.txt");
-            Grid2<Octopus> grid = new Grid2<Octopus>(new Point2(input[0].Length, input.Length));
-
-            foreach (Point2 point in Point2.Quadrant(grid.Bounds))
-            {
-                grid[point] = new Octopus(input[point.Y][point.X] - '0');
-            }
-
+            Grid2<Octopus> grid = LoadGrid();
             long result = 0;
 
             for (int i = 1; true; i++)
@@ -56,22 +42,34 @@ namespace AdventOfCode2021
             Assert.Equal(348, result);
         }
 
+        private Grid2<Octopus> LoadGrid()
+        {
+            string[] input = File.ReadAllLines("Day11Input.txt");
+            Grid2<Octopus> grid = new Grid2<Octopus>(input[0].Length, input.Length);
+
+            foreach (Point2 point in grid.Points)
+            {
+                grid[point] = new Octopus(input[point.Y][point.X] - '0');
+            }
+
+            return grid;
+        }
+
         private long ProcessStep(Grid2<Octopus> grid)
         {
-            foreach (Point2 point in Point2.Quadrant(grid.Bounds))
+            foreach (Point2 point in grid.Points)
             {
                 grid[point].Energy++;
             }
 
-            foreach (Point2 point in Point2.Quadrant(grid.Bounds).ToArray())
+            foreach (Point2 point in grid.Points)
             {
                 TryFlash(grid, point);
             }
 
-            long flashes = Point2.Quadrant(grid.Bounds)
-                                 .Count(p => grid[p].HasFlashed);
+            long flashes = grid.Points.Count(p => grid[p].HasFlashed);
 
-            foreach (Point2 point in Point2.Quadrant(grid.Bounds))
+            foreach (Point2 point in grid.Points)
             {
                 if (grid[point].HasFlashed)
                 {
