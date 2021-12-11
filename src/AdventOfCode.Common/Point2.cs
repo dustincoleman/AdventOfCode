@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace AdventOfCode.Common
 {
-    public struct Point2
+    public struct Point2 : IEquatable<Point2>
     {
         public static readonly Point2 Zero = new Point2(0, 0);
         public static readonly Point2 UnitX = new Point2(1, 0);
@@ -60,9 +62,26 @@ namespace AdventOfCode.Common
             if (X > 0) yield return this - UnitX; // Left
         }
 
+        public bool Equals([AllowNull] Point2 other) => (this == other);
+
+        public override bool Equals(object obj) => (obj is Point2 other && this.Equals(other));
+
+        public override int GetHashCode() => (this.X.GetHashCode() ^ this.Y.GetHashCode());
+
         public static Point2 operator +(Point2 p) => p;
         public static Point2 operator -(Point2 p) => new Point2(-p.X, -p.Y);
+        public static Point2 operator ~(Point2 p) => new Point2(p.Y, p.X);
+        public static Point2 operator +(Point2 p, int i) => new Point2(p.X + i, p.Y + i);
         public static Point2 operator +(Point2 left, Point2 right) => new Point2(left.X + right.X, left.Y + right.Y);
+        public static Point2 operator -(Point2 p, int i) => new Point2(p.X - i, p.Y - i);
         public static Point2 operator -(Point2 left, Point2 right) => new Point2(left.X - right.X, left.Y - right.Y);
+        public static Point2 operator *(Point2 p, int i) => new Point2(p.X * i, p.Y * i);
+        public static Point2 operator *(Point2 left, Point2 right) => new Point2(left.X * right.X, left.Y * right.Y);
+        public static Point2 operator /(Point2 p, int i) => new Point2(p.X / i, p.Y / i);
+        public static Point2 operator /(Point2 left, Point2 right) => new Point2(left.X / right.X, left.Y / right.Y);
+        public static Point2 operator %(Point2 p, int i) => new Point2(p.X % i, p.Y % i);
+        public static Point2 operator %(Point2 left, Point2 right) => new Point2(left.X % right.X, left.Y % right.Y);
+        public static bool operator ==(Point2 left, Point2 right) => (left.X == right.X && left.Y == right.Y);
+        public static bool operator !=(Point2 left, Point2 right) => !(left == right);
     }
 }
