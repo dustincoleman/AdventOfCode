@@ -41,6 +41,25 @@ namespace AdventOfCode.Common
             if (Y < bounds.Y - 1) yield return this + UnitY;
         }
 
+        public IEnumerable<Point2> Surrounding(Point2 bounds)
+        {
+            if (Y > 0)
+            {
+                if (X > 0) yield return this - UnitY - UnitX; // Top Left
+                yield return this - UnitY; // Top
+                if (X < bounds.X - 1) yield return this - UnitY + UnitX; // Top Right
+            }
+            if (X < bounds.X - 1) yield return this + UnitX; // Right
+            if (Y < bounds.Y - 1)
+            {
+                if (X < bounds.X - 1) yield return this + UnitY + UnitX; // Bottom Right
+                yield return this + UnitY; // Bottom
+                if (X > 0) yield return this + UnitY - UnitX; // Bottom Left
+
+            }
+            if (X > 0) yield return this - UnitX; // Left
+        }
+
         public static Point2 operator +(Point2 p) => p;
         public static Point2 operator -(Point2 p) => new Point2(-p.X, -p.Y);
         public static Point2 operator +(Point2 left, Point2 right) => new Point2(left.X + right.X, left.Y + right.Y);
