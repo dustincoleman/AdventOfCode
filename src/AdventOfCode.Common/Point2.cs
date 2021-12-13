@@ -83,5 +83,9 @@ namespace AdventOfCode.Common
         public static Point2 operator %(Point2 left, Point2 right) => new Point2(left.X % right.X, left.Y % right.Y);
         public static bool operator ==(Point2 left, Point2 right) => (left.X == right.X && left.Y == right.Y);
         public static bool operator !=(Point2 left, Point2 right) => !(left == right);
+        public static bool operator <(Point2 left, Point2 right) => (left.X < right.X && left.Y < right.Y);
+        public static bool operator >(Point2 left, Point2 right) => (left.X > right.X && left.Y > right.Y);
+        public static bool operator <=(Point2 left, Point2 right) => (left.X <= right.X && left.Y <= right.Y);
+        public static bool operator >=(Point2 left, Point2 right) => (left.X >= right.X && left.Y >= right.Y);
     }
 }

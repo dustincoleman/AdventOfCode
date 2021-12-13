@@ -23,6 +23,12 @@ namespace AdventOfCode.Common
             Bounds = bounds;
         }
 
+        public T this[int x, int y]
+        {
+            get => this.grid[x, y];
+            set => this.grid[x, y] = value;
+        }
+
         public T this[Point2 point]
         {
             get => this.grid[point.X, point.Y];
