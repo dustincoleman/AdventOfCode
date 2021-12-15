@@ -68,6 +68,9 @@ namespace AdventOfCode.Common
 
         public override int GetHashCode() => (this.X.GetHashCode() ^ this.Y.GetHashCode());
 
+        public int Sum() => X + Y;
+        public int Product() => X * Y;
+
         public static Point2 operator +(Point2 p) => p;
         public static Point2 operator -(Point2 p) => new Point2(-p.X, -p.Y);
         public static Point2 operator ~(Point2 p) => new Point2(p.Y, p.X);

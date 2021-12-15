@@ -14,11 +14,7 @@ namespace AdventOfCode2021
         [Fact]
         public void Part1()
         {
-            string[] lines = File.ReadAllLines("Day15Input.txt");
-
-            Point2 bounds = new Point2(lines[0].Length, lines.Length);
-
-            long result = RunProblem(bounds, point => int.Parse(lines[point.Y][point.X].ToString()));
+            long result = RunProblem(ParseInput());
 
             Assert.Equal(745, result);
         }
@@ -26,130 +22,77 @@ namespace AdventOfCode2021
         [Fact]
         public void Part2()
         {
-            string[] lines = File.ReadAllLines("Day15Input.txt");
+            Grid2<Grid2<int>> mapPieces = new Grid2<Grid2<int>>(5, 5);
 
-            // Load the input map
-            Grid2<int> inputMap = new Grid2<int>(lines[0].Length, lines.Length);
+            mapPieces[Point2.Zero] = ParseInput();
 
-            foreach (Point2 point in inputMap.Points)
-            {
-                inputMap[point] = int.Parse(lines[point.Y][point.X].ToString());
-            }
-
-            // Create the larger map 
-            Grid2<Grid2<int>> enlargedMapPieces = new Grid2<Grid2<int>>(5, 5);
-            enlargedMapPieces[Point2.Zero] = inputMap;
-
-            foreach (Point2 point in enlargedMapPieces.Points.Skip(1))
+            foreach (Point2 point in mapPieces.Points.Skip(1))
             {
                 Point2 source = (point.X > 0) ? point - Point2.UnitX : point - Point2.UnitY;
-                enlargedMapPieces[point] = enlargedMapPieces[source].Transform(i => (i < 9) ? i + 1 : 1);
+                mapPieces[point] = mapPieces[source].Transform(i => (i < 9) ? i + 1 : 1);
             }
 
-            Grid2<int> enlargedMap = Grid2<int>.Combine(enlargedMapPieces);
-
-            long result = RunProblem(enlargedMap.Bounds, point => enlargedMap[point]);
+            long result = RunProblem(Grid2<int>.Combine(mapPieces));
 
             Assert.Equal(3002, result);
         }
 
-        long RunProblem(Point2 bounds, Func<Point2, int> getValue)
+        Grid2<int> ParseInput()
         {
-            PriorityQueue queue = new PriorityQueue();
-            Grid2<Position> map = new Grid2<Position>(bounds);
+            string[] lines = File.ReadAllLines("Day15Input.txt");
+            Grid2<int> map = new Grid2<int>(lines[0].Length, lines.Length);
 
             foreach (Point2 point in map.Points)
             {
-                Position position = new Position()
-                {
-                    Point = point,
-                    Risk = getValue(point),
-                    LowestCost = (point == Point2.Zero) ? 0 : int.MaxValue
-                };
-
-                map[point] = position;
-                queue.Enqueue(position);
+                map[point] = int.Parse(lines[point.Y][point.X].ToString());
             }
 
-            while (queue.Any())
+            return map;
+        }
+
+        long RunProblem(Grid2<int> map)
+        {
+            PriorityQueue<Node, int> queue = new PriorityQueue<Node, int>();
+            Grid2<bool> visited = new Grid2<bool>(map.Bounds);
+            Point2 end = map.Bounds - 1;
+
+            queue.Enqueue(new Node(Point2.Zero, 0), 0);
+
+            while (queue.Count > 0)
             {
-                Position position = queue.Dequeue();
+                Node node = queue.Dequeue();
 
-                foreach (Point2 adjacent in position.Point.Adjacent(map.Bounds))
+                if (node.Point == map.Bounds - 1)
                 {
-                    Position adjacentPosition = map[adjacent];
-                    int currentCost = position.LowestCost + adjacentPosition.Risk;
+                    return node.Distance;
+                }
 
-                    if (currentCost < adjacentPosition.LowestCost)
-                    {
-                        adjacentPosition.LowestCost = currentCost;
-                        queue.Requeue(adjacentPosition);
-                    }
+                if (visited[node.Point])
+                {
+                    continue;
+                }
+
+                visited[node.Point] = true;
+
+                foreach (Point2 adjacent in node.Point.Adjacent(map.Bounds).Where(p => !visited[p]))
+                {
+                    int adjacentDistance = node.Distance + map[adjacent];
+                    queue.Enqueue(new Node(adjacent, adjacentDistance), adjacentDistance);
                 }
             }
 
-            return map[map.Bounds - 1].LowestCost;
+            throw new Exception("Didn't find end");
         }
 
-        public class Position
+        public class Node
         {
-            public int Risk;
-            public int LowestCost;
             public Point2 Point;
-        }
+            public int Distance;
 
-        public class PriorityQueue
-        {
-            private LinkedList<Position> list = new LinkedList<Position>();
-            Dictionary<Position, LinkedListNode<Position>> map = new Dictionary<Position, LinkedListNode<Position>>();
-
-            internal bool Any()
+            public Node(Point2 point, int distance)
             {
-                return list.Any();
-            }
-
-            internal void Enqueue(Position position)
-            {
-                if (list.Count == 0 || position.LowestCost >= list.Last.Value.LowestCost)
-                {
-                    map[position] = list.AddLast(position);
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-
-            internal Position Dequeue()
-            {
-                Position position = list.First.Value;
-                list.RemoveFirst();
-                map.Remove(position);
-                return position;
-            }
-
-            internal void Requeue(Position p)
-            {
-                if (map.ContainsKey(p) && list.Count > 1)
-                {
-                    LinkedListNode<Position> node = map[p];
-                    list.Remove(node);
-
-                    if (p.LowestCost < list.First.Value.LowestCost)
-                    {
-                        list.AddFirst(p);
-                    }
-                    else
-                    {
-                        LinkedListNode<Position> insertAfter = list.First;
-                        while (insertAfter.Next != null && p.LowestCost > insertAfter.Next.Value.LowestCost)
-                        {
-                            insertAfter = insertAfter.Next;
-                        }
-
-                        list.AddAfter(insertAfter, node);
-                    }
-                }
+                Point = point;
+                Distance = distance;
             }
         }
     }
