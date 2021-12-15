@@ -137,6 +137,18 @@ namespace AdventOfCode.Common
             return output;
         }
 
+        public Grid2<T> Transform(Func<T, T> transformValue)
+        {
+            Grid2<T> output = new Grid2<T>(Bounds);
+
+            foreach (Point2 point in Point2.Quadrant(Bounds))
+            {
+                output[point] = transformValue(this[point]);
+            }
+
+            return output;
+        }
+
         public IEnumerator<T> GetEnumerator() => this.grid.Cast<T>().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
