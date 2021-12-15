@@ -5,12 +5,17 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace AdventOfCode.Common
 {
     public class Grid2<T> : IEnumerable<T>, IEquatable<Grid2<T>>
     {
         private readonly T[,] grid;
+        private readonly Func<Point2, Point2> pointTransform;
+        private readonly Func<T, T> valueTransform;
+
+        private int? hashcode;
 
         public Grid2(int xBound, int yBound)
             : this(new Point2(xBound, yBound))
@@ -20,19 +25,54 @@ namespace AdventOfCode.Common
         public Grid2(Point2 bounds)
         {
             this.grid = new T[bounds.X, bounds.Y];
-            Bounds = bounds;
+            this.Bounds = bounds;
+        }
+
+        private Grid2(T[,] grid, Point2 bounds, Func<Point2, Point2> pointTransform, Func<T, T> valueTransform)
+        {
+            this.grid = grid;
+            this.Bounds = bounds;
+            this.pointTransform = pointTransform;
+            this.valueTransform = valueTransform;
         }
 
         public T this[int x, int y]
         {
-            get => this.grid[x, y];
-            set => this.grid[x, y] = value;
+            get => this[new Point2(x, y)];
+            set => this[new Point2(x, y)] = value;
         }
 
         public T this[Point2 point]
         {
-            get => this.grid[point.X, point.Y];
-            set => this.grid[point.X, point.Y] = value;
+            get
+            {
+                if (this.pointTransform != null)
+                {
+                    point = this.pointTransform(point);
+                }
+                
+                if (this.valueTransform != null)
+                {
+                    return this.valueTransform(this.grid[point.X, point.Y]);
+                }
+
+                return this.grid[point.X, point.Y];
+            }
+            set
+            {
+                if (this.valueTransform != null)
+                {
+                    throw new InvalidOperationException("Cannot set values on a transformed grid");
+                }
+
+                if (this.pointTransform != null)
+                {
+                    point = this.pointTransform(point);
+                }
+
+                this.grid[point.X, point.Y] = value;
+                this.hashcode = null;
+            }
         }
 
         public Point2 Bounds { get; }
@@ -118,38 +158,31 @@ namespace AdventOfCode.Common
             return subGrid;
         }
 
-        public Grid2<T> FlipHorizontal() => Transpose(Bounds, source => new Point2(source.X, Bounds.Y - source.Y - 1));
+        public Grid2<T> FlipHorizontal() => Transpose(Bounds, view => new Point2(view.X, Bounds.Y - view.Y - 1));
 
-        public Grid2<T> FlipVertical() => Transpose(Bounds, source => new Point2(Bounds.X - source.X - 1, source.Y));
+        public Grid2<T> FlipVertical() => Transpose(Bounds, view => new Point2(Bounds.X - view.X - 1, view.Y));
 
-        public Grid2<T> Rotate() => Transpose(~Bounds, source => new Point2(Bounds.Y - source.Y - 1, source.X));
+        public Grid2<T> Rotate() => Transpose(~Bounds, view => new Point2(view.Y, Bounds.Y - view.X - 1));
 
-        public Grid2<T> Transpose(Point2 newBounds, Func<Point2, Point2> computeDestination)
+        public Grid2<T> Transpose(Point2 newBounds, Func<Point2, Point2> transpose)
         {
-            Grid2<T> output = new Grid2<T>(newBounds);
-
-            foreach (Point2 source in Point2.Quadrant(Bounds))
-            {
-                Point2 destination = computeDestination(source);
-                output[destination] = this[source];
-            }
-
-            return output;
+            return new Grid2<T>(
+                this.grid, 
+                newBounds, 
+                (this.pointTransform != null) ? p => transpose(this.pointTransform(p)) : transpose, 
+                this.valueTransform);
         }
 
-        public Grid2<T> Transform(Func<T, T> transformValue)
+        public Grid2<T> Transform(Func<T, T> transform)
         {
-            Grid2<T> output = new Grid2<T>(Bounds);
-
-            foreach (Point2 point in Point2.Quadrant(Bounds))
-            {
-                output[point] = transformValue(this[point]);
-            }
-
-            return output;
+            return new Grid2<T>(
+                this.grid, 
+                this.Bounds, 
+                this.pointTransform,
+                (this.valueTransform != null) ? v => transform(this.valueTransform(v)) : transform);
         }
 
-        public IEnumerator<T> GetEnumerator() => this.grid.Cast<T>().GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => new Grid2Enumerator<T>(this);
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
@@ -159,14 +192,19 @@ namespace AdventOfCode.Common
 
         public override int GetHashCode()
         {
-            int hashcode = 0;
-
-            foreach (T item in this)
+            if (!this.hashcode.HasValue)
             {
-                hashcode = HashCode.Combine(hashcode, item);
+                int temp = 0;
+
+                foreach (T item in this)
+                {
+                    temp = HashCode.Combine(temp, item);
+                }
+
+                this.hashcode = temp;
             }
 
-            return hashcode;
+            return this.hashcode.Value;
         }
 
         public static bool operator ==(Grid2<T> left, Grid2<T> right)
