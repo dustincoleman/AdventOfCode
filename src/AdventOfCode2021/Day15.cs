@@ -84,7 +84,7 @@ namespace AdventOfCode2021
             throw new Exception("Didn't find end");
         }
 
-        public class Node
+        public struct Node
         {
             public Point2 Point;
             public int Distance;
