@@ -159,11 +159,11 @@ namespace AdventOfCode.Common
 
         public override int GetHashCode()
         {
-            int shift = 0, hashcode = 0;
+            int hashcode = 0;
 
             foreach (T item in this)
             {
-                hashcode ^= (item.GetHashCode() << (shift++ % 16));
+                hashcode = HashCode.Combine(hashcode, item);
             }
 
             return hashcode;

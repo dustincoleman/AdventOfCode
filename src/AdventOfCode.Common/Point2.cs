@@ -66,7 +66,7 @@ namespace AdventOfCode.Common
 
         public override bool Equals(object obj) => (obj is Point2 other && this.Equals(other));
 
-        public override int GetHashCode() => (this.X.GetHashCode() ^ this.Y.GetHashCode());
+        public override int GetHashCode() => HashCode.Combine(X, Y);
 
         public int Sum() => X + Y;
         public int Product() => X * Y;

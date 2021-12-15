@@ -52,48 +52,33 @@ namespace AdventOfCode2021
 
         long RunProblem(Grid2<int> map)
         {
-            PriorityQueue<Node, int> queue = new PriorityQueue<Node, int>();
+            PriorityQueue<Point2, int> queue = new PriorityQueue<Point2, int>();
             Grid2<bool> visited = new Grid2<bool>(map.Bounds);
             Point2 end = map.Bounds - 1;
 
-            queue.Enqueue(new Node(Point2.Zero, 0), 0);
+            queue.Enqueue(Point2.Zero, 0);
 
-            while (queue.Count > 0)
+            while (queue.TryDequeue(out Point2 point, out int distance))
             {
-                Node node = queue.Dequeue();
-
-                if (node.Point == map.Bounds - 1)
+                if (point == end)
                 {
-                    return node.Distance;
+                    return distance;
                 }
 
-                if (visited[node.Point])
+                if (visited[point])
                 {
                     continue;
                 }
 
-                visited[node.Point] = true;
+                visited[point] = true;
 
-                foreach (Point2 adjacent in node.Point.Adjacent(map.Bounds).Where(p => !visited[p]))
+                foreach (Point2 adjacent in point.Adjacent(map.Bounds).Where(p => !visited[p]))
                 {
-                    int adjacentDistance = node.Distance + map[adjacent];
-                    queue.Enqueue(new Node(adjacent, adjacentDistance), adjacentDistance);
+                    queue.Enqueue(adjacent, distance + map[adjacent]);
                 }
             }
 
             throw new Exception("Didn't find end");
-        }
-
-        public struct Node
-        {
-            public Point2 Point;
-            public int Distance;
-
-            public Node(Point2 point, int distance)
-            {
-                Point = point;
-                Distance = distance;
-            }
         }
     }
 }
