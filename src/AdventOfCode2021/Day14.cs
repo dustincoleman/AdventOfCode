@@ -28,19 +28,12 @@ namespace AdventOfCode2021
         {
             ParseResult parseResult = ParseInput();
 
-            Dictionary<string, long> polymer = new Dictionary<string, long>();
+            IDictionary<string, long> polymer = new AutoDictionary<string, long>();
 
             for (int i = 0; i < parseResult.Template.Length - 1; i++)
             {
                 string pair = string.Concat(parseResult.Template.Skip(i).Take(2));
-                if (!polymer.ContainsKey(pair))
-                {
-                    polymer[pair] = 1;
-                }
-                else
-                {
-                    polymer[pair]++;
-                }
+                polymer[pair]++;
             }
 
             for (int i = 0; i < cycles; i++)
@@ -83,34 +76,17 @@ namespace AdventOfCode2021
             };
         }
 
-        private Dictionary<string, long> ApplyRules(Dictionary<string, long> polymer, Dictionary<string, string> rules)
+        private IDictionary<string, long> ApplyRules(IDictionary<string, long> polymer, Dictionary<string, string> rules)
         {
-            Dictionary<string, long> newPolymer = new Dictionary<string, long>();
+            AutoDictionary<string, long> newPolymer = new AutoDictionary<string, long>();
 
             foreach (string pair in polymer.Keys)
             {
                 long count = polymer[pair];
                 string insert = rules[pair];
-                string left = string.Concat(pair[0], insert);
-                string right = string.Concat(insert, pair[1]);
 
-                if (!newPolymer.ContainsKey(left))
-                {
-                    newPolymer[left] = count;
-                }
-                else
-                {
-                    newPolymer[left] += count;
-                }
-
-                if (!newPolymer.ContainsKey(right))
-                {
-                    newPolymer[right] = count;
-                }
-                else
-                {
-                    newPolymer[right] += count;
-                }
+                newPolymer[string.Concat(pair[0], insert)] += count;
+                newPolymer[string.Concat(insert, pair[1])] += count;
             }
 
             return newPolymer;
