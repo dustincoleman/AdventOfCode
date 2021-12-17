@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using AdventOfCode.Common;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 using Microsoft.VisualStudio.Utilities;
 using WinForms = System.Windows.Forms;
@@ -15,7 +16,8 @@ namespace Grid2Visualizer
 
             using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.PerMonitorAwareV2))
             {
-                Grid2VisualizerWindow window = new Grid2VisualizerWindow();
+                IGrid2 grid = (IGrid2)((IVisualizerObjectProvider2)objectProvider).GetObject();
+                Grid2VisualizerWindow window = new Grid2VisualizerWindow(grid);
 
                 window.SetOwner(parentWindow.Handle);
                 window.RemoveIcon();

@@ -9,7 +9,8 @@ using System.Threading;
 
 namespace AdventOfCode.Common
 {
-    public class Grid2<T> : IEnumerable<T>, IEquatable<Grid2<T>>
+    [Serializable]
+    public class Grid2<T> : IGrid2, IEnumerable<T>, IEquatable<Grid2<T>>
     {
         private readonly T[,] grid;
         private readonly Func<Point2, Point2> pointTransform;
@@ -225,5 +226,9 @@ namespace AdventOfCode.Common
         }
 
         public static bool operator !=(Grid2<T> left, Grid2<T> right) => !(left == right);
+
+        object IGrid2.this[Point2 p] => this[p];
+
+        object IGrid2.this[int x, int y] => this[x, y];
     }
 }

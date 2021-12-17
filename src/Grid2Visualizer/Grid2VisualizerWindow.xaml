@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Grid2Visualizer.UI"
+        xmlns:local="clr-namespace:Grid2Visualizer"
         mc:Ignorable="d"
         Title="Grid2VisualizerWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Name="ContentGrid" />
+    </ScrollViewer>
 </Window>
