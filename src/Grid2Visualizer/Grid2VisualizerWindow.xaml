@@ -6,11 +6,23 @@
         xmlns:local="clr-namespace:Grid2Visualizer"
         mc:Ignorable="d"
         Title="Grid2 Visualizer" Height="450" Width="800">
-    <DataGrid Name="ContentGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True" ScrollViewer.IsDeferredScrollingEnabled="True">
+    
+    <Window.Resources>
+        <local:Grid2DataGridColumnConverter x:Key="ColumnConverter" />
+    </Window.Resources>
+    
+    <local:BindableDataGrid x:Name="ContentGrid"
+                            AutoGenerateColumns="False"
+                            EnableRowVirtualization="True"
+                            EnableColumnVirtualization="True"
+                            ScrollViewer.IsDeferredScrollingEnabled="True"
+                            ColumnsBinding="{Binding Columns, Converter={StaticResource ColumnConverter}}"
+                            ItemsSource="{Binding Rows}">
         <DataGrid.RowHeaderTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=DataContext.Row}" />
+                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=DataContext.Header}" />
             </DataTemplate>
         </DataGrid.RowHeaderTemplate>
-    </DataGrid>
+    </local:BindableDataGrid>
+    
 </Window>

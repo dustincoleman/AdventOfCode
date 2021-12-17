@@ -56,10 +56,17 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindableDataGrid.cs" />
+    <Compile Include="Grid2CellViewModel.cs" />
+    <Compile Include="Grid2DataGridColumnConverter.cs" />
+    <Compile Include="Grid2ColumnViewModel.cs" />
+    <Compile Include="Grid2RowViewModel.cs" />
+    <Compile Include="Grid2ViewModel.cs" />
     <Compile Include="Grid2Visualizer.cs" />
     <Compile Include="Grid2VisualizerWindow.xaml.cs">
       <DependentUpon>Grid2VisualizerWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -73,6 +80,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ViewProperty.cs" />
     <Compile Include="WindowExtensions.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

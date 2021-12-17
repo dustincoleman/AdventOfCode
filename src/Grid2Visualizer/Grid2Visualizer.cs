@@ -7,14 +7,14 @@ using Microsoft.VisualStudio.Utilities;
 using WinForms = System.Windows.Forms;
 
 [assembly: DebuggerVisualizer(
-    typeof(Grid2Visualizer.Grid2Visualizer),
+    typeof(Grid2Visualizer.Grid2DialogVisualizer),
     typeof(Grid2ObjectSource),
     Target = typeof(Grid2<>),
     Description = "Grid2 Visualizer")]
 
 namespace Grid2Visualizer
 {
-    public class Grid2Visualizer : DialogDebuggerVisualizer
+    public class Grid2DialogVisualizer : DialogDebuggerVisualizer
     {
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
