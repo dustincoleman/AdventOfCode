@@ -6,7 +6,6 @@ using System.Text;
 
 namespace AdventOfCode.Common
 {
-    [Serializable]
     public struct Point2 : IEquatable<Point2>
     {
         public static readonly Point2 Zero = new Point2(0, 0);

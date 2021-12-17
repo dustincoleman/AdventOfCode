@@ -1,5 +1,5 @@
 ﻿using AdventOfCode.Common;
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using Grid2Visualizer.Remote;
 using System.Diagnostics;
 using System.Reflection;
 using System.Resources;
@@ -9,18 +9,18 @@ using System.Windows;
 
 [assembly: DebuggerVisualizer(
     typeof(Grid2Visualizer.Grid2Visualizer),
-    typeof(VisualizerObjectSource), 
+    typeof(Grid2ObjectSource), 
     Target = typeof(Grid2<>), 
     Description = "Grid2 Visualizer")]
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Grid2Visualizer.UI")]
+[assembly: AssemblyTitle("Grid2Visualizer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Grid2Visualizer.UI")]
+[assembly: AssemblyProduct("Grid2Visualizer")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

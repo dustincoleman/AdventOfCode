@@ -9,7 +9,6 @@ using System.Threading;
 
 namespace AdventOfCode.Common
 {
-    [Serializable]
     public class Grid2<T> : IGrid2, IEnumerable<T>, IEquatable<Grid2<T>>
     {
         private readonly T[,] grid;

@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Grid2Visualizer"
         mc:Ignorable="d"
-        Title="Grid2VisualizerWindow" Height="450" Width="800">
+        Title="Grid2 Visualizer" Height="450" Width="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid Name="ContentGrid" />
+        <DataGrid Name="ContentGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True">
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=DataContext.Row}" /> 
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+        </DataGrid>
     </ScrollViewer>
 </Window>

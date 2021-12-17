@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCodeOther", "Advent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grid2Visualizer", "Grid2Visualizer\Grid2Visualizer.csproj", "{01DEA041-B76A-4C24-92F5-654A99504898}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grid2Visualizer.Remote", "Grid2Visualizer.Remote\Grid2Visualizer.Remote.csproj", "{BF0B91CC-9225-4D8A-91B7-F1A1AA67EF64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{01DEA041-B76A-4C24-92F5-654A99504898}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01DEA041-B76A-4C24-92F5-654A99504898}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01DEA041-B76A-4C24-92F5-654A99504898}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF0B91CC-9225-4D8A-91B7-F1A1AA67EF64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF0B91CC-9225-4D8A-91B7-F1A1AA67EF64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF0B91CC-9225-4D8A-91B7-F1A1AA67EF64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF0B91CC-9225-4D8A-91B7-F1A1AA67EF64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

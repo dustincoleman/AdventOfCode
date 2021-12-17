@@ -94,6 +94,10 @@
       <Project>{b047a721-f365-4ac7-a9a8-f70220a1beaa}</Project>
       <Name>AdventOfCode.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Grid2Visualizer.Remote\Grid2Visualizer.Remote.csproj">
+      <Project>{BF0B91CC-9225-4D8A-91B7-F1A1AA67EF64}</Project>
+      <Name>Grid2Visualizer.Remote</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

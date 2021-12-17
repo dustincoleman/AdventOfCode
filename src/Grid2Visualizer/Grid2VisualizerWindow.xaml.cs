@@ -1,5 +1,6 @@
 ﻿using AdventOfCode.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,22 +36,57 @@ namespace Grid2Visualizer
 
             for (int x = 0; x < grid.Bounds.X; x++)
             {
-                ContentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+                ContentGrid.Columns.Add(new DataGridTextColumn() { Binding = new Binding($"Columns[{x}]"), Header = x });
             }
 
-            for (int y = 0; y < grid.Bounds.Y; y++)
-            {
-                ContentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
-            }
+            ContentGrid.ItemsSource = new Grid2RowsPresenter(grid);
+        }
+    }
 
-            foreach (Point2 p in grid.Points)
-            {
-                TextBlock textBlock = new TextBlock(new Run(grid[p].ToString()));
-                Grid.SetColumn(textBlock, p.X);
-                Grid.SetRow(textBlock, p.Y);
+    public class Grid2RowsPresenter : IEnumerable<Grid2Row>
+    {
+        private IGrid2 grid;
 
-                ContentGrid.Children.Add(textBlock);
-            }
+        internal Grid2RowsPresenter(IGrid2 grid)
+        {
+            this.grid = grid;
+        }
+
+        public IEnumerator<Grid2Row> GetEnumerator()
+        {
+            return Enumerable
+                   .Range(0, grid.Bounds.Y)
+                   .Select(row => new Grid2Row(grid, row))
+                   .GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class Grid2Row
+    {
+        private IGrid2 grid;
+        private int row;
+
+        private Lazy<object[]> columns;
+
+        internal Grid2Row(IGrid2 grid, int row)
+        {
+            this.grid = grid;
+            this.row = row;
+            this.columns = new Lazy<object[]>(LoadColumns);
+        }
+
+        public int Row => row;
+
+        public object[] Columns => columns.Value;
+
+        private object[] LoadColumns()
+        {
+            return Enumerable
+                   .Range(0, grid.Bounds.X)
+                   .Select(column => grid[column, row])
+                   .ToArray();
         }
     }
 }
