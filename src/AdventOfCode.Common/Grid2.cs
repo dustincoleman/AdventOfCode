@@ -186,7 +186,7 @@ namespace AdventOfCode.Common
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-        public bool Equals([AllowNull] Grid2<T> other) => (this == other);
+        public bool Equals(Grid2<T> other) => (this == other);
 
         public override bool Equals(object obj) => (obj is Grid2<T> other && this.Equals(other));
 

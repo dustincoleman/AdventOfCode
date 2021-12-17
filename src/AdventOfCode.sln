@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode.Common", "Adve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2021", "AdventOfCode2021\AdventOfCode2021.csproj", "{55ED62AC-5427-48C5-9275-FE123B1714B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCodeOther", "AdventOfCodeOther\AdventOfCodeOther.csproj", "{36A69596-F3D5-46DE-B582-911CCE439D7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCodeOther", "AdventOfCodeOther\AdventOfCodeOther.csproj", "{36A69596-F3D5-46DE-B582-911CCE439D7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grid2Visualizer", "Grid2Visualizer\Grid2Visualizer.csproj", "{01DEA041-B76A-4C24-92F5-654A99504898}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{36A69596-F3D5-46DE-B582-911CCE439D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36A69596-F3D5-46DE-B582-911CCE439D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36A69596-F3D5-46DE-B582-911CCE439D7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01DEA041-B76A-4C24-92F5-654A99504898}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01DEA041-B76A-4C24-92F5-654A99504898}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01DEA041-B76A-4C24-92F5-654A99504898}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01DEA041-B76A-4C24-92F5-654A99504898}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

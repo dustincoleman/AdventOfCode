@@ -44,7 +44,7 @@ namespace AdventOfCode.Common
 
         public bool Remove(TKey key) => Dictionary.Remove(key);
 
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => Dictionary.TryGetValue(key, out value);
+        public bool TryGetValue(TKey key, out TValue value) => Dictionary.TryGetValue(key, out value);
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => ((ICollection<KeyValuePair<TKey, TValue>>)Dictionary).IsReadOnly;
 

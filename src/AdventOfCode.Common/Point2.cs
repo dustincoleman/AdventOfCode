@@ -62,7 +62,7 @@ namespace AdventOfCode.Common
             if (X > 0) yield return this - UnitX; // Left
         }
 
-        public bool Equals([AllowNull] Point2 other) => (this == other);
+        public bool Equals(Point2 other) => (this == other);
 
         public override bool Equals(object obj) => (obj is Point2 other && this.Equals(other));
 
