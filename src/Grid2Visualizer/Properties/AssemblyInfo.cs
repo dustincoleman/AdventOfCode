@@ -1,17 +1,9 @@
-﻿using AdventOfCode.Common;
-using Grid2Visualizer.Remote;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
-
-[assembly: DebuggerVisualizer(
-    typeof(Grid2Visualizer.Grid2Visualizer),
-    typeof(Grid2ObjectSource), 
-    Target = typeof(Grid2<>), 
-    Description = "Grid2 Visualizer")]
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information

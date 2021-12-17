@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
 using AdventOfCode.Common;
+using Grid2Visualizer.Remote;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 using Microsoft.VisualStudio.Utilities;
 using WinForms = System.Windows.Forms;
+
+[assembly: DebuggerVisualizer(
+    typeof(Grid2Visualizer.Grid2Visualizer),
+    typeof(Grid2ObjectSource),
+    Target = typeof(Grid2<>),
+    Description = "Grid2 Visualizer")]
 
 namespace Grid2Visualizer
 {
