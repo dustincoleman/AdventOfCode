@@ -72,29 +72,19 @@ namespace AdventOfCode2021
 
         class BitsReader
         {
-            string binaryString;
-            int position;
+            private BitStream bitStream;
 
             internal BitsReader(string hexString)
             {
-                StringBuilder sb = new StringBuilder();
-
-                foreach (char c in hexString)
-                {
-                    int i = Convert.ToInt32(c.ToString(), 16);
-                    string binary = Convert.ToString(i, 2).PadLeft(4, '0');
-                    sb.Append(binary);
-                }
-
-                binaryString = sb.ToString();
+                this.bitStream = BitStream.FromHexString(hexString);
             }
 
             internal Packet ReadPacket()
             {
                 Packet packet = new Packet()
                 {
-                    Version = ReadInt(3),
-                    TypeId = ReadInt(3),
+                    Version = this.bitStream.Read(3),
+                    TypeId = this.bitStream.Read(3),
                 };
 
                 if (packet.TypeId == 4)
@@ -111,8 +101,8 @@ namespace AdventOfCode2021
 
             private void ReadSubPackets(Packet packet)
             {
-                bool isLengthCount = ReadBit();
-                int length = (isLengthCount) ? ReadInt(11) : ReadInt(15);
+                bool isLengthCount = this.bitStream.ReadBit();
+                int length = (isLengthCount) ? this.bitStream.Read(11) : this.bitStream.Read(15);
 
                 if (isLengthCount)
                 {
@@ -123,45 +113,33 @@ namespace AdventOfCode2021
                 }
                 else
                 {
-                    int endPosition = position + length;
+                    int endPosition = this.bitStream.Position + length;
 
-                    while (position < endPosition)
+                    while (this.bitStream.Position < endPosition)
                     {
                         packet.SubPackets.Add(ReadPacket());
                     }
 
-                    if (position > endPosition)
+                    if (this.bitStream.Position > endPosition)
                     {
                         throw new Exception("Read too far");
                     }
                 }
             }
 
-            internal bool ReadBit()
-            {
-                return (binaryString[position++] == '1');
-            }
-
-            internal int ReadInt(int width)
-            {
-                string str = binaryString.Substring(position, width);
-                position += width;
-                return Convert.ToInt32(str, 2);
-            }
-
             internal long ReadLiteralValue()
             {
-                StringBuilder sb = new StringBuilder();
                 bool more = true;
+                long value = 0;
 
                 while (more)
                 {
-                    more = ReadBit();
-                    sb.Append(binaryString.Substring(position, 4));
-                    position += 4;
+                    more = this.bitStream.ReadBit();
+                    value <<= 4;
+                    value |= (long)this.bitStream.Read(4);
                 }
 
-                return Convert.ToInt64(sb.ToString(), 2);
+                return value;
             }
         }
     }
