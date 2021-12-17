@@ -9,7 +9,7 @@ namespace Grid2Visualizer.Remote
     {
         public override void GetData(object target, Stream outgoingData)
         {
-            IGrid2 grid = new ImmutableGrid2((IGrid2)target);
+            IGrid2 grid = new StringGrid2((IGrid2)target);
             base.GetData(grid, outgoingData);
         }
     }

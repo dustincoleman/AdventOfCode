@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Grid2Visualizer"
         mc:Ignorable="d"
         Title="Grid2 Visualizer" Height="450" Width="800">
-    <DataGrid Name="ContentGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True">
+    <DataGrid Name="ContentGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True" ScrollViewer.IsDeferredScrollingEnabled="True">
         <DataGrid.RowHeaderTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=DataContext.Row}" />
