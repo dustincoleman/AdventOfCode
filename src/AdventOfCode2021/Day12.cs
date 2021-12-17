@@ -38,30 +38,15 @@ namespace AdventOfCode2021
 
         private Dictionary<string, HashSet<string>> LoadGraph()
         {
-            Dictionary<string, HashSet<string>> graph = new Dictionary<string, HashSet<string>>();
+            AutoDictionary<string, HashSet<string>> graph = new AutoDictionary<string, HashSet<string>>();
 
             foreach (string[] entry in File.ReadAllLines("Day12Input.txt").Select(s => s.Split('-')))
             {
-                HashSet<string> set;
-
-                if (!graph.TryGetValue(entry[0], out set))
-                {
-                    set = new HashSet<string>();
-                    graph.Add(entry[0], set);
-                }
-
-                set.Add(entry[1]);
-
-                if (!graph.TryGetValue(entry[1], out set))
-                {
-                    set = new HashSet<string>();
-                    graph.Add(entry[1], set);
-                }
-
-                set.Add(entry[0]);
+                graph[entry[0]].Add(entry[1]);
+                graph[entry[1]].Add(entry[0]);
             }
 
-            return graph;
+            return graph.Dictionary;
         }
 
         private void FindPaths(string currentPath, Dictionary<string, HashSet<string>> graph, List<string> paths, bool canDoubleVisit = false)
