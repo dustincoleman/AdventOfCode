@@ -15,45 +15,41 @@ namespace AdventOfCode2021
         [Fact]
         public void Part1()
         {
-            Target target = Target.ReadFromFile();
-            int yMax = 0;
+            int result = RunProblem((accumulator, probe) => Math.Max(accumulator, probe.YMax));
 
-            for (int x = 1; x < target.XMax; x++)
-            {
-                for (int y = -999; y < 1000; y++)
-                {
-                    Probe probe = new Probe(x, y, target);
-
-                    if (probe.HitsTarget())
-                    {
-                        yMax = Math.Max(yMax, probe.YMax);
-                    }
-                }
-            }
-
-            Assert.Equal(7626, yMax);
+            Assert.Equal(7626, result);
         }
 
         [Fact]
         public void Part2()
         {
-            Target target = Target.ReadFromFile();
-            int velocityCounts = 0;
+            int result = RunProblem((accumulator, probe) => accumulator + 1);
 
-            for (int x = 1; x < 1000; x++)
+            Assert.Equal(2032, result);
+        }
+
+        private int RunProblem(Func<int, Probe, int> func)
+        {
+            Target target = Target.ReadFromFile();
+            int accumulator = 0;
+
+            // Initial x velocity can never exceed the end of the target zone
+            for (int x = 1; x <= target.XMax + 1; x++)
             {
-                for (int y = -999; y < 1000; y++)
+                // Since the target is in the fourth quadrant, the probe will always cross
+                // back over the x-axis with -(intial y velocity)
+                for (int y = target.YMin - 1; y <= (-target.YMin) + 1; y++)
                 {
                     Probe probe = new Probe(x, y, target);
 
                     if (probe.HitsTarget())
                     {
-                        velocityCounts++;
+                        accumulator = func(accumulator, probe);
                     }
                 }
             }
 
-            Assert.Equal(2032, velocityCounts);
+            return accumulator;
         }
 
         private class Probe
@@ -92,8 +88,8 @@ namespace AdventOfCode2021
 
         private class Target
         {
-            // HACK: Assume positive x values
-            private static readonly Regex regex = new Regex(@"^target area: x=(?<x1>\d+)..(?<x2>\d+), y=(?<y1>-?\d+)..(?<y2>-?\d+)$");
+            // Target is assumed to be in Quadrant IV
+            private static readonly Regex regex = new Regex(@"^target area: x=(?<x1>\d+)..(?<x2>\d+), y=(?<y1>-\d+)..(?<y2>-\d+)$");
 
             public int XMin;
             public int XMax;
