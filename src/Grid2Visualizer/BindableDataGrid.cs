@@ -7,25 +7,25 @@ namespace Grid2Visualizer
 {
     public class BindableDataGrid : DataGrid
     {
-        public static readonly DependencyProperty ColumnsBindingProperty =
+        public static readonly DependencyProperty BindableColumnsProperty =
             DependencyProperty.Register(
-                "ColumnsBinding", 
+                "BindableColumns", 
                 typeof(IEnumerable<DataGridColumn>), 
                 typeof(BindableDataGrid), 
-                new PropertyMetadata(OnColumnsBindingChanged));
+                new PropertyMetadata(OnBindableColumnsChanged));
 
-        public IEnumerable<DataGridColumn> ColumnsBinding
+        public IEnumerable<DataGridColumn> BindableColumns
         {
-            get { return (IEnumerable<DataGridColumn>)GetValue(ColumnsBindingProperty); }
-            set { SetValue(ColumnsBindingProperty, value); }
+            get { return (IEnumerable<DataGridColumn>)GetValue(BindableColumnsProperty); }
+            set { SetValue(BindableColumnsProperty, value); }
         }
 
-        private static void OnColumnsBindingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnBindableColumnsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((BindableDataGrid)d).OnColumnsBindingChanged(e);
+            ((BindableDataGrid)d).OnBindableColumnsChanged(e);
         }
 
-        private void OnColumnsBindingChanged(DependencyPropertyChangedEventArgs e)
+        private void OnBindableColumnsChanged(DependencyPropertyChangedEventArgs e)
         {
             Columns.Clear();
 

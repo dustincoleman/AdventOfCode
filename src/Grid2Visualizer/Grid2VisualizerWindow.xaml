@@ -16,7 +16,7 @@
                             EnableRowVirtualization="True"
                             EnableColumnVirtualization="True"
                             ScrollViewer.IsDeferredScrollingEnabled="True"
-                            ColumnsBinding="{Binding Columns, Converter={StaticResource ColumnConverter}}"
+                            BindableColumns="{Binding Columns, Converter={StaticResource ColumnConverter}}"
                             ItemsSource="{Binding Rows}">
         <DataGrid.RowHeaderTemplate>
             <DataTemplate>
