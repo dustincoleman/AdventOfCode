@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Grid2Visualizer
 {
-    public class Grid2RowViewModel : ViewModelBase
+    public class Grid2RowViewModel : NotifyPropertyChanged
     {
         private readonly int row;
-        private readonly IGrid2 grid;
-        private ViewProperty<string> header;
+        private readonly Grid2DataProvider provider;
+        private NotifyProperty<string> header;
         private Lazy<IReadOnlyCollection<Grid2CellViewModel>> cells;
 
-        internal Grid2RowViewModel(int row, IGrid2 grid)
+        public Grid2RowViewModel(int row, Grid2DataProvider provider)
         {
             this.row = row;
-            this.grid = grid;
-            this.header = new ViewProperty<string>(nameof(Header), this, row.ToString());
-            this.cells = new Lazy<IReadOnlyCollection<Grid2CellViewModel>>(CreateColumns);
+            this.provider = provider;
+            this.header = new NotifyProperty<string>(nameof(Header), this, row.ToString());
+            this.cells = new Lazy<IReadOnlyCollection<Grid2CellViewModel>>(CreateCells);
         }
 
         public string Header
@@ -31,11 +31,11 @@ namespace Grid2Visualizer
 
         public IReadOnlyCollection<Grid2CellViewModel> Cells => this.cells.Value;
 
-        private IReadOnlyCollection<Grid2CellViewModel> CreateColumns()
+        private IReadOnlyCollection<Grid2CellViewModel> CreateCells()
         {
             return new ReadOnlyCollection<Grid2CellViewModel>(
-                Enumerable.Range(0, grid.Bounds.X)
-                    .Select(column => new Grid2CellViewModel(this.row, column, this.grid))
+                Enumerable.Range(0, this.provider.Bounds.X)
+                    .Select(column => new Grid2CellViewModel(this.row, column, this.provider))
                     .ToList());
         }
     }

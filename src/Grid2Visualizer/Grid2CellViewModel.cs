@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Grid2Visualizer
 {
-    public class Grid2CellViewModel : ViewModelBase
+    public class Grid2CellViewModel : NotifyPropertyChanged
     {
         private readonly int row;
         private readonly int column;
-        private readonly IGrid2 grid;
+        private readonly Grid2DataProvider provider;
 
-        internal Grid2CellViewModel(int row, int column, IGrid2 grid)
+        internal Grid2CellViewModel(int row, int column, Grid2DataProvider provider)
         {
             this.row = row;
             this.column = column;
-            this.grid = grid;
+            this.provider = provider;
         }
 
-        public object Value => this.grid[this.column, this.row];
+        public object RemoteValue => this.provider[this.column, this.row];
     }
 }

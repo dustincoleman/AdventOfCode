@@ -31,7 +31,7 @@ namespace Grid2Visualizer
                 {
                     DataGridColumn column = new DataGridTextColumn()
                     {
-                        Binding = new Binding($"{ nameof(Grid2RowViewModel.Cells) }[{ viewModel.Column }].Value")
+                        Binding = new Binding($"{ nameof(Grid2RowViewModel.Cells) }[{ viewModel.Column }].RemoteValue.Value")
                     };
 
                     BindingOperations.SetBinding(

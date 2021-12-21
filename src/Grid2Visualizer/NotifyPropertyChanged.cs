@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Grid2Visualizer
 {
-    public class ViewModelBase : INotifyPropertyChanged
+    public class NotifyPropertyChanged : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal void NotifyPropertyChanged(string name)
+        internal void OnPropertyChanged(string name)
         {
             if (PropertyChanged != null)
             {

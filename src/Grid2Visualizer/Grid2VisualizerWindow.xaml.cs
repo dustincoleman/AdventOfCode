@@ -1,4 +1,5 @@
 ﻿using AdventOfCode.Common;
+using Microsoft.VisualStudio.DebuggerVisualizers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,10 +22,10 @@ namespace Grid2Visualizer
     /// </summary>
     public partial class Grid2VisualizerWindow : Window
     {
-        public Grid2VisualizerWindow(IGrid2 grid)
+        public Grid2VisualizerWindow(IVisualizerObjectProvider2 objectProvider)
         {
             InitializeComponent();
-            DataContext = new Grid2ViewModel(grid);
+            DataContext = new Grid2ViewModel(objectProvider);
         }
     }
 }

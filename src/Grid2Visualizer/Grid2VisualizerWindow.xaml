@@ -9,20 +9,26 @@
     
     <Window.Resources>
         <local:Grid2DataGridColumnConverter x:Key="ColumnConverter" />
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
-    
-    <local:BindableDataGrid x:Name="ContentGrid"
-                            AutoGenerateColumns="False"
-                            EnableRowVirtualization="True"
-                            EnableColumnVirtualization="True"
-                            ScrollViewer.IsDeferredScrollingEnabled="True"
-                            BindableColumns="{Binding Columns, Converter={StaticResource ColumnConverter}}"
-                            ItemsSource="{Binding Rows}">
-        <DataGrid.RowHeaderTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=DataContext.Header}" />
-            </DataTemplate>
-        </DataGrid.RowHeaderTemplate>
-    </local:BindableDataGrid>
+
+    <Grid>
+        <local:BindableDataGrid x:Name="ContentGrid"
+                                AutoGenerateColumns="False"
+                                EnableRowVirtualization="True"
+                                EnableColumnVirtualization="True"
+                                ScrollViewer.IsDeferredScrollingEnabled="True"
+                                BindableColumns="{Binding Columns, Converter={StaticResource ColumnConverter}}"
+                                ItemsSource="{Binding Rows}">
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=DataContext.Header}" />
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+        </local:BindableDataGrid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Provider.IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ProgressBar Width="150" Height="15" IsIndeterminate="True" />
+        </StackPanel>
+    </Grid>
     
 </Window>

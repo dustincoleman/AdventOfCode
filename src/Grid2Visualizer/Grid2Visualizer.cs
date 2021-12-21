@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Windows;
 using AdventOfCode.Common;
 using Grid2Visualizer.Remote;
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -23,13 +24,24 @@ namespace Grid2Visualizer
 
             using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.PerMonitorAwareV2))
             {
-                IGrid2 grid = (IGrid2)((IVisualizerObjectProvider2)objectProvider).GetObject();
-                Grid2VisualizerWindow window = new Grid2VisualizerWindow(grid);
+                Grid2VisualizerWindow window = new Grid2VisualizerWindow((IVisualizerObjectProvider2)objectProvider);
 
                 window.SetOwner(parentWindow.Handle);
                 window.RemoveIcon();
                 window.RemoveMinButton();
                 window.ShowDialog();
+            }
+        }
+
+        public static void TestShow(StringGrid2 grid)
+        {
+            try
+            {
+                VisualizerDevelopmentHost visualizerHost = new VisualizerDevelopmentHost(grid, typeof(Grid2DialogVisualizer));
+                visualizerHost.ShowVisualizer();
+            }
+            catch (CannotUnloadAppDomainException)
+            {
             }
         }
     }

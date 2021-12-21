@@ -6,13 +6,13 @@ using System.Text;
 namespace Grid2Visualizer.Remote
 {
     [Serializable]
-    internal class StringGrid2 : IGrid2
+    public class StringGrid2 : IGrid2
     {
         int boundsX;
         int boundsY;
         string[,] data;
 
-        internal StringGrid2(IGrid2 source)
+        public StringGrid2(IGrid2 source)
         {
             this.boundsX = source.Bounds.X;
             this.boundsY = source.Bounds.Y;
