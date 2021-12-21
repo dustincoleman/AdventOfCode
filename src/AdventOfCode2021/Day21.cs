@@ -16,19 +16,19 @@ namespace AdventOfCode2021
         public void Part1()
         {
             DiceGame game = ReadGameFromFile();
-            int nextDieRoll = 0;
+            int timesRolled = 0;
 
             int NextRoll()
             {
-                int rollSum = ((nextDieRoll % 100) + 2) * 3;
-                nextDieRoll += 3;
+                int rollSum = ((timesRolled % 100) + 2) * 3;
+                timesRolled += 3;
                 return rollSum;
             }
 
             while (!(game = game.Player1Rolls(NextRoll())).IsComplete(1000) &&
                    !(game = game.Player2Rolls(NextRoll())).IsComplete(1000)) { }
 
-            long result = nextDieRoll * Math.Min(game.P1Score, game.P2Score);
+            long result = timesRolled * Math.Min(game.P1Score, game.P2Score);
 
             Assert.Equal(897798, result);
         }
