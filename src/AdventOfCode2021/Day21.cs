@@ -15,41 +15,20 @@ namespace AdventOfCode2021
         [Fact]
         public void Part1()
         {
-            string[] input = File.ReadAllLines("Day21Input.txt");
-
-            int player1Pos = int.Parse(input[0].Split(" starting position: ")[1]);
-            int player2Pos = int.Parse(input[1].Split(" starting position: ")[1]);
-
-            int player1Score = 0;
-            int player2Score = 0;
+            DiceGame game = ReadGameFromFile();
             int nextDieRoll = 0;
 
-            while (true)
+            int NextRoll()
             {
                 int rollSum = ((nextDieRoll % 100) + 2) * 3;
                 nextDieRoll += 3;
-
-                player1Pos = (player1Pos + rollSum) % 10;
-                player1Score += (player1Pos == 0) ? 10 : player1Pos;
-
-                if (player1Score >= 1000)
-                {
-                    break;
-                }
-
-                rollSum = ((nextDieRoll % 100) + 2) * 3;
-                nextDieRoll += 3;
-
-                player2Pos = (player2Pos + rollSum) % 10;
-                player2Score += (player2Pos == 0) ? 10 : player2Pos;
-
-                if (player2Score >= 1000)
-                {
-                    break;
-                }
+                return rollSum;
             }
 
-            long result = nextDieRoll * Math.Min(player1Score, player2Score);
+            while (!(game = game.Player1Rolls(NextRoll())).IsComplete(1000) &&
+                   !(game = game.Player2Rolls(NextRoll())).IsComplete(1000)) { }
+
+            long result = nextDieRoll * Math.Min(game.P1Score, game.P2Score);
 
             Assert.Equal(897798, result);
         }
@@ -57,82 +36,58 @@ namespace AdventOfCode2021
         [Fact]
         public void Part2()
         {
-            string[] input = File.ReadAllLines("Day21Input.txt");
-
-            int player1Pos = int.Parse(input[0].Split(" starting position: ")[1]);
-            int player2Pos = int.Parse(input[1].Split(" starting position: ")[1]);
-
             int[] rollOutcomes = new int[] { 0, 0, 0, 1, 3, 6, 7, 6, 3, 1 };
 
-            List<List<DiceGame>> outcomes = new List<List<DiceGame>>();
+            long p1Wins = 0;
+            long p2Wins = 0;
 
-            outcomes.Add(new List<DiceGame>() { new DiceGame() { P1Position = player1Pos, P2Position = player2Pos, Combos = 1 } });
+            Queue<DiceGame> inProgressGames = new Queue<DiceGame>() {  };
 
-            for (int i = 1; true; i++)
+            inProgressGames.Enqueue(ReadGameFromFile());
+
+            while (inProgressGames.Count > 0)
             {
-                List<DiceGame> current = new List<DiceGame>();
+                DiceGame previousRound = inProgressGames.Dequeue();
 
-                foreach (DiceGame info in outcomes[i - 1])
+                for (int p1Roll = 3; p1Roll < 10; p1Roll++)
                 {
-                    if (info.P1Score < 21 && info.P2Score < 21)
+                    DiceGame p1Round = previousRound.Player1Rolls(p1Roll, rollOutcomes[p1Roll]);
+
+                    if (p1Round.IsComplete(21))
                     {
-                        for (int p1Roll = 3; p1Roll < 10; p1Roll++)
+                        p1Wins += p1Round.Combos;
+                        continue;
+                    }
+
+                    for (int p2Roll = 3; p2Roll < 10; p2Roll++)
+                    {
+                        DiceGame p2Round = p1Round.Player2Rolls(p2Roll, rollOutcomes[p2Roll]);
+                        
+                        if (p2Round.IsComplete(21))
                         {
-                            int newP1Pos = (info.P1Position + p1Roll) % 10;
-                            int newP1Score = info.P1Score + ((newP1Pos == 0) ? 10 : newP1Pos);
-                            int p1RollOutcomes = rollOutcomes[p1Roll];
-
-                            if (newP1Score >= 21)
-                            {
-                                current.Add(new DiceGame()
-                                {
-                                    P1Position = newP1Pos,
-                                    P1Score = newP1Score,
-                                    P2Position = info.P2Position,
-                                    P2Score = info.P2Score,
-                                    Combos = info.Combos * p1RollOutcomes,
-                                });
-                            }
-                            else
-                            {
-                                for (int p2Roll = 3; p2Roll < 10; p2Roll++)
-                                {
-                                    int newP2Pos = (info.P2Position + p2Roll) % 10;
-                                    int newP2Score = info.P2Score + ((newP2Pos == 0) ? 10 : newP2Pos);
-                                    int p2RollOutcomes = rollOutcomes[p2Roll];
-
-                                    current.Add(new DiceGame()
-                                    {
-                                        P1Position = newP1Pos,
-                                        P1Score = newP1Score,
-                                        P2Position = newP2Pos,
-                                        P2Score = newP2Score,
-                                        Combos = info.Combos * p1RollOutcomes * p2RollOutcomes,
-                                    });
-                                }
-                            }
+                            p2Wins += p2Round.Combos;
+                            continue;
                         }
+
+                        inProgressGames.Enqueue(p2Round);
                     }
                 }
-
-                if (!current.Any())
-                {
-                    break;
-                }
-
-                outcomes.Add(current);
             }
-
-            List<DiceGame> completedGames = outcomes.SelectMany(list => list)
-                                                    .Where(game => game.P1Score >= 21 || game.P2Score >= 21)
-                                                    .ToList();
-
-            long p1Wins = completedGames.Where(game => game.P1Score >= 21).Sum(game => game.Combos);
-            long p2Wins = completedGames.Where(game => game.P2Score >= 21).Sum(game => game.Combos);
-
             long result = Math.Max(p1Wins, p2Wins);
 
             Assert.Equal(48868319769358, result);
+        }
+
+        private DiceGame ReadGameFromFile()
+        {
+            string[] input = File.ReadAllLines("Day21Input.txt");
+
+            return new DiceGame()
+            {
+                P1Position = int.Parse(input[0].Split(" starting position: ")[1]),
+                P2Position = int.Parse(input[1].Split(" starting position: ")[1]),
+                Combos = 1
+            };
         }
 
         private struct DiceGame
@@ -142,6 +97,38 @@ namespace AdventOfCode2021
             public int P2Position;
             public int P2Score;
             public long Combos;
+
+            internal bool IsComplete(int winningScore) => (P1Score >= winningScore || P2Score >= winningScore);
+
+            internal DiceGame Player1Rolls(int roll, long combos = 1)
+            {
+                int newPos = (P1Position + roll) % 10;
+                int newScore = P1Score + ((newPos == 0) ? 10 : newPos);
+
+                return new DiceGame()
+                {
+                    P1Position = newPos,
+                    P1Score = newScore,
+                    P2Position = P2Position,
+                    P2Score = P2Score,
+                    Combos = Combos * combos
+                };
+            }
+
+            internal DiceGame Player2Rolls(int roll, long combos = 1)
+            {
+                int newPos = (P2Position + roll) % 10;
+                int newScore = P2Score + ((newPos == 0) ? 10 : newPos);
+
+                return new DiceGame()
+                {
+                    P1Position = P1Position,
+                    P1Score = P1Score,
+                    P2Position = newPos,
+                    P2Score = newScore,
+                    Combos = Combos * combos
+                };
+            }
         }
     }
 }
