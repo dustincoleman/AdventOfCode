@@ -62,6 +62,8 @@ namespace AdventOfCode.Common
             if (X > 0) yield return this - UnitX; // Left
         }
 
+        public int Manhattan() => Math.Abs(X) + Math.Abs(Y);
+
         public bool Equals(Point2 other) => (this == other);
 
         public override bool Equals(object obj) => (obj is Point2 other && this.Equals(other));

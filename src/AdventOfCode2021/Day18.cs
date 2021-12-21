@@ -10,7 +10,7 @@ using Xunit;
 
 namespace AdventOfCode2021
 {
-    public class Day19
+    public class Day18
     {
         [Fact]
         public void Part1()
