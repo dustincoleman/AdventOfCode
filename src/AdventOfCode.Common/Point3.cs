@@ -27,69 +27,73 @@ namespace AdventOfCode.Common
             switch (orientation)
             {
                 case Orientation3.PositiveX1:
-                    return this.Rotate(UnitX * 0);
+                    return this;
                 case Orientation3.PositiveX2:
-                    return this.Rotate(UnitX * 1);
+                    return this.RotateXClockwise();
                 case Orientation3.PositiveX3:
-                    return this.Rotate(UnitX * 2);
+                    return this.RotateX180Degrees();
                 case Orientation3.PositiveX4:
-                    return this.Rotate(UnitX * 3);
+                    return this.RotateXCounterclockwise();
 
                 case Orientation3.PositiveY1:
-                    return this.Rotate(UnitZ * 3).Rotate(UnitY * 0);
+                    return this.RotateZCounterclockwise();
                 case Orientation3.PositiveY2:
-                    return this.Rotate(UnitZ * 3).Rotate(UnitY * 1);
+                    return this.RotateZCounterclockwise().RotateYClockwise();
                 case Orientation3.PositiveY3:
-                    return this.Rotate(UnitZ * 3).Rotate(UnitY * 2);
+                    return this.RotateZCounterclockwise().RotateY180Degrees();
                 case Orientation3.PositiveY4:
-                    return this.Rotate(UnitZ * 3).Rotate(UnitY * 3);
+                    return this.RotateZCounterclockwise().RotateYCounterclockwise();
 
                 case Orientation3.PositiveZ1:
-                    return this.Rotate(UnitY * 1).Rotate(UnitZ * 0);
+                    return this.RotateYClockwise();
                 case Orientation3.PositiveZ2:
-                    return this.Rotate(UnitY * 1).Rotate(UnitZ * 1);
+                    return this.RotateYClockwise().RotateZClockwise();
                 case Orientation3.PositiveZ3:
-                    return this.Rotate(UnitY * 1).Rotate(UnitZ * 2);
+                    return this.RotateYClockwise().RotateZ180Degrees();
                 case Orientation3.PositiveZ4:
-                    return this.Rotate(UnitY * 1).Rotate(UnitZ * 3);
+                    return this.RotateYClockwise().RotateZCounterclockwise();
 
                 case Orientation3.NegativeX1:
-                    return this.Rotate(UnitY * 2).Rotate(UnitX * 0);
+                    return this.RotateY180Degrees();
                 case Orientation3.NegativeX2:
-                    return this.Rotate(UnitY * 2).Rotate(UnitX * 1);
+                    return this.RotateY180Degrees().RotateXClockwise();
                 case Orientation3.NegativeX3:
-                    return this.Rotate(UnitY * 2).Rotate(UnitX * 2);
+                    return this.RotateY180Degrees().RotateX180Degrees();
                 case Orientation3.NegativeX4:
-                    return this.Rotate(UnitY * 2).Rotate(UnitX * 3);
+                    return this.RotateY180Degrees().RotateXCounterclockwise();
 
                 case Orientation3.NegativeY1:
-                    return this.Rotate(UnitZ * 1).Rotate(UnitY * 0);
+                    return this.RotateZClockwise();
                 case Orientation3.NegativeY2:
-                    return this.Rotate(UnitZ * 1).Rotate(UnitY * 1);
+                    return this.RotateZClockwise().RotateYClockwise();
                 case Orientation3.NegativeY3:
-                    return this.Rotate(UnitZ * 1).Rotate(UnitY * 2);
+                    return this.RotateZClockwise().RotateY180Degrees();
                 case Orientation3.NegativeY4:
-                    return this.Rotate(UnitZ * 1).Rotate(UnitY * 3);
+                    return this.RotateZClockwise().RotateYCounterclockwise();
 
                 case Orientation3.NegativeZ1:
-                    return this.Rotate(UnitY * 3).Rotate(UnitZ * 0);
+                    return this.RotateYCounterclockwise();
                 case Orientation3.NegativeZ2:
-                    return this.Rotate(UnitY * 3).Rotate(UnitZ * 1);
+                    return this.RotateYCounterclockwise().RotateZClockwise();
                 case Orientation3.NegativeZ3:
-                    return this.Rotate(UnitY * 3).Rotate(UnitZ * 2);
+                    return this.RotateYCounterclockwise().RotateZ180Degrees();
                 case Orientation3.NegativeZ4:
-                    return this.Rotate(UnitY * 3).Rotate(UnitZ * 3);
+                    return this.RotateYCounterclockwise().RotateZCounterclockwise();
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(orientation));
             }
         }
 
-        public Point3 RotateX() => new Point3(X, -Z, Y);
-
-        public Point3 RotateY() => new Point3(-Z, Y, X);
-
-        public Point3 RotateZ() => new Point3(Y, -X, Z);
+        public Point3 RotateXClockwise() => new Point3(X, -Z, Y);
+        public Point3 RotateXCounterclockwise() => new Point3(X, Z, -Y);
+        public Point3 RotateX180Degrees() => new Point3(X, -Y, -Z);
+        public Point3 RotateYClockwise() => new Point3(-Z, Y, X);
+        public Point3 RotateYCounterclockwise() => new Point3(Z, Y, -X);
+        public Point3 RotateY180Degrees() => new Point3(-X, Y, -Z);
+        public Point3 RotateZClockwise() => new Point3(Y, -X, Z);
+        public Point3 RotateZCounterclockwise() => new Point3(-Y, X, Z);
+        public Point3 RotateZ180Degrees() => new Point3(-X, -Y, Z);
 
         public Point3 Rotate(Point3 times)
         {
@@ -97,17 +101,17 @@ namespace AdventOfCode.Common
 
             for (int x = 0; x < times.X; x++)
             {
-                point3 = point3.RotateX();
+                point3 = point3.RotateXClockwise();
             }
 
             for (int y = 0; y < times.Y; y++)
             {
-                point3 = point3.RotateY();
+                point3 = point3.RotateYClockwise();
             }
 
             for (int z = 0; z < times.Z; z++)
             {
-                point3 = point3.RotateZ();
+                point3 = point3.RotateZClockwise();
             }
 
             return point3;

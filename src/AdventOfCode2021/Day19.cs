@@ -115,7 +115,7 @@ namespace AdventOfCode2021
         {
             public Scanner(Point3Set probes)
             {
-                Probes = new Point3Set(probes); // Copy
+                Probes = probes;
                 NearbyScanners = new List<NearbyScanner>();
             }
 
@@ -145,7 +145,7 @@ namespace AdventOfCode2021
 
             public Scanner Merge()
             {
-                Scanner merged = new Scanner(Probes);
+                Scanner merged = new Scanner(new Point3Set(Probes)); // Copy
 
                 MergeHelper(merged, this, Point3.Zero);
 
