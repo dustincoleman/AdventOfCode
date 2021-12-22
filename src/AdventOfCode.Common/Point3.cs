@@ -7,6 +7,7 @@ namespace AdventOfCode.Common
     public struct Point3 : IEquatable<Point3>
     {
         public static readonly Point3 Zero = new Point3(0, 0, 0);
+        public static readonly Point3 One = new Point3(1, 1, 1);
         public static readonly Point3 UnitX = new Point3(1, 0, 0);
         public static readonly Point3 UnitY = new Point3(0, 1, 0);
         public static readonly Point3 UnitZ = new Point3(0, 0, 1);
@@ -20,6 +21,60 @@ namespace AdventOfCode.Common
             X = x;
             Y = y;
             Z = z;
+        }
+
+        public static IEnumerable<Point3> GetPointsInRange(Point3 upper)
+        {
+            return GetPointsInRange(Zero, upper);
+        }
+
+        public static IEnumerable<Point3> GetPointsInRange(Point3 lower, Point3 upper)
+        {
+            for (int z = lower.Z; z <= upper.Z; z++)
+            {
+                for (int y = lower.Y; y <= upper.Y; y++)
+                {
+                    for (int x = lower.X; x <= upper.X; x++)
+                    {
+                        yield return new Point3(x, y, z);
+                    }
+                }
+            }
+        }
+
+        internal static Point3 Min(Point3 left, Point3 right)
+        {
+            return new Point3(Math.Min(left.X, right.X), Math.Min(left.Y, right.Y), Math.Min(left.Z, right.Z));
+        }
+
+        internal static Point3 Max(Point3 left, Point3 right)
+        {
+            return new Point3(Math.Max(left.X, right.X), Math.Max(left.Y, right.Y), Math.Max(left.Z, right.Z));
+        }
+
+        internal int Sum() => X + Y + Z;
+
+        internal long Product() => (long)X * (long)Y * (long)Z;
+
+
+        internal bool AllGreaterThan(Point3 other)
+        {
+            return (X > other.X && Y > other.Y && Z > other.Z);
+        }
+
+        internal bool AllLessThan(Point3 other)
+        {
+            return (X < other.X && Y < other.Y && Z < other.Z);
+        }
+
+        internal bool AllGreaterThanOrEqual(Point3 other)
+        {
+            return (X >= other.X && Y >= other.Y && Z >= other.Z);
+        }
+
+        internal bool AllLessThanOrEqual(Point3 other)
+        {
+            return (X <= other.X && Y <= other.Y && Z <= other.Z);
         }
 
         public Point3 Orient(Orientation3 orientation)
