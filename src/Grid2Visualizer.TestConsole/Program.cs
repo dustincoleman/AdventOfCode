@@ -13,7 +13,7 @@ namespace Grid2Visualizer.TestConsole
         [STAThread]
         static void Main(string[] args)
         {
-            Grid2<int> grid = new Grid2<int>(500, 500);
+            Grid2<int> grid = new Grid2<int>(502, 502);
 
             foreach (Point2 point in grid.Points)
             {

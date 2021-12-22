@@ -35,6 +35,16 @@ namespace AdventOfCode.Common
             }
         }
 
+        public static Point2 Min(Point2 left, Point2 right)
+        {
+            return new Point2(Math.Min(left.X, right.X), Math.Min(left.Y, right.Y));
+        }
+
+        public static Point2 Max(Point2 left, Point2 right)
+        {
+            return new Point2(Math.Max(left.X, right.X), Math.Max(left.Y, right.Y));
+        }
+
         public IEnumerable<Point2> Adjacent(Point2 bounds)
         {
             if (X > 0) yield return this - UnitX;

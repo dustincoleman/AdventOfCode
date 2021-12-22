@@ -10,6 +10,8 @@ using System.Windows.Threading;
 
 namespace Grid2Visualizer
 {
+    // NOTE: This is somewhat structured to be async, but I'm converting it back to sync
+    //       since I can't chat with the remote side on a random task thread.
     public class Grid2DataProvider : NotifyPropertyChanged
     {
         private readonly IVisualizerObjectProvider2 objectProvider;
@@ -17,7 +19,7 @@ namespace Grid2Visualizer
         private NotifyProperty<Point2> bounds;
         private Grid2<RemoteValue> grid;
         private IGrid2 remoteGrid;
-        private Grid2<Task> tasks;
+        private Grid2<bool> tasks;
         private int runningTasks;
 
         public Grid2DataProvider(IVisualizerObjectProvider2 objectProvider)
@@ -33,32 +35,28 @@ namespace Grid2Visualizer
 
         public object this[int x, int y] => this.grid[x, y];
 
-        internal async Task InitializeAsync()
+        internal void Initialize()
         {
             Dispatcher.CurrentDispatcher.VerifyAccess();
 
             this.isLoading.Value = true;
 
-            await Task.Run(() =>
+            // Fetch the bounds of the grid from the remote side
+            this.remoteGrid = (IGrid2)this.objectProvider.GetObject();
+
+            // Create the grid of tasks which fetch chunks of data from the remote side
+            Point2 bounds = this.remoteGrid.Bounds;
+            int tasksX = (bounds.X % 100 > 0) ? (bounds.X / 100) + 2 : (bounds.X / 100) + 1;
+            int tasksY = (bounds.Y % 100 > 0) ? (bounds.Y / 100) + 2 : (bounds.Y / 100) + 1;
+            this.tasks = new Grid2<bool>(tasksX, tasksY);
+
+            // Create the grid of RemoteValue objects for the view to bind to
+            this.grid = new Grid2<RemoteValue>(bounds);
+
+            foreach (Point2 p in this.grid.Points)
             {
-                // Fetch the bounds of the grid from the remote side
-                this.remoteGrid = (IGrid2)this.objectProvider.GetObject();
-
-                // Create the grid of tasks which fetch chunks of data from the remote side
-                Point2 bounds = this.remoteGrid.Bounds;
-                int tasksX = (bounds.X % 100 > 0) ? (bounds.X / 100) + 2 : (bounds.X / 100) + 1;
-                int tasksY = (bounds.Y % 100 > 0) ? (bounds.Y / 100) + 2 : (bounds.Y / 100) + 1;
-                this.tasks = new Grid2<Task>(tasksX, tasksY);
-
-                // Create the grid of RemoteValue objects for the view to bind to
-                this.grid = new Grid2<RemoteValue>(bounds);
-
-                foreach (Point2 p in this.grid.Points)
-                {
-                    this.grid[p] = new RemoteValue(this, p);
-                }
-            })
-            .ConfigureAwait(true);
+                this.grid[p] = new RemoteValue(this, p);
+            }
 
             this.bounds.Value = this.grid.Bounds;
             this.isLoading.Value = false;
@@ -70,33 +68,27 @@ namespace Grid2Visualizer
 
             Point2 taskPoint = point / 100;
 
-            if (this.tasks[taskPoint] == null)
+            if (!this.tasks[taskPoint])
             {
                 if (++this.runningTasks == 1)
                 {
                     this.isLoading.Value = true;
                 }
 
-                this.tasks[taskPoint] = Task.Run(() =>
-                {
-                    Thread.Sleep(3000);
-                })
-                .ContinueWith(t =>
-                {
-                    Point2 origin = taskPoint * 100;
+                Point2 origin = taskPoint * 100;
 
-                    foreach (Point2 p in Point2.Quadrant(Point2.Zero + 100))
-                    {
-                        Point2 cell = origin + p;
-                        this.grid[cell].Value = this.remoteGrid[cell];
-                    }
+                this.tasks[taskPoint] = true;
 
-                    if (--this.runningTasks == 0)
-                    {
-                        this.isLoading.Value = false;
-                    }
-                }, 
-                TaskScheduler.FromCurrentSynchronizationContext());
+                foreach (Point2 p in Point2.Quadrant(Point2.Min(Point2.Zero + 100, this.grid.Bounds - origin)))
+                {
+                    Point2 cell = origin + p;
+                    this.grid[cell].Value = this.remoteGrid[cell];
+                }
+
+                if (--this.runningTasks == 0)
+                {
+                    this.isLoading.Value = false;
+                }
             }
         }
 

@@ -24,11 +24,11 @@ namespace Grid2Visualizer
             this.columns = new NotifyProperty<IReadOnlyCollection<Grid2ColumnViewModel>>(nameof(Columns), this, initialColumns);
             this.rows = new NotifyProperty<IReadOnlyCollection<Grid2RowViewModel>>(nameof(Rows), this, initialRows);
 
-            this.provider.InitializeAsync().ContinueWith(t =>
-            {
+            this.provider.Initialize(); //.InitializeAsync().ContinueWith(t =>
+            //{
                 Columns = CreateColumns();
                 Rows = CreateRows();
-            });
+            //});
         }
 
         public Grid2DataProvider Provider => this.provider;
