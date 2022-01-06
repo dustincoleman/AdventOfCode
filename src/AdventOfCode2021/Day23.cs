@@ -16,9 +16,7 @@ namespace AdventOfCode2021
         [Fact]
         public void Part1()
         {
-            Puzzle puzzle = new Puzzle("CC", "AA", "BD", "DB");
-
-            long result = puzzle.Solve();
+            long result = new Puzzle("CC", "AA", "BD", "DB").Solve();
 
             Assert.Equal(11536, result);
         }
@@ -26,9 +24,7 @@ namespace AdventOfCode2021
         [Fact]
         public void Part2()
         {
-            Puzzle puzzle = new Puzzle("CDDC", "ACBA", "BBAD", "DACB");
-
-            long result = puzzle.Solve();
+            long result = new Puzzle("CDDC", "ACBA", "BBAD", "DACB").Solve();
 
             Assert.Equal(55136, result);
         }
