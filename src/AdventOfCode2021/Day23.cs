@@ -16,9 +16,9 @@ namespace AdventOfCode2021
         [Fact]
         public void Part1()
         {
-            long result = long.MaxValue;
+            Puzzle puzzle = new Puzzle("CC", "AA", "BD", "DB");
 
-            RunProblem(new Puzzle("CC", "AA", "BD", "DB"), ref result);
+            long result = puzzle.Solve();
 
             Assert.Equal(11536, result);
         }
@@ -26,30 +26,11 @@ namespace AdventOfCode2021
         [Fact]
         public void Part2()
         {
-            long result = long.MaxValue;
+            Puzzle puzzle = new Puzzle("CDDC", "ACBA", "BBAD", "DACB");
 
-            RunProblem(new Puzzle("CDDC", "ACBA", "BBAD", "DACB"), ref result);
+            long result = puzzle.Solve();
 
             Assert.Equal(55136, result);
-        }
-
-        private void RunProblem(Puzzle puzzle, ref long result)
-        {
-            if (puzzle.IsSolved())
-            {
-                result = Math.Min(puzzle.Cost, result);
-                return;
-            }
-            
-            foreach (Move move in puzzle.GetAvailableMoves())
-            {
-                if (puzzle.Cost > result)
-                {
-                    return;
-                }
-
-                RunProblem(puzzle.Move(move), ref result);
-            }
         }
 
         private enum HallId : int { LL, L, AB, BC, CD, R, RR, Count };
@@ -58,10 +39,8 @@ namespace AdventOfCode2021
 
         private class Puzzle
         {
-            internal Hallway Hallway { get; }
-            internal Room[] Rooms { get; }
-
-            internal long Cost { get; private set; }
+            private long bestSolution = long.MaxValue;
+            private Stack<Move> moves = new Stack<Move>();
 
             internal Puzzle(params string[] rooms)
             {
@@ -74,19 +53,39 @@ namespace AdventOfCode2021
                 }
             }
 
-            private Puzzle(Hallway hallway, Room[] rooms, long cost)
-            {
-                Hallway = hallway.Clone();
-                Rooms = new Room[(int)RoomId.Count];
-                Cost = cost;
+            internal Hallway Hallway { get; }
 
-                for (int i = 0; i < rooms.Length; i++)
+            internal Room[] Rooms { get; }
+
+            internal long Cost { get; private set; }
+
+            internal bool IsSolved => Rooms.All(r => r.IsSolved);
+
+            internal long Solve()
+            {
+                if (Cost < this.bestSolution)
                 {
-                    Rooms[i] = rooms[i].Clone();
+                    foreach (Move move in GetAvailableMoves())
+                    {
+                        PushMove(move);
+
+                        if (IsSolved)
+                        {
+                            this.bestSolution = Math.Min(Cost, this.bestSolution);
+                        }
+                        else
+                        {
+                            Solve();
+                        }
+
+                        PopMove();
+                    }
                 }
+
+                return this.bestSolution;
             }
 
-            internal IEnumerable<Move> GetAvailableMoves()
+            private IEnumerable<Move> GetAvailableMoves()
             {
                 for (RoomId roomId = 0; roomId != RoomId.Count; roomId++)
                 {
@@ -146,16 +145,7 @@ namespace AdventOfCode2021
                 }
             }
 
-            internal Puzzle Move(Move move)
-            {
-                Puzzle newPuzzle = new Puzzle(Hallway, Rooms, Cost);
-
-                newPuzzle.MoveInternal(move);
-
-                return newPuzzle;
-            }
-
-            private void MoveInternal(Move move)
+            private void PushMove(Move move)
             {
                 Amphipod amphipod;
 
@@ -179,9 +169,37 @@ namespace AdventOfCode2021
                 }
 
                 Cost += move.Cost;
+
+                this.moves.Push(move);
             }
 
-            internal bool IsSolved() => Rooms.All(r => r.IsSolved());
+            private void PopMove()
+            {
+                Move move = this.moves.Pop();
+
+                Amphipod amphipod;
+
+                if (move.ToRoom != null)
+                {
+                    amphipod = Rooms[(int)move.ToRoom.Value].Pop();
+                }
+                else
+                {
+                    amphipod = Hallway.Positions[(int)move.ToHall.Value].Value;
+                    Hallway.Positions[(int)move.ToHall.Value] = null;
+                }
+
+                if (move.FromRoom != null)
+                {
+                    Rooms[(int)move.FromRoom.Value].Push(amphipod);
+                }
+                else
+                {
+                    Hallway.Positions[(int)move.FromHall.Value] = amphipod;
+                }
+
+                Cost -= move.Cost;
+            }
         }
 
         private class Hallway
@@ -276,15 +294,6 @@ namespace AdventOfCode2021
 
                 return true;
             }
-
-            internal Hallway Clone()
-            {
-                Hallway newHallway = new Hallway();
-
-                Positions.CopyTo(newHallway.Positions, 0);
-
-                return newHallway;
-            }
         }
 
         private class Room
@@ -293,6 +302,7 @@ namespace AdventOfCode2021
             private readonly int initialSize;
             private Stack<Amphipod> occupants;
             private bool? canMoveIn;
+            private bool? isSolved;
 
             internal Room(string initial, RoomId roomId)
             {
@@ -315,30 +325,27 @@ namespace AdventOfCode2021
 
             internal int MoveInDistance => MoveOutDistance - 1;
 
-            internal bool CanMoveIn => canMoveIn ?? (canMoveIn = this.occupants.Count == 0 || this.occupants.All(a => a.Home == this.roomId)).Value;
+            internal bool CanMoveIn => this.canMoveIn ?? (this.canMoveIn = this.occupants.Count == 0 || this.occupants.All(a => a.Home == this.roomId)).Value;
 
             internal bool CanMoveOut => !CanMoveIn;
+
+            internal bool IsSolved => this.isSolved ?? (this.isSolved = this.occupants.Count == this.initialSize && this.occupants.All(a => a.Home == this.roomId)).Value;
 
             internal Amphipod Peek() => this.occupants.Peek();
 
             internal void Push(Amphipod amphipod)
             {
-                this.occupants.Push(amphipod);
                 this.canMoveIn = null;
+                this.isSolved = null;
+                this.occupants.Push(amphipod);
             }
 
             internal Amphipod Pop()
             {
-                return this.occupants.Pop();
                 this.canMoveIn = null;
+                this.isSolved = null;
+                return this.occupants.Pop();
             }
-
-            internal Room Clone()
-            {
-                return new Room(this.occupants, this.roomId, this.initialSize);
-            }
-
-            internal bool IsSolved() => this.occupants.Count == this.initialSize && this.occupants.All(a => a.Home == this.roomId);
         }
 
         private struct Amphipod
