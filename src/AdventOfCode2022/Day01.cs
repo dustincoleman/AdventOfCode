@@ -7,50 +7,33 @@ namespace AdventOfCode2022
         [Fact]
         public void Test1()
         {
-            string[] input = File.ReadAllLines("Day01.txt");
-
-            long current = 0;
-            long max = 0;
-
-            for (int i = 0; i < input.Length; i++)
-            {
-                if (input[i] == string.Empty)
-                {
-                    max = Math.Max(max, current);
-                    current = 0;
-                }
-                else
-                {
-                    current += int.Parse(input[i]);
-                }
-            }
-
-            Assert.Equal(68292, max);
+            long answer = GetCaloriesPerElf().Max();
+            Assert.Equal(68292, answer);
         }
 
         [Fact]
         public void Test2()
         {
-            string[] input = File.ReadAllLines("Day01.txt");
+            long answer = GetCaloriesPerElf().OrderByDescending(i => i).Take(3).Sum();
+            Assert.Equal(203203, answer);
+        }
 
-            long current = 0;
-            List<long> elves = new List<long>();
+        private IEnumerable<int> GetCaloriesPerElf()
+        {
+            int current = 0;
 
-            for (int i = 0; i < input.Length; i++)
+            foreach (string line in File.ReadAllLines("Day01.txt"))
             {
-                if (input[i] == string.Empty)
+                if (line == string.Empty)
                 {
-                    elves.Add(current);
+                    yield return current;
                     current = 0;
                 }
                 else
                 {
-                    current += int.Parse(input[i]);
+                    current += int.Parse(line);
                 }
             }
-
-            long answer = elves.OrderByDescending(i => i).Take(3).Sum();
-            Assert.Equal(203203, answer);
         }
     }
 }
