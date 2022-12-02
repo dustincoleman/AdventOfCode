@@ -12,13 +12,13 @@ namespace AdventOfCode2022
         [Fact]
         public void Part2()
         {
-            long answer = GetCaloriesPerElf().OrderByDescending(i => i).Take(3).Sum();
+            long answer = GetCaloriesPerElf().OrderDescending().Take(3).Sum();
             Assert.Equal(203203, answer);
         }
 
         private IEnumerable<int> GetCaloriesPerElf()
         {
-            return PuzzleFile.ReadAllLineGroups("Day01.txt").Select(lines => lines.Sum(l => int.Parse(l)));
+            return PuzzleFile.ReadAllLineGroups("Day01.txt").Select(lines => lines.Sum(int.Parse));
         }
     }
 }
