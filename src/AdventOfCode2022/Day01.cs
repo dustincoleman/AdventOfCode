@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace AdventOfCode2022
 {
     public class Day01
@@ -20,20 +18,7 @@ namespace AdventOfCode2022
 
         private IEnumerable<int> GetCaloriesPerElf()
         {
-            int current = 0;
-
-            foreach (string line in File.ReadAllLines("Day01.txt"))
-            {
-                if (line == string.Empty)
-                {
-                    yield return current;
-                    current = 0;
-                }
-                else
-                {
-                    current += int.Parse(line);
-                }
-            }
+            return PuzzleFile.ReadAllLineGroups("Day01.txt").Select(lines => lines.Sum(l => int.Parse(l)));
         }
     }
 }
