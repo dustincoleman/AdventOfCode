@@ -3,14 +3,14 @@ namespace AdventOfCode2022
     public class Day01
     {
         [Fact]
-        public void Test1()
+        public void Part1()
         {
             long answer = GetCaloriesPerElf().Max();
             Assert.Equal(68292, answer);
         }
 
         [Fact]
-        public void Test2()
+        public void Part2()
         {
             long answer = GetCaloriesPerElf().OrderByDescending(i => i).Take(3).Sum();
             Assert.Equal(203203, answer);
