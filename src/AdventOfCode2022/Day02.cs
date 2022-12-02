@@ -1,12 +1,7 @@
-﻿namespace AdventOfCode2022
-{
-    public enum Moves : int
-    {
-        Rock = 1,
-        Paper = 2,
-        Scissors = 3
-    }
+﻿using static System.Formats.Asn1.AsnWriter;
 
+namespace AdventOfCode2022
+{
     public class Day02
     {
         [Fact]
@@ -16,28 +11,10 @@
 
             foreach (string line in File.ReadAllLines("Day02.txt"))
             {
-                string[] moves = line.Split(' ');
+                int p1 = line[0] - 'A';
+                int p2 = line[2] - 'X';
 
-                Moves p1 = moves[0] == "A" ? Moves.Rock :
-                           moves[0] == "B" ? Moves.Paper :
-                           moves[0] == "C" ? Moves.Scissors :
-                           throw new Exception();
-
-                Moves p2 = moves[1] == "X" ? Moves.Rock :
-                           moves[1] == "Y" ? Moves.Paper :
-                           moves[1] == "Z" ? Moves.Scissors :
-                           throw new Exception();
-
-                score += (int)p2;
-
-                if (p1 == p2)
-                {
-                    score += 3;
-                }
-                else if (p1 == Moves.Rock && p2 == Moves.Paper || p1 == Moves.Paper && p2 == Moves.Scissors || p1 == Moves.Scissors && p2 == Moves.Rock)
-                {
-                    score += 6;
-                }
+                score += Score(p1, p2);
             }
 
             Assert.Equal(10404, score);
@@ -50,31 +27,20 @@
 
             foreach (string line in File.ReadAllLines("Day02.txt"))
             {
-                string[] moves = line.Split(' ');
+                int p1 = line[0] - 'A';
+                int p2 = (p1 + (line[2] - 'Y') + 3) % 3; // Use 'Y' to get -1, 0, 1
 
-                Moves p1 = moves[0] == "A" ? Moves.Rock :
-                           moves[0] == "B" ? Moves.Paper :
-                           moves[0] == "C" ? Moves.Scissors :
-                           throw new Exception();
-
-                Moves p2 = moves[1] == "X" ? (Moves)((((int)p1 + 1) % 3) + 1) :
-                           moves[1] == "Y" ? p1 :
-                           moves[1] == "Z" ? (Moves)((((int)p1) % 3) + 1) :
-                           throw new Exception();
-
-                score += (int)p2;
-
-                if (p1 == p2)
-                {
-                    score += 3;
-                }
-                else if (p1 == Moves.Rock && p2 == Moves.Paper || p1 == Moves.Paper && p2 == Moves.Scissors || p1 == Moves.Scissors && p2 == Moves.Rock)
-                {
-                    score += 6;
-                }
+                score += Score(p1, p2);
             }
 
-            Assert.Equal(-1, score);
+            Assert.Equal(10334, score);
+        }
+
+        private int Score(int p1, int p2)
+        {
+            // (p2 - p1 + 3) % 3 give -1, 0, 1 for loss, tie, win.
+            // Use '+ 4' to get our multiple of 6 points
+            return ((p2 - p1 + 4) % 3) * 3 + p2 + 1;
         }
     }
 }
