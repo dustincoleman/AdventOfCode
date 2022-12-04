@@ -16,7 +16,7 @@
             Assert.Equal(919, result);
         }
 
-        IEnumerable<AssignmentPair> GetAssignments()
+        private IEnumerable<AssignmentPair> GetAssignments()
         {
             foreach (string line in File.ReadLines("Day04.txt"))
             {
