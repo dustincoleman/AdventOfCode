@@ -5,32 +5,14 @@
         [Fact]
         public void Part1()
         {
-            int result = 0;
-
-            foreach (AssignmentPair pair in GetAssignments())
-            {
-                if (pair.Left.Contains(pair.Right) || pair.Right.Contains(pair.Left))
-                {
-                    result++;
-                }
-            }
-
+            int result = GetAssignments().Count(a => a.Left.Contains(a.Right) || a.Right.Contains(a.Left));
             Assert.Equal(453, result);
         }
 
         [Fact]
         public void Part2()
         {
-            int result = 0;
-
-            foreach (AssignmentPair pair in GetAssignments())
-            {
-                if (pair.Left.Overlaps(pair.Right))
-                {
-                    result++;
-                }
-            }
-
+            int result = GetAssignments().Count(a => a.Left.Overlaps(a.Right));
             Assert.Equal(919, result);
         }
 
@@ -38,14 +20,12 @@
         {
             foreach (string line in File.ReadLines("Day04.txt"))
             {
-                string[] ranges = line.Split(',');
-                string[] left = ranges[0].Split('-');
-                string[] right = ranges[1].Split('-');
+                string[] ranges = line.Split('-', ',');
 
                 yield return new AssignmentPair()
                 {
-                    Left = new Range(int.Parse(left[0]), int.Parse(left[1])),
-                    Right = new Range(int.Parse(right[0]), int.Parse(right[1]))
+                    Left = new Range(int.Parse(ranges[0]), int.Parse(ranges[1])),
+                    Right = new Range(int.Parse(ranges[2]), int.Parse(ranges[3]))
                 };
             }
         }
@@ -55,28 +35,5 @@
     {
         public Range Left;
         public Range Right;
-    }
-
-    internal class Range
-    {
-        public readonly int Begin;
-        public readonly int End;
-
-        public Range(int begin, int end)
-        {
-            if (begin > end) throw new ArgumentOutOfRangeException();
-            Begin = begin;
-            End = end;
-        }
-
-        public bool Contains(Range other)
-        {
-            return (other.Begin >= Begin && other.End <= End);
-        }
-
-        internal bool Overlaps(Range other)
-        {
-            return (Math.Min(End, other.End) - Math.Max(Begin, other.Begin) >= 0);
-        }
     }
 }
