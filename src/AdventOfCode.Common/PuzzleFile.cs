@@ -12,7 +12,7 @@ namespace AdventOfCode.Common
             List<string> lines = new List<string>();
             List<string[]> groups = new List<string[]>();
 
-            foreach (string line in File.ReadAllLines("Day01.txt"))
+            foreach (string line in File.ReadAllLines(filename))
             {
                 if (line == string.Empty)
                 {
@@ -26,6 +26,11 @@ namespace AdventOfCode.Common
                 {
                     lines.Add(line);
                 }
+            }
+
+            if (lines.Count > 0)
+            {
+                groups.Add(lines.ToArray());
             }
 
             return groups.ToArray();
