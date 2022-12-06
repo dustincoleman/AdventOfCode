@@ -28,7 +28,7 @@ namespace AdventOfCode2022
                 set.Clear();
             }
 
-            Assert.Equal(-1, result);
+            Assert.Equal(1876, result);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace AdventOfCode2022
                 set.Clear();
             }
 
-            Assert.Equal(-1, result);
+            Assert.Equal(2202, result);
         }
 
     }
