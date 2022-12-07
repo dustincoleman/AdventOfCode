@@ -57,6 +57,5 @@ namespace AdventOfCode2022
 
             Assert.Equal(2202, result);
         }
-
     }
 }
