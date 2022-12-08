@@ -79,6 +79,10 @@ namespace AdventOfCode.Common
 
         public IEnumerable<Point2> Points => Point2.Quadrant(Bounds);
 
+        public IEnumerable<Point2> EdgePoints => Points.Where(IsEdge);
+
+        public IEnumerable<Point2> InteriorPoints => Points.Where(p => !IsEdge(p));
+
         public static Grid2<T> Combine(Grid2<Grid2<T>> pieces)
         {
             Point2 pieceBounds = pieces[Point2.Zero].Bounds;
@@ -101,12 +105,72 @@ namespace AdventOfCode.Common
             return output;
         }
 
+        public bool IsEdge(Point2 point)
+        {
+            return (point.X == 0 || point.X == Bounds.X - 1 || point.Y == 0 || point.Y == Bounds.Y - 1);
+        }
+
         public IEnumerable<T> Adjacent(Point2 point)
         {
             foreach (Point2 adjacentPoint in point.Adjacent(Bounds))
             {
                 yield return this.grid[adjacentPoint.X, adjacentPoint.Y];
             }
+        }
+
+        public IEnumerable<T> TraverseLeft(Point2 point)
+        {
+            int x = point.X;
+            while (--x >= 0)
+            {
+                yield return this.grid[x, point.Y];
+            }
+        }
+
+        public IEnumerable<T> TraverseRight(Point2 point)
+        {
+            int x = point.X;
+            while (++x < Bounds.X)
+            {
+                yield return this.grid[x, point.Y];
+            }
+        }
+
+        public IEnumerable<T> TraverseUp(Point2 point)
+        {
+            int y = point.Y;
+            while (--y >= 0)
+            {
+                yield return this.grid[point.X, y];
+            }
+        }
+
+        public IEnumerable<T> TraverseDown(Point2 point)
+        {
+            int y = point.Y;
+            while (++y < Bounds.Y)
+            {
+                yield return this.grid[point.X, y];
+            }
+        }
+
+        public Grid2<T> SurroundWith(T value)
+        {
+            Grid2<T> newGrid = new Grid2<T>(Bounds + 2);
+
+            foreach (Point2 point in newGrid.Points)
+            {
+                if (newGrid.IsEdge(point))
+                {
+                    newGrid[point] = value;
+                }
+                else
+                {
+                    newGrid[point] = this[point - 1];
+                }
+            }
+
+            return newGrid;
         }
 
         public IEnumerable<Grid2<T>> Permutations()
