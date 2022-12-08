@@ -26,7 +26,7 @@ namespace AdventOfCode2022
             {
                 new Directory7() { Name = "/" }
             };
-            Stack<Directory7> cd = new Stack<Directory7>();
+            Directory7 cd = dirs[0];
 
             foreach (string line in System.IO.File.ReadAllLines("Day07.txt"))
             {
@@ -38,28 +38,27 @@ namespace AdventOfCode2022
                     {
                         if (tokens[2] == "/")
                         {
-                            cd.Clear();
-                            cd.Push(dirs[0]);
+                            cd = dirs[0];
                         }
                         else if (tokens[2] == "..")
                         {
-                            cd.Pop();
+                            cd = cd.Parent;
                         }
                         else
                         {
-                            cd.Push(cd.Peek().Directories.First(d => d.Name == tokens[2]));
+                            cd = cd.Directories.First(d => d.Name == tokens[2]);
                         }
                     }
                 }
                 else if (tokens[0] == "dir")
                 {
-                    Directory7 d = new Directory7() { Name = tokens[1], Parent = cd.Peek() };
-                    cd.Peek().Directories.Add(d);
+                    Directory7 d = new Directory7() { Name = tokens[1], Parent = cd };
+                    cd.Directories.Add(d);
                     dirs.Add(d);
                 }
                 else // file
                 {
-                    cd.Peek().Files.Add(new File7() { Name = tokens[1], Size = int.Parse(tokens[0]) });
+                    cd.Files.Add(new File7() { Name = tokens[1], Size = int.Parse(tokens[0]) });
                 }
             }
 
