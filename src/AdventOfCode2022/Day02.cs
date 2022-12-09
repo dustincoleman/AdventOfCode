@@ -1,6 +1,4 @@
-﻿using static System.Formats.Asn1.AsnWriter;
-
-namespace AdventOfCode2022
+﻿namespace AdventOfCode2022
 {
     public class Day02
     {

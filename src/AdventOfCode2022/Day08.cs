@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using System.Text.RegularExpressions;
-
-namespace AdventOfCode2022
+﻿namespace AdventOfCode2022
 {
     public class Day08
     {
