@@ -54,14 +54,8 @@ namespace AdventOfCode2022
 
             void VisitTree(Tree tree, int[] view)
             {
-                int score = 0;
-                int pivot = 10;
-
-                if (view[0] > 0) // Not the first tree in the series
-                {
-                    score = view[tree.Height];
-                    pivot = tree.Height + 1;
-                }
+                int score = view[tree.Height];
+                int pivot = (view[0] > 0) ? tree.Height + 1 : 10;
 
                 tree.ScenicScore *= score;
 
@@ -97,7 +91,7 @@ namespace AdventOfCode2022
                 VisitSeries(column.ToList());
             }
 
-            int result = grid.InteriorPoints.Max(p => grid[p].ScenicScore);
+            int result = grid.Max(t => t.ScenicScore);
             Assert.Equal(201684, result);
         }
 
