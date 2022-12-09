@@ -7,36 +7,21 @@ namespace AdventOfCode2022
         [Fact]
         public void Part1()
         {
-            Knot[] knots = new Knot[2];
-            knots[0] = new Knot();
-            knots[1] = new Knot();
-            HashSet<Point2> tailLocations = new HashSet<Point2>();
-
-            tailLocations.Add(knots[1].Point);
-
-            foreach (string line in File.ReadAllLines("Day09.txt"))
-            {
-                string[] tokens = line.Split(' ');
-                string direction = tokens[0];
-                int count = int.Parse(tokens[1]);
-
-                while (--count >= 0)
-                {
-                    Move(direction, knots);
-                    tailLocations.Add(knots[1].Point);
-                }
-            }
-
-            int result = tailLocations.Count;
-
+            int result = RunPuzzle(2);
             Assert.Equal(6067, result);
         }
 
         [Fact]
         public void Part2()
         {
-            Knot[] knots = new Knot[10];
-            for (int i = 0; i < 10; i++)
+            int result = RunPuzzle(10);
+            Assert.Equal(2471, result);
+        }
+
+        private int RunPuzzle(int size)
+        {
+            Knot[] knots = new Knot[size];
+            for (int i = 0; i < size; i++)
             {
                 knots[i] = new Knot();
             }
@@ -52,13 +37,11 @@ namespace AdventOfCode2022
                 while (--count >= 0)
                 {
                     Move(direction, knots);
-                    tailLocations.Add(knots[9].Point);
+                    tailLocations.Add(knots[size - 1].Point);
                 }
             }
 
-            int result = tailLocations.Count;
-
-            Assert.Equal(2471, result);
+            return tailLocations.Count;
         }
 
         private void Move(string direction, Knot[] array, int position = 0)
