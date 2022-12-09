@@ -83,6 +83,10 @@ namespace AdventOfCode.Common
 
         public IEnumerable<Point2> InteriorPoints => Points.Where(p => !IsEdge(p));
 
+        public IEnumerable<Grid2Column<T>> Columns => new Grid2ColumnCollection<T>(this);
+
+        public IEnumerable<Grid2Row<T>> Rows => new Grid2RowCollection<T>(this);
+
         public static Grid2<T> Combine(Grid2<Grid2<T>> pieces)
         {
             Point2 pieceBounds = pieces[Point2.Zero].Bounds;
@@ -246,9 +250,17 @@ namespace AdventOfCode.Common
                 (this.valueTransform != null) ? v => transform(this.valueTransform(v)) : transform);
         }
 
-        public IEnumerator<T> GetEnumerator() => new Grid2Enumerator<T>(this);
+        public IEnumerator<T> GetEnumerator() => Enumerate().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+        public IEnumerable<T> Enumerate()
+        {
+            foreach (Point2 p in Points)
+            {
+                yield return this[p];
+            }
+        }
 
         public bool Equals(Grid2<T> other) => (this == other);
 
