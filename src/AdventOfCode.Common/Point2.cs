@@ -72,6 +72,8 @@ namespace AdventOfCode.Common
             if (X > 0) yield return this - UnitX; // Left
         }
 
+        public Point2 Sign() => new Point2(Math.Sign(X), Math.Sign(Y));
+
         public int Manhattan() => Math.Abs(X) + Math.Abs(Y);
 
         public bool Equals(Point2 other) => (this == other);
