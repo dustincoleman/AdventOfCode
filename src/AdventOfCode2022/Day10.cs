@@ -10,44 +10,13 @@ namespace AdventOfCode2022
         {
             long totalSignalStrength = 0;
 
-            int xRegister = 1;
-            int cycle = 0;
-
-            Queue<Instruction> instructions = LoadPuzzle();
-            Instruction currentInstruction = new Instruction();
-            int remaining = 0;
-            
-            while (instructions.Any())
+            LoadPuzzle().Run((clock, xRegister) =>
             {
-                if (remaining == 0)
+                if ((clock + 1 - 20) % 40 == 0)
                 {
-                    if (currentInstruction.Code == "addx")
-                    {
-                        xRegister += currentInstruction.Operand;
-                    }
-
-                    currentInstruction = instructions.Dequeue();
-
-                    remaining = currentInstruction.Code switch
-                    {
-                        "noop" => 1,
-                        "addx" => 2,
-                        _ => throw new Exception()
-                    };
+                    totalSignalStrength += xRegister * (clock + 1);
                 }
-
-                // Start of cycle
-
-                if ((cycle + 1 - 20) % 40 == 0)
-                {
-                    totalSignalStrength += xRegister * (cycle + 1);
-                }
-
-                // End of cycle
-
-                remaining--;
-                cycle++;
-            }
+            });
 
             Assert.Equal(12640, totalSignalStrength);
         }
@@ -56,53 +25,10 @@ namespace AdventOfCode2022
         public void Part2()
         {
             Grid2<char> screen = new Grid2<char>(40, 6);
-            foreach (Point2 p in screen.Points)
+
+            LoadPuzzle().Run((clock, xRegister) =>
             {
-                screen[p] = ' ';
-            }
-
-            int xRegister = 1;
-            int cycle = 0;
-
-            Queue<Instruction> instructions = LoadPuzzle();
-            Instruction currentInstruction = new Instruction();
-            int remaining = 0;
-
-            while (instructions.Any())
-            {
-                string spritePosition = string.Empty;
-                for (int i = 0; i < 40; i++)
-                {
-                    if (i == xRegister - 1 || i == xRegister || i == xRegister + 1)
-                    {
-                        spritePosition += '#';
-                    }
-                    else
-                    {
-                        spritePosition += '.';
-                    }
-                }
-
-                if (remaining == 0)
-                {
-                    if (currentInstruction.Code == "addx")
-                    {
-                        xRegister += currentInstruction.Operand;
-                    }
-
-                    currentInstruction = instructions.Dequeue();
-
-                    remaining = currentInstruction.Code switch
-                    {
-                        "noop" => 1,
-                        "addx" => 2,
-                        _ => throw new Exception()
-                    };
-                }
-
-                // Start of cycle
-
-                Point2 screenPoint = new Point2(cycle % 40, (cycle % 240) / 40);
+                Point2 screenPoint = new Point2(clock % 40, (clock % 240) / 40);
 
                 if (screenPoint.X == xRegister - 1 || screenPoint.X == xRegister || screenPoint.X == xRegister + 1)
                 {
@@ -112,21 +38,16 @@ namespace AdventOfCode2022
                 {
                     screen[screenPoint] = '.';
                 }
-
-                // End of cycle
-
-                remaining--;
-                cycle++;
-            }
+            });
 
             StringBuilder builder = new StringBuilder();
+            StringBuilder expected = new StringBuilder();
 
             foreach (Grid2Row<char> row in screen.Rows)
             {
                 builder.AppendLine(new string(row.ToArray()));
             }
 
-            StringBuilder expected = new StringBuilder();
             expected.AppendLine("####.#..#.###..####.#....###....##.###..");
             expected.AppendLine("#....#..#.#..#....#.#....#..#....#.#..#.");
             expected.AppendLine("###..####.###....#..#....#..#....#.#..#.");
@@ -138,7 +59,7 @@ namespace AdventOfCode2022
             
         }
 
-        private Queue<Instruction> LoadPuzzle()
+        private Scanner LoadPuzzle()
         {
             Queue<Instruction> instructions = new Queue<Instruction>();
 
@@ -155,7 +76,52 @@ namespace AdventOfCode2022
                 }
             }
 
-            return instructions;
+            return new Scanner(instructions);
+        }
+
+        private class Scanner
+        {
+            private Instruction _instruction;
+            private int _remaining = 0;
+            private int _clock = 0;
+            private int _xRegister = 1;
+
+            private Queue<Instruction> _program;
+
+            internal delegate void ClockTickHandler(int clock, int xRegister);
+
+            internal Scanner(Queue<Instruction> program)
+            {
+                _program = program;
+            }
+
+            internal void Run(ClockTickHandler onClockTick)
+            {
+                while (_program.Any())
+                {
+                    if (_remaining == 0)
+                    {
+                        if (_instruction.Code == "addx")
+                        {
+                            _xRegister += _instruction.Operand;
+                        }
+
+                        _instruction = _program.Dequeue();
+
+                        _remaining = _instruction.Code switch
+                        {
+                            "noop" => 1,
+                            "addx" => 2,
+                            _ => throw new Exception()
+                        };
+                    }
+
+                    onClockTick(_clock, _xRegister);
+
+                    _clock++;
+                    _remaining--;
+                }
+            }
         }
 
         struct Instruction
