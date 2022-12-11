@@ -5,34 +5,7 @@
         [Fact]
         public void Part1()
         {
-            List<Monkey> monkeys = LoadPuzzle();
-
-            for (int i = 0; i < 20; i++)
-            {
-                foreach (Monkey monkey in monkeys)
-                {
-                    for (int countdown = monkey.Items.Count; countdown > 0; countdown--)
-                    {
-                        long item = monkey.Items.Dequeue();
-
-                        item = monkey.Operation switch
-                        {
-                            InspectOperation.Plus => item + monkey.Operand,
-                            InspectOperation.Times => item * monkey.Operand,
-                            InspectOperation.Squared => item * item,
-                            _ => throw new Exception()
-                        };
-
-                        item /= 3;
-
-                        int tossTo = (item % monkey.TestOperand == 0) ? monkey.TrueDestination : monkey.FalseDesitation;
-                        monkeys[tossTo].Items.Enqueue(item);
-                        monkey.InspectionCount++;
-                    }
-                }
-            }
-
-            long monkeyBusiness = monkeys.Select(m => m.InspectionCount).OrderDescending().Take(2).Aggregate((x, y) => x * y);
+            long monkeyBusiness = RunPuzzle(LoadPuzzle(), 20, x => x / 3);
             Assert.Equal(121450, monkeyBusiness);
         }
 
@@ -41,33 +14,7 @@
         {
             List<Monkey> monkeys = LoadPuzzle();
             int multiple = monkeys.Select(m => m.TestOperand).Aggregate((x, y) => x * y);
-
-            for (int i = 0; i < 10000; i++)
-            {
-                foreach (Monkey monkey in monkeys)
-                {
-                    for (int countdown = monkey.Items.Count; countdown > 0; countdown--)
-                    {
-                        long item = monkey.Items.Dequeue();
-
-                        item = monkey.Operation switch
-                        {
-                            InspectOperation.Plus => item + monkey.Operand,
-                            InspectOperation.Times => item * monkey.Operand,
-                            InspectOperation.Squared => item * item,
-                            _ => throw new Exception()
-                        };
-
-                        item %= multiple;
-
-                        int tossTo = (item % monkey.TestOperand == 0) ? monkey.TrueDestination : monkey.FalseDesitation;
-                        monkeys[tossTo].Items.Enqueue(item);
-                        monkey.InspectionCount++;
-                    }
-                }
-            }
-
-            long monkeyBusiness = monkeys.Select(m => m.InspectionCount).OrderDescending().Take(2).Aggregate((x, y) => x * y);
+            long monkeyBusiness = RunPuzzle(monkeys, 10000, x => x % multiple);
             Assert.Equal(28244037010, monkeyBusiness);
         }
 
@@ -97,6 +44,36 @@
             }
 
             return list;
+        }
+
+        private long RunPuzzle(List<Monkey> monkeys, int times, Func<long, long> afterInspect)
+        {
+            for (int i = 0; i < times; i++)
+            {
+                foreach (Monkey monkey in monkeys)
+                {
+                    for (int countdown = monkey.Items.Count; countdown > 0; countdown--)
+                    {
+                        long item = monkey.Items.Dequeue();
+
+                        item = monkey.Operation switch
+                        {
+                            InspectOperation.Plus => item + monkey.Operand,
+                            InspectOperation.Times => item * monkey.Operand,
+                            InspectOperation.Squared => item * item,
+                            _ => throw new Exception()
+                        };
+
+                        item = afterInspect(item);
+
+                        int tossTo = (item % monkey.TestOperand == 0) ? monkey.TrueDestination : monkey.FalseDesitation;
+                        monkeys[tossTo].Items.Enqueue(item);
+                        monkey.InspectionCount++;
+                    }
+                }
+            }
+
+            return monkeys.Select(m => m.InspectionCount).OrderDescending().Take(2).Aggregate((x, y) => x * y);
         }
 
         private class Monkey
