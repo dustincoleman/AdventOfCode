@@ -21,6 +21,52 @@ namespace AdventOfCode.Common
             Y = y;
         }
 
+        public static Point2 Parse(string input)
+        {
+            string[] parts = input.Split(',');
+            return new Point2(int.Parse(parts[0]), int.Parse(parts[1]));
+        }
+
+        public static IEnumerable<Point2> Line(Point2 left, Point2 right)
+        {
+            Point2 step;
+
+            if (left.X == right.X)
+            {
+                if (left.Y <= right.Y)
+                {
+                    step = UnitY;
+                }
+                else
+                {
+                    step = -UnitY;
+                }
+            }
+            else if (left.Y == right.Y)
+            {
+                if (left.X <= right.X)
+                {
+                    step = UnitX;
+                }
+                else
+                {
+                    step = -UnitX;
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            yield return left;
+
+            while (left != right)
+            {
+                left += step;
+                yield return left;
+            }
+        }
+
         public static IEnumerable<Point2> Quadrant(Point2 bounds)
         {
             int xSign = (bounds.X >= 0) ? 1 : -1;
