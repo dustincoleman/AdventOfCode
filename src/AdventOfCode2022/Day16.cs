@@ -6,40 +6,8 @@
         public void Part1()
         {
             Dictionary<string, Valve> valvesByName = LoadPuzzle();
-            Valve current = valvesByName["AA"];
-
-            int time = 0;
-            int total = 0;
-
-            int totalFlow = valvesByName.Values.Select(v => v.FlowRate).Sum();
-
-            while (time < 30)
-            {
-                total += current.FlowRate * (30 - time);
-                totalFlow -= current.FlowRate;
-
-                Destination destination = FindDestination(current, (30 - time), totalFlow);
-
-                if (destination == null)
-                {
-                    break;
-                }
-
-                Destination next = destination;
-
-                for (int i = 0; i < next.Distance; i++)
-                {
-                    if (next.Path[i].OpenValve)
-                    {
-                        current = next.Path[i].Valve;
-                        current.IsOpened = true;
-                        time += i + 2;
-                        break;
-                    }
-                }
-            }
-
-            Assert.Equal(1673, total);
+            int maxFlow = FindMaxFlow(valvesByName["AA"], 30, valvesByName.Values.Select(v => v.FlowRate).Sum());
+            Assert.Equal(1673, maxFlow);
         }
 
         [Fact]
@@ -48,21 +16,16 @@
             
         }
 
-        private Destination FindDestination(Valve current, int stepsRemaining, int totalFlow)
+        private int FindMaxFlow(Valve start, int stepsRemaining, int totalFlow)
         {
-            Destination destination = null;
-            FindDestinationsHelper(totalFlow, stepsRemaining, current, new Stack<Move>(), new HashSet<Valve>(), ref destination);
-            return destination;
+            int maxFlow = 0;
+            FindMaxFlowHelper(totalFlow, stepsRemaining, start, new HashSet<Valve>(), ref maxFlow);
+            return maxFlow;
         }
 
-        private void FindDestinationsHelper(int totalFlow, int stepsRemaining, Valve current, Stack<Move> traveled, HashSet<Valve> visited, ref Destination best, int depth = 0, int runningScore = 0)
+        private void FindMaxFlowHelper(int totalFlow, int stepsRemaining, Valve current, HashSet<Valve> visited, ref int best, int runningScore = 0)
         {
-            if (stepsRemaining <= 0)
-            {
-                return;
-            }
-
-            if (best != null && runningScore + (totalFlow * stepsRemaining) < best.Score)
+            if (stepsRemaining <= 0 || (runningScore + (totalFlow * stepsRemaining) < best))
             {
                 return;
             }    
@@ -75,30 +38,19 @@
                     {
                         next.IsOpened = true;
 
-                        traveled.Push(new Move() { Valve = next, OpenValve = true });
-
                         int tempScore = runningScore + (next.FlowRate * (stepsRemaining - 2));
 
-                        if (best == null || tempScore > best.Score)
+                        if (tempScore > best)
                         {
-                            best = new Destination()
-                            {
-                                Valve = next,
-                                Path = new List<Move>(traveled.Reverse()),
-                                Score = tempScore
-                            };
+                            best = tempScore;
                         }
 
-                        FindDestinationsHelper(totalFlow - next.FlowRate, stepsRemaining - 2, next, traveled, new HashSet<Valve>(), ref best, depth + 1, tempScore);
-
-                        traveled.Pop();
+                        FindMaxFlowHelper(totalFlow - next.FlowRate, stepsRemaining - 2, next, new HashSet<Valve>(), ref best, tempScore);
 
                         next.IsOpened = false;
                     }
 
-                    traveled.Push(new Move() { Valve = next, OpenValve = false });
-                    FindDestinationsHelper(totalFlow, stepsRemaining - 1, next, traveled, visited, ref best, depth, runningScore);
-                    traveled.Pop();
+                    FindMaxFlowHelper(totalFlow, stepsRemaining - 1, next, visited, ref best, runningScore);
 
                     visited.Remove(next);
                 }
