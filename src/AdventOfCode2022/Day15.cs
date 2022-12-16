@@ -10,19 +10,10 @@
             List<Sensor> sensors = LoadPuzzle();
             List<Range> coverage = GetCoverageAtRow(sensors, row);
 
-            int min = coverage.Select(r => r.Begin).Min();
-            int max = coverage.Select(r => r.End).Max();
-            int count = 0;
+            int beaconsOnRow = sensors.Select(s => s.NearestBeacon).Where(b => b.Y == row).Distinct().Count();
+            int columnsCovered = coverage.Select(r => r.End - r.Begin + 1).Sum();
 
-            for (int i = min; i <= max; i++)
-            {
-                if (coverage.Any(r => i >= r.Begin && i <= r.End) && !sensors.Any(s => s.NearestBeacon.X == i && s.NearestBeacon.Y == row))
-                {
-                    count++;
-                }
-            }
-
-            Assert.Equal(5112034, count);
+            Assert.Equal(5112034, columnsCovered - beaconsOnRow);
         }
 
         [Fact]
@@ -31,52 +22,15 @@
             int maxValue = 4000000;
 
             List<Sensor> sensors = LoadPuzzle();
-
             Point2 result = Point2.Zero;
-
-            
 
             for (int row = 0; row <= maxValue; row++)
             {
-                List<Range> coverage = GetCoverageAtRow(sensors, row);
+                List<Range> coverage = GetCoverageAtRow(sensors, row, (0, maxValue));
 
-                coverage.Sort((left, right) =>
+                if (coverage.Count > 1)
                 {
-                    int result = left.Begin.CompareTo(right.Begin);
-
-                    if (result == 0)
-                    {
-                        result = left.End.CompareTo(right.End);
-                    }
-
-                    return result;
-                });
-
-                int current = 0;
-                int confirmedThrough = 0;
-
-                while (coverage[current].End < 0)
-                {
-                    current++;
-                }
-
-                if (coverage[current].Begin > 0)
-                {
-                    result = new Point2(0, row);
-                    break;
-                }
-
-                confirmedThrough = coverage[current].End;
-
-                while (current < coverage.Count && coverage[current].Begin <= confirmedThrough)
-                {
-                    confirmedThrough = Math.Max(coverage[current].End, confirmedThrough);
-                    current++;
-                }
-
-                if (current < coverage.Count && coverage[current].Begin > confirmedThrough + 1)
-                {
-                    result = new Point2(confirmedThrough + 1, row);
+                    result = new Point2(Math.Min(coverage[0].End, coverage[1].End) + 1, row);
                     break;
                 }
             }
@@ -102,20 +56,28 @@
             return list;
         }
 
-        private List<Range> GetCoverageAtRow(List<Sensor> sensors, int row)
+        private List<Range> GetCoverageAtRow(List<Sensor> sensors, int row, (int lower, int upper)? bounds = null)
         {
             List<Range> list = new List<Range>();
 
             foreach (Sensor sensor in sensors)
             {
                 Range range = sensor.CoverageAtRow(row);
+
                 if (range != null)
                 {
+                    if (bounds.HasValue)
+                    {
+                        int lower = bounds.Value.lower;
+                        int upper = bounds.Value.upper;
+                        range = new Range(Math.Max(range.Begin, lower), Math.Min(range.End, upper));
+                    }
+
                     list.Add(range);
                 }
             }
 
-            return list;
+            return Range.MergeOverlap(list);
         }
 
         private class Sensor
