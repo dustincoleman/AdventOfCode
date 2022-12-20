@@ -8,7 +8,7 @@ namespace AdventOfCode2022
         [Fact]
         public void Part1()
         {
-            Puzzle puzzle = LoadPuzzle(30);
+            Puzzle puzzle = LoadPuzzle(30, 0);
             int score = Solve(puzzle);
             Assert.Equal(1673, score);
         }
@@ -16,43 +16,88 @@ namespace AdventOfCode2022
         [Fact]
         public void Part2()
         {
-            Assert.Equal(1707, 0); // Test data result
+            Puzzle puzzle = LoadPuzzle(26, 26);
+            int score = Solve(puzzle);
+            Assert.Equal(2343, score); // Test data result
         }
 
-        private Dictionary<Puzzle, int> scoresByPuzzle = new Dictionary<Puzzle, int>();
+        private List<int[]> scoresByRemainingByPuzzle = new List<int[]>(UInt16.MaxValue);
+        private List<Dictionary<Puzzle, int>> bigScoresByPuzzleByRemaining = new List<Dictionary<Puzzle, int>>();
 
-        private int Solve(Puzzle puzzle)
+        private long filterHits = 0;
+        private long cacheHits = 0;
+        private long cache2Hits = 0;
+        private long cacheMisses = 0;
+        private int maxScore = 0;
+
+        private int Solve(Puzzle puzzle, int runningScore = 0)
         {
-            if (scoresByPuzzle.TryGetValue(puzzle, out int cached))
+            if (runningScore + puzzle.RemainingPoints < maxScore)
             {
-                return cached;
+                filterHits++;
+                return 0;
             }
+
+            int key = (int)puzzle.PositionIndex;
+
+            if (key > 0)
+            {
+                int cached = scoresByRemainingByPuzzle[(int)puzzle.RemainingValves][key];
+
+                if (cached > 0)
+                {
+                    cacheHits++;
+                    return cached - 1;
+                }
+            }
+            else if (bigScoresByPuzzleByRemaining[(int)puzzle.RemainingValves].TryGetValue(puzzle, out int cached2))
+            {
+                cache2Hits++;
+                return cached2;
+            }
+
+            cacheMisses++;
 
             int score = 0;
 
-            foreach (Destination destination in puzzle.GetNextMoves())
+            foreach (Move move in puzzle.GetNextMoves())
             {
-                if (puzzle.RemainingValves.Contains(destination.Valve))
-                {
-                    Puzzle openValve = puzzle.Without(destination, openValve: true);
-                    int pointsForThisMove = destination.Valve.FlowRate * openValve.RemainingSteps;
-                    score = Math.Max(pointsForThisMove + Solve(openValve), score);
-                }
-
-                Puzzle justMove = puzzle.Without(destination, openValve: false);
-                score = Math.Max(Solve(justMove), score);
+                score = Math.Max(move.Points + Solve(move.Puzzle, runningScore + move.Points), score);
             }
 
-            scoresByPuzzle.Add(puzzle, score);
+            if (key > 0)
+            {
+                scoresByRemainingByPuzzle[(int)puzzle.RemainingValves][key] = score + 1;
+            }
+            else
+            {
+                bigScoresByPuzzleByRemaining[(int)puzzle.RemainingValves].Add(puzzle, score);
+            }
+
+            maxScore = Math.Max(score, maxScore);
 
             return score;
         }
 
-        private Puzzle LoadPuzzle(int stepsRemaining)
+        private Puzzle LoadPuzzle(int stepsRemaining1, int stepsRemaining2)
         {
+            for (int i = 0; i < UInt16.MaxValue; i++)
+            {
+                scoresByRemainingByPuzzle.Add(new int[UInt16.MaxValue]);
+            }
+
+            for (int i = 0; i < UInt16.MaxValue; i++)
+            {
+                bigScoresByPuzzleByRemaining.Add(new Dictionary<Puzzle, int>());
+            }
+
             Regex regex = new Regex(@"^Valve (?<name>\w+) has flow rate=(?<rate>\d+); tunnels? leads? to valves? (?<paths>.+)$");
             Dictionary<string, Valve> valvesByName = new Dictionary<string, Valve>();
             Dictionary<Valve, string> leadsToStringByValve = new Dictionary<Valve, string>();
+
+            uint bit = 1U;
+            uint valveBits = 0;
+            uint id = 0;
 
             foreach (string line in File.ReadAllLines("Day16.txt"))
             {
@@ -63,6 +108,14 @@ namespace AdventOfCode2022
                     Name = match.Groups["name"].Value,
                     FlowRate = int.Parse(match.Groups["rate"].Value)
                 };
+
+                if (valve.FlowRate > 0)
+                {
+                    valve.Id = id++;
+                    valve.Bit = bit;
+                    valveBits |= bit;
+                    bit <<= 1;
+                }
 
                 valvesByName.Add(valve.Name, valve);
                 leadsToStringByValve.Add(valve, match.Groups["paths"].Value);
@@ -101,54 +154,158 @@ namespace AdventOfCode2022
                 valve.LeadsTo = GetDestinations(valve);
             }
 
-            return new Puzzle(valvesByName["AA"], stepsRemaining, valvesByName.Values.Where(v => v.FlowRate > 0));
+            return new Puzzle(valvesByName["AA"], stepsRemaining1, valvesByName["AA"], stepsRemaining2, valveBits, valvesByName.Values.Select(v => v.FlowRate).Sum());
         }
 
         private class Puzzle : IEquatable<Puzzle>
         {
-            private Valve _position;
-            private int _remainingSteps;
-            private HashSet<Valve> _remainingValves;
-            private Lazy<int> _hashCode;
+            private Valve _position1;
+            private int _remainingSteps1;
+            private Valve _position2;
+            private int _remainingSteps2;
+            private uint _remainingValves;
+            private int _remainingPoints;
+            private int _hashCode;
 
-            public Puzzle(Valve position, int remainingSteps, IEnumerable<Valve> remainingValves)
+            private static readonly Destination NoDestination = new Destination();
+
+            public Puzzle(Valve position1, int remainingSteps1, Valve position2, int remainingSteps2, uint remainingValves, int remainingPoints)
             {
-                _position = position;
-                _remainingSteps = remainingSteps;
-                _remainingValves = new HashSet<Valve>(remainingValves);
-                _hashCode = new Lazy<int>(ComputeHashCode);
+                _position1 = position1;
+                _remainingSteps1 = remainingSteps1;
+                _position2 = position2;
+                _remainingSteps2 = remainingSteps2;
+                _remainingValves = remainingValves;
+                _remainingPoints = remainingPoints;
+                _hashCode = HashCode.Combine(_position1, _remainingSteps1, _position2, _remainingSteps2, _remainingValves);
             }
 
-            public Valve Position => _position;
+            internal int RemainingPoints => _remainingPoints * Math.Max(_remainingSteps1, _remainingSteps2);
 
-            public int RemainingSteps => _remainingSteps;
+            internal uint RemainingValves => _remainingValves;
 
-            public IEnumerable<Valve> RemainingValves => _remainingValves;
+            internal uint PositionIndex => (_remainingSteps1 < 16 && _remainingSteps2 < 16) ? (uint)(((uint)_position1.Id << 12) | ((uint)_position2.Id << 8) | ((uint)_remainingSteps1 << 4) | (uint)_remainingSteps2) : 0;
 
-            internal IEnumerable<Destination> GetNextMoves()
+            internal IEnumerable<Move> GetNextMoves()
             {
-                foreach (Destination destination in _position.LeadsTo)
+                int p1Remaining = _remainingSteps1;
+                int p2Remaining = _remainingSteps2;
+
+                IEnumerable<Destination> p1Moves = _position1?.LeadsTo.Where(d => p1Remaining > d.Distance).ToArray();
+                IEnumerable<Destination> p2Moves = _position2?.LeadsTo.Where(d => p2Remaining > d.Distance).ToArray();
+
+                if ((p1Moves?.Any() ?? false) && (p2Moves?.Any() ?? false))
                 {
-                    if (_remainingSteps > destination.Distance)
+                    foreach (Destination p1Destination in p1Moves)
                     {
-                        yield return destination;
+                        foreach (Destination p2Destination in p2Moves)
+                        {
+                            bool p1CanOpenValve = (_remainingValves & p1Destination.Valve.Bit) != 0;
+                            bool p2CanOpenValve = (_remainingValves & p2Destination.Valve.Bit) != 0;
+
+                            if (p1CanOpenValve && p2CanOpenValve && p1Destination.Valve == p2Destination.Valve)
+                            {
+                                if (_remainingSteps1 > _remainingSteps2)
+                                {
+                                    p2CanOpenValve = false;
+                                }
+                                else
+                                {
+                                    p1CanOpenValve = false;
+                                }
+                            }
+
+                            if (p1CanOpenValve && p2CanOpenValve)
+                            {
+                                yield return MakeMove(p1Destination, true, p2Destination, true);
+                            }
+
+                            if (p1CanOpenValve)
+                            {
+                                yield return MakeMove(p1Destination, true, p2Destination, false);
+                            }
+
+                            if (p2CanOpenValve)
+                            {
+                                yield return MakeMove(p1Destination, false, p2Destination, true);
+                            }
+
+                            yield return MakeMove(p1Destination, false, p2Destination, false);
+                        }
+                    }
+                }
+                else if (p1Moves?.Any() ?? false)
+                {
+                    foreach (Destination p1Destination in p1Moves)
+                    {
+                        if ((_remainingValves & p1Destination.Valve.Bit) != 0)
+                        {
+                            yield return MakeMove(p1Destination, true, NoDestination, false);
+                        }
+
+                        yield return MakeMove(p1Destination, false, NoDestination, false);
+                    }
+                }
+                else if (p2Moves?.Any() ?? false)
+                {
+                    foreach (Destination p2Destination in p2Moves)
+                    {
+                        if ((_remainingValves & p2Destination.Valve.Bit) != 0)
+                        {
+                            yield return MakeMove(NoDestination, false, p2Destination, true);
+                        }
+
+                        yield return MakeMove(NoDestination, false, p2Destination, false);
                     }
                 }
             }
 
-            internal Puzzle Without(Destination destination, bool openValve)
+            private Move MakeMove(Destination p1Destination, bool p1OpenValve, Destination p2Destination, bool p2OpenValve)
             {
-                return (openValve) ?
-                    new Puzzle(destination.Valve, _remainingSteps - destination.Distance - 1, _remainingValves.Where(v => v != destination.Valve)) :
-                    new Puzzle(destination.Valve, _remainingSteps - destination.Distance, _remainingValves);
+                int p1NewRemaining = _remainingSteps1 - p1Destination.Distance;
+                int p2NewRemaining = _remainingSteps2 - p2Destination.Distance;
+                uint newRemaining = _remainingValves;
+                int newRemainingPoints = _remainingPoints;
+
+                int points = 0;
+
+                if (p1OpenValve)
+                {
+                    newRemainingPoints -= p1Destination.Valve.FlowRate;
+                    newRemaining &= ~p1Destination.Valve.Bit;
+                    points += p1Destination.Valve.FlowRate * --p1NewRemaining;
+                }
+
+                if (p2OpenValve)
+                {
+                    newRemainingPoints -= p2Destination.Valve.FlowRate;
+                    newRemaining &= ~p2Destination.Valve.Bit;
+                    points += p2Destination.Valve.FlowRate * --p2NewRemaining;
+                }
+
+                Puzzle withMove = new Puzzle(
+                    p1Destination.Valve ?? _position1, 
+                    p1NewRemaining,
+                    p2Destination.Valve ?? _position2, 
+                    p2NewRemaining,
+                    newRemaining,
+                    newRemainingPoints);
+
+                return new Move()
+                {
+                    Puzzle = withMove,
+                    Points = points
+                };
             }
 
             public bool Equals(Puzzle other)
             {
                 return
-                    _position == other._position &&
-                    _remainingSteps == other._remainingSteps &&
-                    _remainingValves.SetEquals(other._remainingValves);
+                    _position1 == other._position1 &&
+                    _remainingSteps1 == other._remainingSteps1 &&
+                    _position2 == other._position2 &&
+                    _remainingSteps2 == other._remainingSteps2 &&
+                    _remainingValves == other._remainingValves;
             }
 
             public override bool Equals(object obj)
@@ -158,22 +315,7 @@ namespace AdventOfCode2022
 
             public override int GetHashCode()
             {
-                return _hashCode.Value;
-            }
-
-            private int ComputeHashCode()
-            {
-                HashCode hashcode = new HashCode();
-
-                hashcode.Add(_position);
-                hashcode.Add(_remainingSteps);
-
-                foreach (Valve v in _remainingValves)
-                {
-                    hashcode.Add(v);
-                }
-
-                return hashcode.ToHashCode();
+                return _hashCode;
             }
         }
 
@@ -182,12 +324,20 @@ namespace AdventOfCode2022
             internal string Name;
             internal int FlowRate;
             internal List<Destination> LeadsTo;
+            internal uint Bit;
+            internal uint Id;
         }
 
         private struct Destination
         {
             internal Valve Valve;
             internal int Distance;
+        }
+
+        private struct Move
+        {
+            internal Puzzle Puzzle;
+            internal int Points;
         }
     }
 }
