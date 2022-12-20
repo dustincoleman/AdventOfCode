@@ -1,345 +1,193 @@
-﻿using static System.Net.Mime.MediaTypeNames;
+﻿using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AdventOfCode2022
 {
     public class Day16
     {
-        Dictionary<string, Valve> valvesByName;
-        List<Valve> valves;
-        List<string> print;
-
         [Fact]
         public void Part1()
         {
-            print = new List<string>();
-            valvesByName = LoadPuzzle();
-            valves = valvesByName.Values.ToList();
-            valves.Sort((v1, v2) => v1.Name.CompareTo(v2.Name));
-
-            for (int i = 0; i < 10; i++)
-            {
-                foreach (Valve v in valves)
-                {
-                    v.Reduce();
-                }
-            }
-
-            int maxFlow = FindMaxFlow2(valvesByName["AA"], valvesByName["AA"], 30, 0, valvesByName.Values.Select(v => v.FlowRate).Sum());
-
-            print.Sort((left, right) => new string(left.Reverse().ToArray()).CompareTo(new string(right.Reverse().ToArray())));
-
-            Assert.Equal(1673, maxFlow);
+            Puzzle puzzle = LoadPuzzle(30);
+            int score = Solve(puzzle);
+            Assert.Equal(1673, score);
         }
-
 
         [Fact]
         public void Part2()
         {
-            print = new List<string>();
-            valvesByName = LoadPuzzle();
-            valves = valvesByName.Values.ToList();
-            valves.Sort((v1, v2) => v1.Name.CompareTo(v2.Name));
-
-            for (int i = 0; i < 10; i++)
-            {
-                foreach (Valve v in valves)
-                {
-                    v.Reduce();
-                }
-            }
-
-            int maxFlow = FindMaxFlow2(valvesByName["AA"], valvesByName["AA"], 26, 26, valvesByName.Values.Select(v => v.FlowRate).Sum());
-
-            print.Sort((left, right) => new string(left.Reverse().ToArray()).CompareTo(new string(right.Reverse().ToArray())));
-
-            Assert.Equal(1707, maxFlow);
+            Assert.Equal(1707, 0); // Test data result
         }
 
-        private int FindMaxFlow(Valve start, int stepsRemaining, int totalFlow)
+        private Dictionary<Puzzle, int> scoresByPuzzle = new Dictionary<Puzzle, int>();
+
+        private int Solve(Puzzle puzzle)
         {
-            int maxFlow = 0;
-            FindMaxFlowHelper(totalFlow, stepsRemaining, new Edge() { Valve = start }, new HashSet<Valve>(), new Stack<Move>(), ref maxFlow);
-            return maxFlow;
+            if (scoresByPuzzle.TryGetValue(puzzle, out int cached))
+            {
+                return cached;
+            }
+
+            int score = 0;
+
+            foreach (Destination destination in puzzle.GetNextMoves())
+            {
+                if (puzzle.RemainingValves.Contains(destination.Valve))
+                {
+                    Puzzle openValve = puzzle.Without(destination, openValve: true);
+                    int pointsForThisMove = destination.Valve.FlowRate * openValve.RemainingSteps;
+                    score = Math.Max(pointsForThisMove + Solve(openValve), score);
+                }
+
+                Puzzle justMove = puzzle.Without(destination, openValve: false);
+                score = Math.Max(Solve(justMove), score);
+            }
+
+            scoresByPuzzle.Add(puzzle, score);
+
+            return score;
         }
 
-        Dictionary<string, int> scoresByKey = new Dictionary<string, int>();
-
-        private void FindMaxFlowHelper(int totalFlow, int stepsRemaining, Edge current, HashSet<Valve> visited, Stack<Move> moves, ref int best, int runningScore = 0)
-        {
-            if (stepsRemaining <= 0 || (runningScore + (totalFlow * stepsRemaining) < best))
-            {
-                print.Add(string.Concat(moves.Reverse().Select(m => m.Print())));
-                return;
-            }
-
-            foreach (Edge next in current.Valve.LeadsTo)
-            {
-                if (visited.Add(next.Valve))
-                {
-                    if (next.Valve.FlowRate > 0 && !next.Valve.IsOpened)
-                    {
-                        next.Valve.IsOpened = true;
-                        moves.Push(new Move() { Edge = next, OpenValve = true });
-
-                        int tempScore = runningScore + (next.Valve.FlowRate * (stepsRemaining - next.Distance - 1));
-
-                        if (tempScore > best)
-                        {
-                            best = tempScore;
-                        }
-
-                        FindMaxFlowHelper(totalFlow - next.Valve.FlowRate, stepsRemaining - next.Distance - 1, next, new HashSet<Valve>(), moves, ref best, tempScore);
-
-                        moves.Pop();
-                        next.Valve.IsOpened = false;
-                    }
-
-                    moves.Push(new Move() { Edge = next, OpenValve = false });
-                    FindMaxFlowHelper(totalFlow, stepsRemaining - next.Distance, next, visited, moves, ref best, runningScore);
-                    moves.Pop();
-
-                    visited.Remove(next.Valve);
-                }
-            }
-        }
-
-        private int FindMaxFlow2(Valve start1, Valve start2, int stepsRemaining1, int stepsRemaining2, int totalFlow)
-        {
-            int maxFlow = 0;
-            FindMaxFlowHelper2(totalFlow, stepsRemaining1, stepsRemaining2, new Edge() { Valve = start1 }, new Edge() { Valve = start2 }, new HashSet<Valve>(), new HashSet<Valve>(), new Stack<Move>(), new Stack<Move>(), ref maxFlow);
-            return maxFlow;
-        }
-
-        private void FindMaxFlowHelper2(int totalFlow, int stepsRemaining1, int stepsRemaining2, Edge current1, Edge current2, HashSet<Valve> visited1, HashSet<Valve> visited2, Stack<Move> moves1, Stack<Move> moves2, ref int best, int runningScore = 0)
-        {
-            if ((stepsRemaining1 < 2 && stepsRemaining2 < 2) || (runningScore + (totalFlow * Math.Max(stepsRemaining1, stepsRemaining2)) < best))
-            {
-                //print.Add(string.Concat(moves1.Reverse().Select(m => m.Print())) + " | " + string.Concat(moves2.Reverse().Select(m => m.Print())));
-                print.Add(string.Concat(moves1.Reverse().Select(m => m.Print())));
-                print.Add(string.Concat(moves2.Reverse().Select(m => m.Print())));
-                return;
-            }
-
-            List<(Edge next1, Edge next2)> combos = new List<(Edge next1, Edge next2)>();
-
-            if (stepsRemaining1 >= 2 && stepsRemaining2 >= 2)
-            {
-                foreach (Edge next1 in current1.Valve.LeadsTo.Where(e => !visited1.Contains(e.Valve)))
-                {
-                    foreach (Edge next2 in current2.Valve.LeadsTo.Where(e => !visited2.Contains(e.Valve)))
-                    {
-                        combos.Add((next1, next2));
-                    }
-                }
-            }
-            else if (stepsRemaining1 >= 2)
-            {
-                FindMaxFlowHelper(totalFlow, stepsRemaining1, current1, visited1, moves1, ref best, runningScore);
-                return;
-            }
-            else
-            {
-                FindMaxFlowHelper(totalFlow, stepsRemaining2, current2, visited2, moves2, ref best, runningScore);
-                return;
-            }
-
-            foreach ((Edge next1, Edge next2) in combos)
-            {
-                visited1.Add(next1.Valve);
-                visited2.Add(next2.Valve);
-
-                if (next1.Valve.FlowRate > 0 && !next1.Valve.IsOpened && next2.Valve.FlowRate > 0 && !next2.Valve.IsOpened && next1.Valve != next2.Valve)
-                {
-                    next1.Valve.IsOpened = true;
-                    next2.Valve.IsOpened = true;
-
-                    moves1.Push(new Move() { Edge = next1, OpenValve = true });
-                    moves2.Push(new Move() { Edge = next2, OpenValve = true });
-
-                    int tempScore = runningScore + (next1.Valve.FlowRate * (stepsRemaining1 - next1.Distance - 1)) + (next2.Valve.FlowRate * (stepsRemaining2 - next2.Distance - 1));
-
-                    if (tempScore > best)
-                    {
-                        best = tempScore;
-                    }
-
-                    FindMaxFlowHelper2(totalFlow - next1.Valve.FlowRate - next2.Valve.FlowRate, stepsRemaining1 - next1.Distance - 1, stepsRemaining2 - next2.Distance - 1, next1, next2, new HashSet<Valve>(), new HashSet<Valve>(), moves1, moves2, ref best, tempScore);
-
-                    moves1.Pop();
-                    moves2.Pop();
-
-                    next1.Valve.IsOpened = false;
-                    next2.Valve.IsOpened = false;
-                }
-
-                if (next1.Valve.FlowRate > 0 && !next1.Valve.IsOpened)
-                {
-                    next1.Valve.IsOpened = true;
-
-                    moves1.Push(new Move() { Edge = next1, OpenValve = true });
-                    moves2.Push(new Move() { Edge = next2, OpenValve = false });
-
-                    int tempScore = runningScore + (next1.Valve.FlowRate * (stepsRemaining1 - next1.Distance - 1));
-
-                    if (tempScore > best)
-                    {
-                        best = tempScore;
-                    }
-
-                    FindMaxFlowHelper2(totalFlow - next1.Valve.FlowRate, stepsRemaining1 - next1.Distance - 1, stepsRemaining2 - next2.Distance, next1, next2, new HashSet<Valve>(), visited2, moves1, moves2, ref best, tempScore);
-
-                    moves1.Pop();
-                    moves2.Pop();
-
-                    next1.Valve.IsOpened = false;
-                }
-                
-                if (next2.Valve.FlowRate > 0 && !next2.Valve.IsOpened)
-                {
-                    next2.Valve.IsOpened = true;
-
-                    moves1.Push(new Move() { Edge = next1, OpenValve = false });
-                    moves2.Push(new Move() { Edge = next2, OpenValve = true });
-
-                    int tempScore = runningScore + (next2.Valve.FlowRate * (stepsRemaining2 - next2.Distance - 1));
-
-                    if (tempScore > best)
-                    {
-                        best = tempScore;
-                    }
-
-                    FindMaxFlowHelper2(totalFlow - next2.Valve.FlowRate, stepsRemaining1 - next1.Distance, stepsRemaining2 - next2.Distance - 1, next1, next2, visited1, new HashSet<Valve>(), moves1, moves2, ref best, tempScore);
-
-                    moves1.Pop();
-                    moves2.Pop();
-
-                    next2.Valve.IsOpened = false;
-                }
-
-                moves1.Push(new Move() { Edge = next1, OpenValve = false });
-                moves2.Push(new Move() { Edge = next2, OpenValve = false });
-
-                FindMaxFlowHelper2(totalFlow, stepsRemaining1 - next1.Distance, stepsRemaining2 - next2.Distance, next1, next2, visited1, visited2, moves1, moves2, ref best, runningScore);
-
-                moves1.Pop();
-                moves2.Pop();
-
-                visited1.Remove(next1.Valve);
-                visited2.Remove(next2.Valve);
-            }
-        }
-
-        private Dictionary<string, Valve> LoadPuzzle()
+        private Puzzle LoadPuzzle(int stepsRemaining)
         {
             Regex regex = new Regex(@"^Valve (?<name>\w+) has flow rate=(?<rate>\d+); tunnels? leads? to valves? (?<paths>.+)$");
             Dictionary<string, Valve> valvesByName = new Dictionary<string, Valve>();
+            Dictionary<Valve, string> leadsToStringByValve = new Dictionary<Valve, string>();
 
             foreach (string line in File.ReadAllLines("Day16.txt"))
             {
                 Match match = regex.Match(line);
-                valvesByName.Add(
-                    match.Groups["name"].Value,
-                    new Valve()
+
+                Valve valve = new Valve()
+                {
+                    Name = match.Groups["name"].Value,
+                    FlowRate = int.Parse(match.Groups["rate"].Value)
+                };
+
+                valvesByName.Add(valve.Name, valve);
+                leadsToStringByValve.Add(valve, match.Groups["paths"].Value);
+            }
+
+            HashSet<Valve> visited = new HashSet<Valve>();
+
+            List<Destination> GetDestinations(Valve current)
+            {
+                List<Destination> list = new List<Destination>();
+
+                visited.Add(current);
+
+                foreach (Valve next in leadsToStringByValve[current].Split(", ").Select(name => valvesByName[name]))
+                {
+                    if (!visited.Contains(next))
                     {
-                        Name = match.Groups["name"].Value,
-                        FlowRate = int.Parse(match.Groups["rate"].Value),
-                        LeadsToString = match.Groups["paths"].Value
-                    });
+                        if (next.FlowRate > 0)
+                        {
+                            list.Add(new Destination() { Valve = next, Distance = visited.Count });
+                        }
+                        else
+                        {
+                            list.AddRange(GetDestinations(next));
+                        }
+                    }
+                }
+
+                visited.Remove(current);
+
+                return list;
             }
 
             foreach (Valve valve in valvesByName.Values)
             {
-                foreach (string name in valve.LeadsToString.Split(", "))
+                valve.LeadsTo = GetDestinations(valve);
+            }
+
+            return new Puzzle(valvesByName["AA"], stepsRemaining, valvesByName.Values.Where(v => v.FlowRate > 0));
+        }
+
+        private class Puzzle : IEquatable<Puzzle>
+        {
+            private Valve _position;
+            private int _remainingSteps;
+            private HashSet<Valve> _remainingValves;
+            private Lazy<int> _hashCode;
+
+            public Puzzle(Valve position, int remainingSteps, IEnumerable<Valve> remainingValves)
+            {
+                _position = position;
+                _remainingSteps = remainingSteps;
+                _remainingValves = new HashSet<Valve>(remainingValves);
+                _hashCode = new Lazy<int>(ComputeHashCode);
+            }
+
+            public Valve Position => _position;
+
+            public int RemainingSteps => _remainingSteps;
+
+            public IEnumerable<Valve> RemainingValves => _remainingValves;
+
+            internal IEnumerable<Destination> GetNextMoves()
+            {
+                foreach (Destination destination in _position.LeadsTo)
                 {
-                    valve.LeadsTo.Add(new Edge() { Valve = valvesByName[name], Distance = 1 });
+                    if (_remainingSteps > destination.Distance)
+                    {
+                        yield return destination;
+                    }
                 }
             }
 
-            return valvesByName;
+            internal Puzzle Without(Destination destination, bool openValve)
+            {
+                return (openValve) ?
+                    new Puzzle(destination.Valve, _remainingSteps - destination.Distance - 1, _remainingValves.Where(v => v != destination.Valve)) :
+                    new Puzzle(destination.Valve, _remainingSteps - destination.Distance, _remainingValves);
+            }
+
+            public bool Equals(Puzzle other)
+            {
+                return
+                    _position == other._position &&
+                    _remainingSteps == other._remainingSteps &&
+                    _remainingValves.SetEquals(other._remainingValves);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Puzzle && Equals((Puzzle)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return _hashCode.Value;
+            }
+
+            private int ComputeHashCode()
+            {
+                HashCode hashcode = new HashCode();
+
+                hashcode.Add(_position);
+                hashcode.Add(_remainingSteps);
+
+                foreach (Valve v in _remainingValves)
+                {
+                    hashcode.Add(v);
+                }
+
+                return hashcode.ToHashCode();
+            }
         }
 
         private class Valve
         {
             internal string Name;
-            internal bool IsOpened;
             internal int FlowRate;
-            internal List<Edge> LeadsTo = new List<Edge>();
-            internal string LeadsToString;
-
-            internal void Reduce()
-            {
-                List<Edge> newList = new List<Edge>();
-                HashSet<string> set = new HashSet<string>() { Name };
-
-                foreach (Edge e in LeadsTo)
-                {
-                    foreach (Edge e2 in e.Reduce())
-                    {
-                        if (set.Add(e2.Valve.Name))
-                        {
-                            newList.Add(e2);
-                        }
-                        else if (e2.Valve.Name != Name)
-                        {
-                            for (int i = 0; i < newList.Count; i++)
-                            {
-                                if (newList[i].Valve.Name == e2.Valve.Name)
-                                {
-                                    Edge e3 = newList[i];
-                                    e3.Distance = Math.Min(newList[i].Distance, e2.Distance);
-                                    newList[i] = e3;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                LeadsTo = newList;
-            }
+            internal List<Destination> LeadsTo;
         }
 
-        private class Destination
-        {
-            internal Valve Valve;
-            internal List<Move> Path;
-            internal int Score;
-            internal int Distance => Path.Count;
-
-            internal int Travel = 1;
-            internal bool IsReduced;
-        }
-
-        private struct Move
-        {
-            internal Edge Edge;
-            internal bool OpenValve;
-
-            internal string Print()
-            {
-                return Edge.Valve.Name + (OpenValve ? "1" : "0");
-            }
-        }
-
-        private struct Edge
+        private struct Destination
         {
             internal Valve Valve;
             internal int Distance;
-
-            internal IEnumerable<Edge> Reduce()
-            {
-                if (Valve.FlowRate > 0)
-                {
-                    yield return this;
-                }
-                else
-                {
-                    foreach (Edge e in Valve.LeadsTo)
-                    {
-                        yield return new Edge() { Valve = e.Valve, Distance = Distance + e.Distance };
-                    }
-                }
-            }
         }
     }
 }
