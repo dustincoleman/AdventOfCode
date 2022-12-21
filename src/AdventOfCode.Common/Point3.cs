@@ -42,37 +42,47 @@ namespace AdventOfCode.Common
             }
         }
 
-        internal static Point3 Min(Point3 left, Point3 right)
+        public static Point3 Min(Point3 left, Point3 right)
         {
             return new Point3(Math.Min(left.X, right.X), Math.Min(left.Y, right.Y), Math.Min(left.Z, right.Z));
         }
 
-        internal static Point3 Max(Point3 left, Point3 right)
+        public static Point3 Max(Point3 left, Point3 right)
         {
             return new Point3(Math.Max(left.X, right.X), Math.Max(left.Y, right.Y), Math.Max(left.Z, right.Z));
         }
 
-        internal int Sum() => X + Y + Z;
+        public int Sum() => X + Y + Z;
 
-        internal long Product() => (long)X * (long)Y * (long)Z;
+        public long Product() => (long)X * (long)Y * (long)Z;
+
+        public IEnumerable<Point3> Adjacent()
+        {
+            yield return this - UnitX;
+            yield return this - UnitY;
+            yield return this - UnitZ;
+            yield return this + UnitX;
+            yield return this + UnitY;
+            yield return this + UnitZ;
+        }
 
 
-        internal bool AllGreaterThan(Point3 other)
+        public bool AllGreaterThan(Point3 other)
         {
             return (X > other.X && Y > other.Y && Z > other.Z);
         }
 
-        internal bool AllLessThan(Point3 other)
+        public bool AllLessThan(Point3 other)
         {
             return (X < other.X && Y < other.Y && Z < other.Z);
         }
 
-        internal bool AllGreaterThanOrEqual(Point3 other)
+        public bool AllGreaterThanOrEqual(Point3 other)
         {
             return (X >= other.X && Y >= other.Y && Z >= other.Z);
         }
 
-        internal bool AllLessThanOrEqual(Point3 other)
+        public bool AllLessThanOrEqual(Point3 other)
         {
             return (X <= other.X && Y <= other.Y && Z <= other.Z);
         }

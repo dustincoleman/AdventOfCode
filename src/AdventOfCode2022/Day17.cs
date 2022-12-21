@@ -1,7 +1,4 @@
-﻿using System;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace AdventOfCode2022
+﻿namespace AdventOfCode2022
 {
     public class Day17
     {
