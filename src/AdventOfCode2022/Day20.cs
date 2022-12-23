@@ -19,31 +19,33 @@ namespace AdventOfCode2022
 
             foreach (LinkedListNode<long> current in nodes)
             {
-                long toMove = Math.Abs(current.Value) % linkedList.Count;
+                long toMove = Math.Abs(current.Value) % (linkedList.Count - 1);
                 bool forward = (current.Value >= 0);
 
                 if (toMove != 0)
                 {
-                    node = current;
-
                     if (forward)
                     {
-                        while (toMove-- > 0)
+                        node = current.Next ?? linkedList.First;
+                        linkedList.Remove(current);
+
+                        while (--toMove > 0)
                         {
                             node = node.Next ?? linkedList.First;
                         }
 
-                        linkedList.Remove(current);
                         linkedList.AddAfter(node, current);
                     }
                     else
                     {
-                        while (toMove-- > 0)
+                        node = current.Previous ?? linkedList.Last;
+                        linkedList.Remove(current);
+
+                        while (--toMove > 0)
                         {
                             node = node.Previous ?? linkedList.Last;
                         }
 
-                        linkedList.Remove(current);
                         linkedList.AddBefore(node, current);
                     }
                 }
@@ -77,32 +79,33 @@ namespace AdventOfCode2022
             {
                 foreach (LinkedListNode<long> current in nodes)
                 {
-                    long toMove = Math.Abs(current.Value) % linkedList.Count;
+                    long toMove = Math.Abs(current.Value) % (linkedList.Count - 1);
                     bool forward = (current.Value >= 0);
 
                     if (toMove != 0)
                     {
-                        node = current;
-
                         if (forward)
                         {
-                            long toMoveTemp = toMove;
-                            while (toMoveTemp-- > 0)
+                            node = current.Next ?? linkedList.First;
+                            linkedList.Remove(current);
+
+                            while (--toMove > 0)
                             {
                                 node = node.Next ?? linkedList.First;
                             }
 
-                            linkedList.Remove(current);
                             linkedList.AddAfter(node, current);
                         }
                         else
                         {
-                            while (toMove-- > 0)
+                            node = current.Previous ?? linkedList.Last;
+                            linkedList.Remove(current);
+
+                            while (--toMove > 0)
                             {
                                 node = node.Previous ?? linkedList.Last;
                             }
 
-                            linkedList.Remove(current);
                             linkedList.AddBefore(node, current);
                         }
                     }
