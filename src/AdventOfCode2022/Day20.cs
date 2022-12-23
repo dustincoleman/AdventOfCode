@@ -120,7 +120,7 @@ namespace AdventOfCode2022
             long i3 = list[(3000 + idx) % list.Count];
 
             long result = i1 + i2 + i3;
-            Assert.Equal(0, result);
+            Assert.Equal(7865110481723, result);
         }
 
         private LinkedList<long> LoadPuzzle(long key = 1)
