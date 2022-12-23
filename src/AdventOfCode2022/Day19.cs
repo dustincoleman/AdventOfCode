@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace AdventOfCode2022
+﻿namespace AdventOfCode2022
 {
     public class Day19
     {
