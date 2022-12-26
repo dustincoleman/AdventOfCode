@@ -99,6 +99,18 @@ namespace AdventOfCode.Common
             if (Y < bounds.Y - 1) yield return this + UnitY;
         }
 
+        public IEnumerable<Point2> Surrounding()
+        {
+            yield return this - UnitY - UnitX; // Top Left
+            yield return this - UnitY; // Top
+            yield return this - UnitY + UnitX; // Top Right
+            yield return this + UnitX; // Right
+            yield return this + UnitY + UnitX; // Bottom Right
+            yield return this + UnitY; // Bottom
+            yield return this + UnitY - UnitX; // Bottom Left
+            yield return this - UnitX; // Left
+        }
+
         public IEnumerable<Point2> Surrounding(Point2 bounds)
         {
             if (Y > 0)

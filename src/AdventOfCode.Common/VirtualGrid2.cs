@@ -113,5 +113,8 @@ namespace AdventOfCode.Common
                 this[point] = other[point];
             }
         }
+
+        public void Add(Point2 point, T value) => this.grid.Add(point, value);
+        public bool Remove(Point2 point) => this.grid.Remove(point);
     }
 }
