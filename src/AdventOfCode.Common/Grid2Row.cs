@@ -9,10 +9,12 @@ namespace AdventOfCode.Common
         public Grid2Row(Grid2<T> grid, int index)
         {
             Grid = grid ?? throw new ArgumentNullException(nameof(grid));
-            Index = (index >= 0 && index <= Grid.Bounds.X) ? index : throw new ArgumentOutOfRangeException(nameof(index));
+            Index = (index >= 0 && index <= Grid.Bounds.Y) ? index : throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         public Grid2<T> Grid { get; }
+
+        public IEnumerable<Point2> Points => Point2.Line(new Point2(0, Index), new Point2(Grid.Bounds.X - 1, Index));
 
         public int Index { get; }
 
@@ -35,6 +37,8 @@ namespace AdventOfCode.Common
         {
             Grid = grid ?? throw new ArgumentNullException(nameof(grid));
         }
+
+        public Grid2Row<T> this[int index] => new Grid2Row<T>(Grid, index);
 
         public Grid2<T> Grid { get; }
 

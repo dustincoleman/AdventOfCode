@@ -18,7 +18,7 @@ namespace AdventOfCodeOther
         {
             Grid2<int> inputGrid = GridFromString(input);
             Grid2<int> roundTripGrid = Grid2<int>.Combine(inputGrid.Split(new Point2(sizeX, sizeY)));
-            Assert.True(inputGrid == roundTripGrid);
+            Assert.Equal(inputGrid, roundTripGrid);
         }
 
         [Theory]
@@ -30,7 +30,7 @@ namespace AdventOfCodeOther
         {
             Grid2<int> flippedGrid = GridFromString(input).FlipHorizontal();
             Grid2<int> expectedGrid = GridFromString(expected);
-            Assert.True(flippedGrid == expectedGrid);
+            Assert.Equal(expectedGrid, flippedGrid);
         }
 
         [Theory]
@@ -42,7 +42,7 @@ namespace AdventOfCodeOther
         {
             Grid2<int> flippedGrid = GridFromString(input).FlipVertical();
             Grid2<int> expectedGrid = GridFromString(expected);
-            Assert.True(flippedGrid == expectedGrid);
+            Assert.Equal(expectedGrid, flippedGrid);
         }
 
         [Theory]
@@ -54,7 +54,31 @@ namespace AdventOfCodeOther
         {
             Grid2<int> flippedGrid = GridFromString(input).Rotate();
             Grid2<int> expectedGrid = GridFromString(expected);
-            Assert.True(flippedGrid == expectedGrid);
+            Assert.Equal(expectedGrid, flippedGrid);
+        }
+
+        [Theory]
+        [InlineData("1,2/3,4", "2,4/1,3")]
+        [InlineData("1,2,3/4,5,6", "3,6/2,5/1,4")]
+        [InlineData("1,2/3,4/5,6", "2,4,6/1,3,5")]
+        [InlineData("1,2,3/4,5,6/7,8,9", "3,6,9/2,5,8/1,4,7")]
+        public void RotateCCW(string input, string expected)
+        {
+            Grid2<int> flippedGrid = GridFromString(input).RotateCCW();
+            Grid2<int> expectedGrid = GridFromString(expected);
+            Assert.Equal(expectedGrid, flippedGrid);
+        }
+
+        [Theory]
+        [InlineData("1,2/3,4", "4,3/2,1")]
+        [InlineData("1,2,3/4,5,6", "6,5,4/3,2,1")]
+        [InlineData("1,2/3,4/5,6", "6,5/4,3/2,1")]
+        [InlineData("1,2,3/4,5,6/7,8,9", "9,8,7/6,5,4/3,2,1")]
+        public void Rotate180(string input, string expected)
+        {
+            Grid2<int> flippedGrid = GridFromString(input).Rotate180();
+            Grid2<int> expectedGrid = GridFromString(expected);
+            Assert.Equal(expectedGrid, flippedGrid);
         }
 
         private Grid2<int> GridFromString(string input)

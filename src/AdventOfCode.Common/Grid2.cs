@@ -83,9 +83,9 @@ namespace AdventOfCode.Common
 
         public IEnumerable<Point2> InteriorPoints => Points.Where(p => !IsEdge(p));
 
-        public IEnumerable<Grid2Column<T>> Columns => new Grid2ColumnCollection<T>(this);
+        public Grid2ColumnCollection<T> Columns => new Grid2ColumnCollection<T>(this);
 
-        public IEnumerable<Grid2Row<T>> Rows => new Grid2RowCollection<T>(this);
+        public Grid2RowCollection<T> Rows => new Grid2RowCollection<T>(this);
 
         public static Grid2<T> Combine(Grid2<Grid2<T>> pieces)
         {
@@ -112,6 +112,11 @@ namespace AdventOfCode.Common
         public bool IsEdge(Point2 point)
         {
             return (point.X == 0 || point.X == Bounds.X - 1 || point.Y == 0 || point.Y == Bounds.Y - 1);
+        }
+
+        public bool InBounds(Point2 point)
+        {
+            return (point.X >= 0 && point.X < Bounds.X && point.Y >= 0 && point.Y < Bounds.Y);
         }
 
         public IEnumerable<T> Adjacent(Point2 point)
@@ -231,6 +236,10 @@ namespace AdventOfCode.Common
         public Grid2<T> FlipVertical() => Transpose(Bounds, view => new Point2(Bounds.X - view.X - 1, view.Y));
 
         public Grid2<T> Rotate() => Transpose(~Bounds, view => new Point2(view.Y, Bounds.Y - view.X - 1));
+
+        public Grid2<T> RotateCCW() => Transpose(~Bounds, view => new Point2(Bounds.X - view.Y - 1, view.X));
+
+        public Grid2<T> Rotate180() => Transpose(Bounds, view => new Point2(Bounds.X - view.X - 1, Bounds.Y - view.Y - 1));
 
         public Grid2<T> Transpose(Point2 newBounds, Func<Point2, Point2> transpose)
         {

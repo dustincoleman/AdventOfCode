@@ -15,6 +15,8 @@ namespace AdventOfCode.Common
 
         public Grid2<T> Grid { get; }
 
+        public IEnumerable<Point2> Points => Point2.Line(new Point2(Index, 0), new Point2(Index, Grid.Bounds.Y - 1));
+
         public int Index { get; }
 
         public IEnumerator<T> GetEnumerator() => Enumerate().GetEnumerator();
@@ -36,6 +38,8 @@ namespace AdventOfCode.Common
         {
             Grid = grid ?? throw new ArgumentNullException(nameof(grid));
         }
+
+        public Grid2Column<T> this[int index] => new Grid2Column<T>(Grid, index);
 
         public Grid2<T> Grid { get; }
 
