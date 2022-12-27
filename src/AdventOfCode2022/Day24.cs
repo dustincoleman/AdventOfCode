@@ -19,7 +19,7 @@ namespace AdventOfCode2022
             int result = RunPuzzle(puzzle, Point2.Zero, puzzle.Bounds - 1);
             result = RunPuzzle(puzzle, puzzle.Bounds - 1, Point2.Zero, result);
             result = RunPuzzle(puzzle, Point2.Zero, puzzle.Bounds - 1, result);
-            Assert.Equal(277, result);
+            Assert.Equal(877, result);
         }
 
         private int RunPuzzle(Puzzle puzzle, Point2 start, Point2 end, int minute = 1)
