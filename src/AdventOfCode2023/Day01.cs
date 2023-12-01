@@ -17,7 +17,7 @@ public class Day01
                     return line[pos] - '0';
                 }
 
-                return null;
+                return 0;
             }));
 
         Assert.Equal(53386, answer);
@@ -42,13 +42,13 @@ public class Day01
                     }
                 }
 
-                return null;
+                return 0;
             }));
 
         Assert.Equal(53312, answer);
     }
 
-    private int Decode(string line, Func<int, int?> decode)
+    private int Decode(string line, Func<int, int> decode)
     {
         int first = 0;
         int last = 0;
@@ -57,11 +57,11 @@ public class Day01
         {
             if (first == 0)
             {
-                first = decode(i) ?? 0;
+                first = decode(i);
             }
             if (last == 0)
             {
-                last = decode(line.Length - i - 1) ?? 0;
+                last = decode(line.Length - i - 1);
             }
         }
 
