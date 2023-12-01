@@ -50,8 +50,21 @@ public class Day01
 
     private int Decode(string line, Func<int, int?> decode)
     {
-        int first = Enumerable.Range(0, line.Length).Select(decode).Where(i => i.HasValue).First()!.Value;
-        int last = Enumerable.Range(0, line.Length).Reverse().Select(decode).Where(i => i.HasValue).First()!.Value;
+        int first = 0;
+        int last = 0;
+
+        for (int i = 0; i < line.Length && (first == 0 || last == 0); i++)
+        {
+            if (first == 0)
+            {
+                first = decode(i) ?? 0;
+            }
+            if (last == 0)
+            {
+                last = decode(line.Length - i - 1) ?? 0;
+            }
+        }
+
         return (first * 10) + last;
     }
 }
