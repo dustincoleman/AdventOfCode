@@ -12,8 +12,8 @@ public class Day01
 
         foreach(string line in lines)
         {
-            int first = line.First(c => c >= '0' && c <= '9') - '0';
-            int last = line.Last(c => c >= '0' && c <= '9') - '0';
+            int first = line.First(char.IsAsciiDigit) - '0';
+            int last = line.Last(char.IsAsciiDigit) - '0';
             answer += (first * 10) + last;
         }
 
@@ -40,7 +40,7 @@ public class Day01
     {
         for (int i = 0; i < line.Length; i++)
         {
-            int? digit = GetPart2Digit(line.Substring(i));
+            int? digit = GetPart2Digit(line, i);
             if (digit.HasValue)
             {
                 return digit.Value;
@@ -54,7 +54,7 @@ public class Day01
     {
         for (int i = line.Length - 1; i >= 0; i--)
         {
-            int? digit = GetPart2Digit(line.Substring(i));
+            int? digit = GetPart2Digit(line, i);
             if (digit.HasValue)
             {
                 return digit.Value;
@@ -64,16 +64,16 @@ public class Day01
         throw new Exception("Value not found");
     }
 
-    private int? GetPart2Digit(string subStr)
+    private int? GetPart2Digit(string line, int pos)
     {
-        if (subStr[0] >= '0' && subStr[0] <= '9')
+        if (char.IsAsciiDigit(line[pos]))
         {
-            return subStr[0] - '0';
+            return line[pos] - '0';
         }
 
         for (int i = 0; i < s_numbers.Length; i++)
         {
-            if (subStr.StartsWith(s_numbers[i]))
+            if (pos + s_numbers[i].Length <= line.Length && line.IndexOf(s_numbers[i], pos, s_numbers[i].Length) == pos)
             {
                 return i + 1;
             }
