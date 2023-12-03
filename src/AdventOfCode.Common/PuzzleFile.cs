@@ -36,7 +36,7 @@ namespace AdventOfCode.Common
             return groups.ToArray();
         }
 
-        public static Grid2<char> AsGrid(string filename)
+        public static Grid2<char> ReadAsGrid(string filename)
         {
             string[] input = File.ReadAllLines(filename);
 

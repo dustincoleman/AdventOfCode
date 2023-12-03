@@ -5,14 +5,14 @@ public class Day03
     [Fact]
     public void Part1()
     {
-        int answer = GetNumbersAdjacentToSymbols(PuzzleFile.AsGrid("Day03.txt")).Sum();
+        int answer = GetNumbersAdjacentToSymbols(PuzzleFile.ReadAsGrid("Day03.txt")).Sum();
         Assert.Equal(528799, answer);
     }
 
     [Fact]
     public void Part2()
     {
-        int answer = GetNumbersAdjacentToGears(PuzzleFile.AsGrid("Day03.txt")).Where(list => list.Count == 2).Sum(list => list[0] * list[1]);
+        int answer = GetNumbersAdjacentToGears(PuzzleFile.ReadAsGrid("Day03.txt")).Where(list => list.Count == 2).Sum(list => list[0] * list[1]);
         Assert.Equal(84907174, answer);
     }
 
