@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace AdventOfCode.Common
 {
-    public class Grid2Column<T> : IEnumerable<T>
+    public class Grid2Column<T> : IEnumerable<T>, IReadOnlyList<T>
     {
         public Grid2Column(Grid2<T> grid, int index)
         {
@@ -18,6 +18,20 @@ namespace AdventOfCode.Common
         public IEnumerable<Point2> Points => Point2.Line(new Point2(Index, 0), new Point2(Index, Grid.Bounds.Y - 1));
 
         public int Index { get; }
+
+        public int Count => Grid.Bounds.Y;
+
+        public T this[int y] => Grid[Index, y];
+
+        public Point2 Point(int y) => new Point2(Index, y);
+
+        public IEnumerable<T> Adjacent(int y) => Grid.Adjacent(Point(y));
+
+        public IEnumerable<Point2> AdjacentPoints(int y) => Grid.AdjacentPoints(Point(y));
+
+        public IEnumerable<T> Surrounding(int y) => Grid.Surrounding(Point(y));
+
+        public IEnumerable<Point2> SurroundingPoints(int y) => Grid.SurroundingPoints(Point(y));
 
         public IEnumerator<T> GetEnumerator() => Enumerate().GetEnumerator();
 

@@ -23,18 +23,18 @@ public class Day03
     {
         List<int> list = new List<int>();
 
-        for (int row = 0; row < grid.Bounds.Y; row++)
+        foreach (Grid2Row<char> row in grid.Rows)
         {
-            for (int pos = 0; pos < grid.Bounds.X; pos++)
+            for (int pos = 0; pos < row.Count; pos++)
             {
                 int value = 0;
                 bool foundSymbol = false;
 
-                while (pos < grid.Bounds.X && char.IsAsciiDigit(grid[pos, row]))
+                while (pos < row.Count && char.IsAsciiDigit(row[pos]))
                 {
                     value *= 10;
-                    value += grid[pos, row] - '0';
-                    foundSymbol |= grid.Surrounding(new Point2(pos, row)).Any(ch => ch != '.' && !char.IsAsciiDigit(ch));
+                    value += row[pos] - '0';
+                    foundSymbol |= row.Surrounding(pos).Any(ch => ch != '.' && !char.IsAsciiDigit(ch));
                     pos++;
                 }
 
@@ -52,19 +52,19 @@ public class Day03
     {
         AutoDictionary<Point2, List<int>> numbersByGear = new AutoDictionary<Point2, List<int>>();
 
-        for (int row = 0; row < grid.Bounds.Y; row++)
+        foreach (Grid2Row<char> row in grid.Rows)
         {
-            for (int pos = 0; pos < grid.Bounds.X; pos++)
+            for (int pos = 0; pos < row.Count; pos++)
             {
                 int value = 0;
                 HashSet<Point2> gears = new HashSet<Point2>();
 
-                while (pos < grid.Bounds.X && char.IsAsciiDigit(grid[pos, row]))
+                while (pos < row.Count && char.IsAsciiDigit(row[pos]))
                 {
                     value *= 10;
-                    value += grid[pos, row] - '0';
+                    value += row[pos] - '0';
 
-                    foreach (Point2 point in new Point2(pos, row).Surrounding(grid.Bounds))
+                    foreach (Point2 point in row.SurroundingPoints(pos))
                     {
                         if (grid[point] == '*')
                         {
