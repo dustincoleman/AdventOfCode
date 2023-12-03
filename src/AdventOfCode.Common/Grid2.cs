@@ -127,6 +127,14 @@ namespace AdventOfCode.Common
             }
         }
 
+        public IEnumerable<T> Surrounding(Point2 point)
+        {
+            foreach (Point2 surroundingPoint in point.Surrounding(Bounds))
+            {
+                yield return this.grid[surroundingPoint.X, surroundingPoint.Y];
+            }
+        }
+
         public IEnumerable<T> TraverseLeft(Point2 point)
         {
             int x = point.X;

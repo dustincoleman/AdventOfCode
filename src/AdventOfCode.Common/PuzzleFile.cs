@@ -35,5 +35,20 @@ namespace AdventOfCode.Common
 
             return groups.ToArray();
         }
+
+        public static Grid2<char> AsGrid(string filename)
+        {
+            string[] input = File.ReadAllLines(filename);
+
+            Point2 bounds = new Point2(input[0].Length, input.Length);
+            Grid2<char> grid = new Grid2<char>(bounds);
+
+            foreach (Point2 p in Point2.Quadrant(bounds))
+            {
+                grid[p] = input[p.Y][p.X];
+            }
+
+            return grid;
+        }
     }
 }
