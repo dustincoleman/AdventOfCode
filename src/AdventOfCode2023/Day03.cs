@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace AdventOfCode2023;
+﻿namespace AdventOfCode2023;
 
 public class Day03
 {
