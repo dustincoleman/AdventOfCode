@@ -91,6 +91,14 @@ namespace AdventOfCode.Common
             return new Point2(Math.Max(left.X, right.X), Math.Max(left.Y, right.Y));
         }
 
+        public IEnumerable<Point2> Adjacent()
+        {
+            yield return this - UnitX;
+            yield return this - UnitY;
+            yield return this + UnitX;
+            yield return this + UnitY;
+        }
+
         public IEnumerable<Point2> Adjacent(Point2 bounds)
         {
             if (X > 0) yield return this - UnitX;
