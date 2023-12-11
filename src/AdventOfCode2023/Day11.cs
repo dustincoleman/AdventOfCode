@@ -5,24 +5,20 @@ public class Day11
     [Fact]
     public void Part1()
     {
-        List<Point2Big> puzzle = LoadPuzzle(2);
-        long answer = 0;
-
-        for (int i = 0; i < puzzle.Count; i++)
-        {
-            for (int j = i + 1; j < puzzle.Count; j++)
-            {
-                answer += (puzzle[j] - puzzle[i]).Manhattan();
-            }
-        }
-
+        long answer = RunPuzzle(2);
         Assert.Equal(10494813, answer);
     }
 
     [Fact]
     public void Part2()
     {
-        List<Point2Big> puzzle = LoadPuzzle(1000000);
+        long answer = RunPuzzle(1000000);
+        Assert.Equal(840988812853, answer);
+    }
+
+    private long RunPuzzle(long expansion)
+    {
+        List<Point2Big> puzzle = LoadPuzzle(expansion);
         long answer = 0;
 
         for (int i = 0; i < puzzle.Count; i++)
@@ -33,7 +29,7 @@ public class Day11
             }
         }
 
-        Assert.Equal(840988812853, answer);
+        return answer;
     }
 
     private List<Point2Big> LoadPuzzle(long expansion)
