@@ -45,7 +45,7 @@ namespace AdventOfCode.Common
         }
     }
 
-    public class Grid2RowCollection<T> : IEnumerable<Grid2Row<T>>
+    public class Grid2RowCollection<T> : IEnumerable<Grid2Row<T>>, IReadOnlyList<Grid2Row<T>>
     {
         public Grid2RowCollection(Grid2<T> grid)
         {
@@ -55,6 +55,8 @@ namespace AdventOfCode.Common
         public Grid2Row<T> this[int index] => new Grid2Row<T>(Grid, index);
 
         public Grid2<T> Grid { get; }
+
+        public int Count => Grid.Bounds.Y;
 
         public IEnumerator<Grid2Row<T>> GetEnumerator() => Enumerate().GetEnumerator();
 
