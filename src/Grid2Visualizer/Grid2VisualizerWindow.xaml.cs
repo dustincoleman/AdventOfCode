@@ -22,7 +22,7 @@ namespace Grid2Visualizer
     /// </summary>
     public partial class Grid2VisualizerWindow : Window
     {
-        public Grid2VisualizerWindow(IVisualizerObjectProvider2 objectProvider)
+        public Grid2VisualizerWindow(IVisualizerObjectProvider3 objectProvider)
         {
             InitializeComponent();
             DataContext = new Grid2ViewModel(objectProvider);

@@ -14,7 +14,7 @@ namespace Grid2Visualizer
     //       since I can't chat with the remote side on a random task thread.
     public class Grid2DataProvider : NotifyPropertyChanged
     {
-        private readonly IVisualizerObjectProvider2 objectProvider;
+        private readonly IVisualizerObjectProvider3 objectProvider;
         private NotifyProperty<bool> isLoading;
         private NotifyProperty<Point2> bounds;
         private Grid2<RemoteValue> grid;
@@ -22,7 +22,7 @@ namespace Grid2Visualizer
         private Grid2<bool> tasks;
         private int runningTasks;
 
-        public Grid2DataProvider(IVisualizerObjectProvider2 objectProvider)
+        public Grid2DataProvider(IVisualizerObjectProvider3 objectProvider)
         {
             this.objectProvider = objectProvider;
             this.isLoading = new NotifyProperty<bool>(nameof(IsLoading), this);
@@ -42,7 +42,7 @@ namespace Grid2Visualizer
             this.isLoading.Value = true;
 
             // Fetch the bounds of the grid from the remote side
-            this.remoteGrid = (IGrid2)this.objectProvider.GetObject();
+            this.remoteGrid = this.objectProvider.GetObject<IGrid2>();
 
             // Create the grid of tasks which fetch chunks of data from the remote side
             Point2 bounds = this.remoteGrid.Bounds;

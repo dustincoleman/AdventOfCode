@@ -15,7 +15,7 @@ namespace Grid2Visualizer
         private NotifyProperty<IReadOnlyCollection<Grid2ColumnViewModel>> columns;
         private NotifyProperty<IReadOnlyCollection<Grid2RowViewModel>> rows;
 
-        public Grid2ViewModel(IVisualizerObjectProvider2 objectProvider)
+        public Grid2ViewModel(IVisualizerObjectProvider3 objectProvider)
         {
             IReadOnlyCollection<Grid2ColumnViewModel> initialColumns = new ReadOnlyCollection<Grid2ColumnViewModel>(new List<Grid2ColumnViewModel>());
             IReadOnlyCollection<Grid2RowViewModel> initialRows = new ReadOnlyCollection<Grid2RowViewModel>(new List<Grid2RowViewModel>());

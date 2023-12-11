@@ -17,6 +17,11 @@ namespace Grid2Visualizer
 {
     public class Grid2DialogVisualizer : DialogDebuggerVisualizer
     {
+        public Grid2DialogVisualizer()
+            : base(FormatterPolicy.NewtonsoftJson)
+        {
+        }
+
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
             IDialogVisualizerService modalService = windowService ?? throw new ApplicationException("This debugger does not support modal visualizers");
@@ -24,7 +29,7 @@ namespace Grid2Visualizer
 
             using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.PerMonitorAwareV2))
             {
-                Grid2VisualizerWindow window = new Grid2VisualizerWindow((IVisualizerObjectProvider2)objectProvider);
+                Grid2VisualizerWindow window = new Grid2VisualizerWindow((IVisualizerObjectProvider3)objectProvider);
 
                 window.SetOwner(parentWindow.Handle);
                 window.RemoveIcon();
