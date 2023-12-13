@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace AdventOfCode.Common
 {
-    public class Grid2Column<T> : IEnumerable<T>, IReadOnlyList<T>
+    public class Grid2Column<T> : IEnumerable<T>, IReadOnlyList<T>, IEquatable<Grid2Column<T>>
     {
         public Grid2Column(Grid2<T> grid, int index)
         {
@@ -43,6 +43,23 @@ namespace AdventOfCode.Common
             {
                 yield return Grid[Index, y];
             }
+        }
+
+        public bool Equals(Grid2Column<T> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            bool equal = Count.Equals(other.Count);
+
+            for (int y = 0; equal && y < Count; y++)
+            {
+                equal = EqualityComparer<T>.Default.Equals(this[y], other[y]);
+            }
+
+            return equal;
         }
     }
 

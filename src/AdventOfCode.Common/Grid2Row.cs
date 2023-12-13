@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AdventOfCode.Common
 {
-    public class Grid2Row<T> : IEnumerable<T>, IReadOnlyList<T>
+    public class Grid2Row<T> : IEnumerable<T>, IReadOnlyList<T>, IEquatable<Grid2Row<T>>
     {
         public Grid2Row(Grid2<T> grid, int index)
         {
@@ -42,6 +42,23 @@ namespace AdventOfCode.Common
             {
                 yield return Grid[x, Index];
             }
+        }
+
+        public bool Equals(Grid2Row<T> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            bool equal = Count.Equals(other.Count);
+
+            for (int x = 0; equal && x < Count; x++)
+            {
+                equal = EqualityComparer<T>.Default.Equals(this[x], other[x]);
+            }
+
+            return equal;
         }
     }
 
