@@ -2,6 +2,9 @@
 
 public class Day12
 {
+    private static Stack<int> stack = new Stack<int>();
+    Dictionary<string, long> cache = new Dictionary<string, long>();
+
     [Fact]
     public void Part1()
     {
@@ -10,6 +13,7 @@ public class Day12
 
         foreach (PuzzleLine line in puzzle)
         {
+            cache.Clear();
             answer += CountPossibleArrangements(line);
         }
 
@@ -24,10 +28,11 @@ public class Day12
 
         foreach (PuzzleLine line in puzzle)
         {
+            cache.Clear();
             answer += CountPossibleArrangements(Unfold(line));
         }
 
-        Assert.Equal(555, answer);
+        Assert.Equal(8475948826693, answer);
     }
 
     private PuzzleLine Unfold(PuzzleLine line)
@@ -67,8 +72,6 @@ public class Day12
         return CountCombinations(line, possibleOperationalGroups, totalOperational);
     }
 
-    private static Stack<int> stack = new Stack<int>();
-
     private long CountCombinations(PuzzleLine line, int possibleOperationalGroups, int totalOperational)
     {
         long count = 0;
@@ -91,12 +94,21 @@ public class Day12
             return;
         }
 
+        long countAtStart = count;
         bool allowZero = !stack.Any() || possibleOperationalGroups == 1;
         int maxForThisGroup = (totalOperational > 0) ? totalOperational - possibleOperationalGroups + 2 : 0;
 
         if (maxForThisGroup < 0 || (!allowZero && maxForThisGroup < 1))
         {
             throw new Exception("Unexpected");
+        }
+
+        string key = $"{possibleOperationalGroups},{totalOperational},{pos},{idx},{(allowZero ? '0' : '1')},{maxForThisGroup}";
+
+        if (cache.TryGetValue(key, out long value))
+        {
+            count += value;
+            return;
         }
 
         for (int i = allowZero ? 0 : 1; i <= maxForThisGroup; i++)
@@ -109,6 +121,9 @@ public class Day12
             }
             stack.Pop();
         }
+
+        long possibilities = count - countAtStart;
+        cache.Add(key, possibilities);
     }
 
     private bool IsMatching(PuzzleLine line, int i, ref int pos, ref int idx)
