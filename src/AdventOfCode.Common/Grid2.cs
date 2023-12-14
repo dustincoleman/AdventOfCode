@@ -28,6 +28,20 @@ namespace AdventOfCode.Common
             this.Bounds = bounds;
         }
 
+        public Grid2(Grid2<T> copyFrom)
+        {
+            this.grid = new T[copyFrom.Bounds.X, copyFrom.Bounds.Y]; 
+            this.Bounds = copyFrom.Bounds;
+            this.pointTransform = copyFrom.pointTransform;
+            this.valueTransform = copyFrom.valueTransform;
+            this.hashcode = copyFrom.hashcode;
+
+            foreach (Point2 point in copyFrom.Points)
+            {
+                this[point] = copyFrom[point];
+            }
+        }
+
         private Grid2(T[,] grid, Point2 bounds, Func<Point2, Point2> pointTransform, Func<T, T> valueTransform)
         {
             this.grid = grid;

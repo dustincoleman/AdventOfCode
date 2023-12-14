@@ -21,7 +21,11 @@ namespace AdventOfCode.Common
 
         public int Count => Grid.Bounds.Y;
 
-        public T this[int y] => Grid[Index, y];
+        public T this[int y]
+        {
+            get => Grid[Index, y];
+            set => Grid[Index, y] = value;
+        }
 
         public Point2 Point(int y) => new Point2(Index, y);
 
