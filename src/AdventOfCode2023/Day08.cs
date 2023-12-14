@@ -73,13 +73,7 @@ public class Day08
             }
         }
 
-        long l = counts.OrderDescending().First();
-        long answer = l;
-
-        while (!counts.All(count => answer % count == 0))
-        {
-            answer += l;
-        }
+        long answer = counts.LeastCommonMultiple();
 
         Assert.Equal(13385272668829, answer);
     }
