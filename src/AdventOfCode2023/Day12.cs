@@ -32,28 +32,10 @@ public class Day12
 
     private PuzzleLine Unfold(PuzzleLine line)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.Append(line.Chars);
-        sb.Append('?');
-        sb.Append(line.Chars);
-        sb.Append('?');
-        sb.Append(line.Chars);
-        sb.Append('?');
-        sb.Append(line.Chars);
-        sb.Append('?');
-        sb.Append(line.Chars);
-
-        List<int> list = new List<int>();
-        list.AddRange(line.Ints);
-        list.AddRange(line.Ints);
-        list.AddRange(line.Ints);
-        list.AddRange(line.Ints);
-        list.AddRange(line.Ints);
-
         return new PuzzleLine()
         {
-            Chars = sb.ToString(),
-            Ints = list.ToArray()
+            Pattern = string.Join("?", Enumerable.Repeat(line.Pattern, 5)),
+            DamagedGroupSizes = Enumerable.Repeat(line.DamagedGroupSizes, 5).Aggregate((x,y) => x.Concat(y).ToArray())
         };
     }
 
@@ -67,8 +49,8 @@ public class Day12
             list.Add(
                 new PuzzleLine()
                 {
-                    Chars = split[0],
-                    Ints = split[1].Split(',').Select(int.Parse).ToArray()
+                    Pattern = split[0],
+                    DamagedGroupSizes = split[1].Split(',').Select(int.Parse).ToArray()
                 });
         }
 
@@ -79,14 +61,14 @@ public class Day12
     {
         private Dictionary<Tuple<int, int>, long> cache = new Dictionary<Tuple<int, int>, long>();
 
-        public string Chars;
-        public int[] Ints;
+        public string Pattern;
+        public int[] DamagedGroupSizes;
 
         public long CountPossibleArrangements()
         {
             long count = 0;
-            int totalDamaged = Ints.Sum();
-            int totalOperational = Chars.Length - totalDamaged;
+            int totalDamaged = DamagedGroupSizes.Sum();
+            int totalOperational = Pattern.Length - totalDamaged;
 
             cache.Clear();
             CountPossibleArrangementsHelper(totalSpringsAdded: 0, operationalGroupsAdded: 0, remainingOperationalSprings: totalOperational, ref count);
@@ -96,7 +78,7 @@ public class Day12
 
         private void CountPossibleArrangementsHelper(int totalSpringsAdded, int operationalGroupsAdded, int remainingOperationalSprings, ref long count)
         {
-            int totalOperationalGroups = Ints.Length + 1; // First and last can be zero length
+            int totalOperationalGroups = DamagedGroupSizes.Length + 1; // First and last can be zero length
             int remainingOperationalGroups = totalOperationalGroups - operationalGroupsAdded;
 
             if (remainingOperationalGroups == 1)
@@ -125,7 +107,7 @@ public class Day12
                 return;
             }
 
-            int damagedToAdd = Ints[operationalGroupsAdded];
+            int damagedToAdd = DamagedGroupSizes[operationalGroupsAdded];
 
             for (int i = allowZero ? 0 : 1; i <= maxForThisGroup; i++)
             {
@@ -143,7 +125,7 @@ public class Day12
         {
             while (operationalToAdd-- > 0)
             {
-                char ch = Chars[pos++];
+                char ch = Pattern[pos++];
                 if (ch != '?' && ch != '.')
                 {
                     return false;
@@ -152,7 +134,7 @@ public class Day12
 
             while (damagedToAdd-- > 0)
             {
-                char ch = Chars[pos++];
+                char ch = Pattern[pos++];
                 if (ch != '?' && ch != '#')
                 {
                     return false;
