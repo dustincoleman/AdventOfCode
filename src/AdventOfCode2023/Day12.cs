@@ -2,9 +2,6 @@
 
 public class Day12
 {
-    private static Stack<int> stack = new Stack<int>();
-    Dictionary<string, long> cache = new Dictionary<string, long>();
-
     [Fact]
     public void Part1()
     {
@@ -13,8 +10,7 @@ public class Day12
 
         foreach (PuzzleLine line in puzzle)
         {
-            cache.Clear();
-            answer += CountPossibleArrangements(line);
+            answer += line.CountPossibleArrangements();
         }
 
         Assert.Equal(6852, answer);
@@ -28,8 +24,7 @@ public class Day12
 
         foreach (PuzzleLine line in puzzle)
         {
-            cache.Clear();
-            answer += CountPossibleArrangements(Unfold(line));
+            answer += Unfold(line).CountPossibleArrangements();
         }
 
         Assert.Equal(8475948826693, answer);
@@ -62,100 +57,6 @@ public class Day12
         };
     }
 
-    private long CountPossibleArrangements(PuzzleLine line)
-    {
-        int damagedGroups = line.Ints.Length;
-        int possibleOperationalGroups = damagedGroups + 1;
-        int totalDamaged = line.Ints.Sum();
-        int totalOperational = line.Chars.Length - totalDamaged;
-
-        return CountCombinations(line, possibleOperationalGroups, totalOperational);
-    }
-
-    private long CountCombinations(PuzzleLine line, int possibleOperationalGroups, int totalOperational)
-    {
-        long count = 0;
-        stack.Clear();
-        CountCombinationsHelper(line, possibleOperationalGroups, totalOperational, stack, ref count, 0, 0);
-        return count;
-    }
-
-    private void CountCombinationsHelper(PuzzleLine line, int possibleOperationalGroups, int totalOperational, Stack<int> stack, ref long count, int pos, int idx)
-    {
-        if (possibleOperationalGroups == 1)
-        {
-            int tempPos = pos, tempIdx = idx;
-            stack.Push(totalOperational);
-            if (IsMatching(line, totalOperational, ref tempPos, ref tempIdx))
-            {
-                count++;
-            }
-            stack.Pop();
-            return;
-        }
-
-        long countAtStart = count;
-        bool allowZero = !stack.Any() || possibleOperationalGroups == 1;
-        int maxForThisGroup = (totalOperational > 0) ? totalOperational - possibleOperationalGroups + 2 : 0;
-
-        if (maxForThisGroup < 0 || (!allowZero && maxForThisGroup < 1))
-        {
-            throw new Exception("Unexpected");
-        }
-
-        string key = $"{possibleOperationalGroups},{totalOperational},{pos},{idx},{(allowZero ? '0' : '1')},{maxForThisGroup}";
-
-        if (cache.TryGetValue(key, out long value))
-        {
-            count += value;
-            return;
-        }
-
-        for (int i = allowZero ? 0 : 1; i <= maxForThisGroup; i++)
-        {
-            int tempPos = pos, tempIdx = idx;
-            stack.Push(i);
-            if (IsMatching(line, i, ref tempPos, ref tempIdx))
-            {
-                CountCombinationsHelper(line, possibleOperationalGroups - 1, totalOperational - i, stack, ref count, tempPos, tempIdx);
-            }
-            stack.Pop();
-        }
-
-        long possibilities = count - countAtStart;
-        cache.Add(key, possibilities);
-    }
-
-    private bool IsMatching(PuzzleLine line, int i, ref int pos, ref int idx)
-    {
-        string pattern = line.Chars;
-
-        for (int j = 0; j < i; j++)
-        {
-            char ch = pattern[pos++];
-            if (ch != '?' && ch != '.')
-            {
-                return false;
-            }
-        }
-
-        if (idx < line.Ints.Length)
-        {
-            for (int k = 0; k < line.Ints[idx]; k++)
-            {
-                char ch = pattern[pos++];
-                if (ch != '?' && ch != '#')
-                {
-                    return false;
-                }
-            }
-
-            idx++;
-        }
-
-        return true;
-    }
-
     private List<PuzzleLine> LoadPuzzle()
     {
         List<PuzzleLine> list = new List<PuzzleLine>();
@@ -176,7 +77,89 @@ public class Day12
 
     private class PuzzleLine
     {
+        private Dictionary<Tuple<int, int>, long> cache = new Dictionary<Tuple<int, int>, long>();
+
         public string Chars;
         public int[] Ints;
+
+        public long CountPossibleArrangements()
+        {
+            long count = 0;
+            int totalDamaged = Ints.Sum();
+            int totalOperational = Chars.Length - totalDamaged;
+
+            cache.Clear();
+            CountPossibleArrangementsHelper(totalSpringsAdded: 0, operationalGroupsAdded: 0, remainingOperationalSprings: totalOperational, ref count);
+
+            return count;
+        }
+
+        private void CountPossibleArrangementsHelper(int totalSpringsAdded, int operationalGroupsAdded, int remainingOperationalSprings, ref long count)
+        {
+            int totalOperationalGroups = Ints.Length + 1; // First and last can be zero length
+            int remainingOperationalGroups = totalOperationalGroups - operationalGroupsAdded;
+
+            if (remainingOperationalGroups == 1)
+            {
+                if (IsMatching(operationalToAdd: remainingOperationalSprings, damagedToAdd: 0, totalSpringsAdded))
+                {
+                    count++;
+                }
+                return;
+            }
+
+            long countAtStart = count;
+            bool allowZero = (operationalGroupsAdded == 0);
+            int maxForThisGroup = remainingOperationalSprings - remainingOperationalGroups + 2;
+
+            if (maxForThisGroup < 0 || (!allowZero && maxForThisGroup < 1))
+            {
+                throw new Exception("Unexpected");
+            }
+
+            Tuple<int, int> key = new Tuple<int, int>(totalSpringsAdded, remainingOperationalGroups);
+
+            if (cache.TryGetValue(key, out long value))
+            {
+                count += value;
+                return;
+            }
+
+            int damagedToAdd = Ints[operationalGroupsAdded];
+
+            for (int i = allowZero ? 0 : 1; i <= maxForThisGroup; i++)
+            {
+                if (IsMatching(operationalToAdd: i, damagedToAdd, totalSpringsAdded))
+                {
+                    CountPossibleArrangementsHelper(totalSpringsAdded + i + damagedToAdd, operationalGroupsAdded + 1, remainingOperationalSprings - i, ref count);
+                }
+            }
+
+            long possibilities = count - countAtStart;
+            cache.Add(key, possibilities);
+        }
+
+        private bool IsMatching(int operationalToAdd, int damagedToAdd, int pos)
+        {
+            while (operationalToAdd-- > 0)
+            {
+                char ch = Chars[pos++];
+                if (ch != '?' && ch != '.')
+                {
+                    return false;
+                }
+            }
+
+            while (damagedToAdd-- > 0)
+            {
+                char ch = Chars[pos++];
+                if (ch != '?' && ch != '#')
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }
