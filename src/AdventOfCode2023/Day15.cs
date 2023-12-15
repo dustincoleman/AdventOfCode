@@ -21,24 +21,20 @@ public class Day15
 
         foreach (string step in File.ReadAllText("Day15.txt").Split(','))
         {
-            string label;
-            int boxIndex;
+            string[] split = step.Split('-', '=');
 
-            if (step.EndsWith('-'))
+            string label = split[0];
+            int boxIndex = Hash(label);
+
+            if (split[1] == string.Empty)
             {
-                label = step.Substring(0, step.Length - 1);
-                boxIndex = Hash(label);
                 boxes[boxIndex].RemoveAll(l => l.Label == label);
             }
             else
             {
-                string[] split = step.Split('=');
-                label = split[0];
-                boxIndex = Hash(label);
-
-                int lensIndex = boxes[boxIndex].FindIndex(l => l.Label == label);
                 int focalLength = int.Parse(split[1]);
-
+                int lensIndex = boxes[boxIndex].FindIndex(l => l.Label == label);
+                
                 if (lensIndex >= 0)
                 {
                     boxes[boxIndex][lensIndex].FocalLength = focalLength;
