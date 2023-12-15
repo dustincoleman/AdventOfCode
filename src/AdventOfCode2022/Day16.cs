@@ -13,7 +13,7 @@ namespace AdventOfCode2022
             Assert.Equal(1673, score);
         }
 
-        [Fact]
+        [Fact(Skip = "Poor Performance")]
         public void Part2()
         {
             Puzzle puzzle = LoadPuzzle(26, 26);

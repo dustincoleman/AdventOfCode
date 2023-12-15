@@ -1,35 +1,31 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Numerics;
 
 namespace AdventOfCode.Common
 {
-    public struct Point2 : IEquatable<Point2>
+    public struct Point2<T> : IEquatable<Point2<T>> where T : INumber<T>
     {
-        public static readonly Point2 Zero = new Point2(0, 0);
-        public static readonly Point2 UnitX = new Point2(1, 0);
-        public static readonly Point2 UnitY = new Point2(0, 1);
+        public static readonly Point2<T> Zero = new Point2<T>(T.Zero, T.Zero);
+        public static readonly Point2<T> UnitX = new Point2<T>(T.One, T.Zero);
+        public static readonly Point2<T> UnitY = new Point2<T>(T.Zero, T.One);
 
-        public readonly int X;
-        public readonly int Y;
+        public readonly T X;
+        public readonly T Y;
 
-        public Point2(int x, int y)
+        public Point2(T x, T y)
         {
             X = x;
             Y = y;
         }
 
-        public static Point2 Parse(string input)
+        public static Point2<T> Parse(string input)
         {
             string[] parts = input.Split(',');
-            return new Point2(int.Parse(parts[0]), int.Parse(parts[1]));
+            return new Point2<T>(T.Parse(parts[0], provider: null), T.Parse(parts[1], provider: null));
         }
 
-        public static IEnumerable<Point2> Line(Point2 left, Point2 right)
+        public static IEnumerable<Point2<T>> Line(Point2<T> left, Point2<T> right)
         {
-            Point2 step;
+            Point2<T> step;
 
             if (left.X == right.X)
             {
@@ -67,31 +63,31 @@ namespace AdventOfCode.Common
             }
         }
 
-        public static IEnumerable<Point2> Quadrant(Point2 bounds)
+        public static IEnumerable<Point2<T>> Quadrant(Point2<T> bounds)
         {
-            int xSign = (bounds.X >= 0) ? 1 : -1;
-            int ySign = (bounds.Y >= 0) ? 1 : -1;
+            T xSign = (bounds.X >= T.Zero) ? T.One : -T.One;
+            T ySign = (bounds.Y >= T.Zero) ? T.One : -T.One;
 
-            for (int y = 0; y < bounds.Y; y++)
+            for (T y = T.Zero; y < bounds.Y; y++)
             {
-                for (int x = 0; x < bounds.X; x++)
+                for (T x = T.Zero; x < bounds.X; x++)
                 {
-                    yield return new Point2(x * xSign, y * ySign);
+                    yield return new Point2<T>(x * xSign, y * ySign);
                 }
             }
         }
 
-        public static Point2 Min(Point2 left, Point2 right)
+        public static Point2<T> Min(Point2<T> left, Point2<T> right)
         {
-            return new Point2(Math.Min(left.X, right.X), Math.Min(left.Y, right.Y));
+            return new Point2<T>(T.Min(left.X, right.X), T.Min(left.Y, right.Y));
         }
 
-        public static Point2 Max(Point2 left, Point2 right)
+        public static Point2<T> Max(Point2<T> left, Point2<T> right)
         {
-            return new Point2(Math.Max(left.X, right.X), Math.Max(left.Y, right.Y));
+            return new Point2<T>(T.Max(left.X, right.X), T.Max(left.Y, right.Y));
         }
 
-        public IEnumerable<Point2> Adjacent()
+        public IEnumerable<Point2<T>> Adjacent()
         {
             yield return this - UnitX;
             yield return this - UnitY;
@@ -99,15 +95,15 @@ namespace AdventOfCode.Common
             yield return this + UnitY;
         }
 
-        public IEnumerable<Point2> Adjacent(Point2 bounds)
+        public IEnumerable<Point2<T>> Adjacent(Point2<T> bounds)
         {
-            if (X > 0) yield return this - UnitX;
-            if (Y > 0) yield return this - UnitY;
-            if (X < bounds.X - 1) yield return this + UnitX;
-            if (Y < bounds.Y - 1) yield return this + UnitY;
+            if (X > T.Zero) yield return this - UnitX;
+            if (Y > T.Zero) yield return this - UnitY;
+            if (X < bounds.X - T.One) yield return this + UnitX;
+            if (Y < bounds.Y - T.One) yield return this + UnitY;
         }
 
-        public IEnumerable<Point2> Surrounding()
+        public IEnumerable<Point2<T>> Surrounding()
         {
             yield return this - UnitY - UnitX; // Top Left
             yield return this - UnitY; // Top
@@ -119,56 +115,56 @@ namespace AdventOfCode.Common
             yield return this - UnitX; // Left
         }
 
-        public IEnumerable<Point2> Surrounding(Point2 bounds)
+        public IEnumerable<Point2<T>> Surrounding(Point2<T> bounds)
         {
-            if (Y > 0)
+            if (Y > T.Zero)
             {
-                if (X > 0) yield return this - UnitY - UnitX; // Top Left
+                if (X > T.Zero) yield return this - UnitY - UnitX; // Top Left
                 yield return this - UnitY; // Top
-                if (X < bounds.X - 1) yield return this - UnitY + UnitX; // Top Right
+                if (X < bounds.X - T.One) yield return this - UnitY + UnitX; // Top Right
             }
-            if (X < bounds.X - 1) yield return this + UnitX; // Right
-            if (Y < bounds.Y - 1)
+            if (X < bounds.X - T.One) yield return this + UnitX; // Right
+            if (Y < bounds.Y - T.One)
             {
-                if (X < bounds.X - 1) yield return this + UnitY + UnitX; // Bottom Right
+                if (X < bounds.X - T.One) yield return this + UnitY + UnitX; // Bottom Right
                 yield return this + UnitY; // Bottom
-                if (X > 0) yield return this + UnitY - UnitX; // Bottom Left
+                if (X > T.Zero) yield return this + UnitY - UnitX; // Bottom Left
 
             }
-            if (X > 0) yield return this - UnitX; // Left
+            if (X > T.Zero) yield return this - UnitX; // Left
         }
 
-        public Point2 Sign() => new Point2(Math.Sign(X), Math.Sign(Y));
+        public Point2 Sign() => new Point2(T.Sign(X), T.Sign(Y));
 
-        public int Manhattan() => Math.Abs(X) + Math.Abs(Y);
+        public T Manhattan() => T.Abs(X) + T.Abs(Y);
 
-        public bool Equals(Point2 other) => (this == other);
+        public bool Equals(Point2<T> other) => (this == other);
 
-        public override bool Equals(object obj) => (obj is Point2 other && this.Equals(other));
+        public override bool Equals(object obj) => (obj is Point2<T> other && this.Equals(other));
 
         public override int GetHashCode() => HashCode.Combine(X, Y);
 
-        public int Sum() => X + Y;
-        public int Product() => X * Y;
+        public T Sum() => X + Y;
+        public T Product() => X * Y;
 
-        public static Point2 operator +(Point2 p) => p;
-        public static Point2 operator -(Point2 p) => new Point2(-p.X, -p.Y);
-        public static Point2 operator ~(Point2 p) => new Point2(p.Y, p.X);
-        public static Point2 operator +(Point2 p, int i) => new Point2(p.X + i, p.Y + i);
-        public static Point2 operator +(Point2 left, Point2 right) => new Point2(left.X + right.X, left.Y + right.Y);
-        public static Point2 operator -(Point2 p, int i) => new Point2(p.X - i, p.Y - i);
-        public static Point2 operator -(Point2 left, Point2 right) => new Point2(left.X - right.X, left.Y - right.Y);
-        public static Point2 operator *(Point2 p, int i) => new Point2(p.X * i, p.Y * i);
-        public static Point2 operator *(Point2 left, Point2 right) => new Point2(left.X * right.X, left.Y * right.Y);
-        public static Point2 operator /(Point2 p, int i) => new Point2(p.X / i, p.Y / i);
-        public static Point2 operator /(Point2 left, Point2 right) => new Point2(left.X / right.X, left.Y / right.Y);
-        public static Point2 operator %(Point2 p, int i) => new Point2(p.X % i, p.Y % i);
-        public static Point2 operator %(Point2 left, Point2 right) => new Point2(left.X % right.X, left.Y % right.Y);
-        public static bool operator ==(Point2 left, Point2 right) => (left.X == right.X && left.Y == right.Y);
-        public static bool operator !=(Point2 left, Point2 right) => !(left == right);
-        public static bool operator <(Point2 left, Point2 right) => (left.X < right.X && left.Y < right.Y);
-        public static bool operator >(Point2 left, Point2 right) => (left.X > right.X && left.Y > right.Y);
-        public static bool operator <=(Point2 left, Point2 right) => (left.X <= right.X && left.Y <= right.Y);
-        public static bool operator >=(Point2 left, Point2 right) => (left.X >= right.X && left.Y >= right.Y);
+        public static Point2<T> operator +(Point2<T> p) => p;
+        public static Point2<T> operator -(Point2<T> p) => new Point2<T>(-p.X, -p.Y);
+        public static Point2<T> operator ~(Point2<T> p) => new Point2<T>(p.Y, p.X);
+        public static Point2<T> operator +(Point2<T> p, T i) => new Point2<T>(p.X + i, p.Y + i);
+        public static Point2<T> operator +(Point2<T> left, Point2<T> right) => new Point2<T>(left.X + right.X, left.Y + right.Y);
+        public static Point2<T> operator -(Point2<T> p, T i) => new Point2<T>(p.X - i, p.Y - i);
+        public static Point2<T> operator -(Point2<T> left, Point2<T> right) => new Point2<T>(left.X - right.X, left.Y - right.Y);
+        public static Point2<T> operator *(Point2<T> p, T i) => new Point2<T>(p.X * i, p.Y * i);
+        public static Point2<T> operator *(Point2<T> left, Point2<T> right) => new Point2<T>(left.X * right.X, left.Y * right.Y);
+        public static Point2<T> operator /(Point2<T> p, T i) => new Point2<T>(p.X / i, p.Y / i);
+        public static Point2<T> operator /(Point2<T> left, Point2<T> right) => new Point2<T>(left.X / right.X, left.Y / right.Y);
+        public static Point2<T> operator %(Point2<T> p, T i) => new Point2<T>(p.X % i, p.Y % i);
+        public static Point2<T> operator %(Point2<T> left, Point2<T> right) => new Point2<T>(left.X % right.X, left.Y % right.Y);
+        public static bool operator ==(Point2<T> left, Point2<T> right) => (left.X == right.X && left.Y == right.Y);
+        public static bool operator !=(Point2<T> left, Point2<T> right) => !(left == right);
+        public static bool operator <(Point2<T> left, Point2<T> right) => (left.X < right.X && left.Y < right.Y);
+        public static bool operator >(Point2<T> left, Point2<T> right) => (left.X > right.X && left.Y > right.Y);
+        public static bool operator <=(Point2<T> left, Point2<T> right) => (left.X <= right.X && left.Y <= right.Y);
+        public static bool operator >=(Point2<T> left, Point2<T> right) => (left.X >= right.X && left.Y >= right.Y);
     }
 }
