@@ -37,24 +37,20 @@ namespace AdventOfCode.Common
             return groups.ToArray();
         }
 
-        public static Grid2<char> ReadAsGrid(string filename)
-        {
-            return ReadLinesAsGrid(File.ReadAllLines(filename));
-        }
+        public static Grid2<char> ReadAsGrid(string filename) => ReadLinesAsGrid(File.ReadAllLines(filename));
+        public static Grid2<T> ReadAsGrid<T>(string filename, Func<char, T> parser) => ReadLinesAsGrid(File.ReadAllLines(filename), parser);
+        public static List<Grid2<char>> ReadLineGroupsAsGrids(string filename) => ReadAllLineGroups(filename).Select(ReadLinesAsGrid).ToList();
+        public static List<Grid2<T>> ReadLineGroupsAsGrids<T>(string filename, Func<char, T> parser) => ReadAllLineGroups(filename).Select(lines => ReadLinesAsGrid(lines, parser)).ToList();
+        public static Grid2<char> ReadLinesAsGrid(string[] lines) => ReadLinesAsGrid(lines, ch => ch);
 
-        public static List<Grid2<char>> ReadLineGroupsAsGrids(string filename)
-        {
-            return ReadAllLineGroups(filename).Select(ReadLinesAsGrid).ToList();
-        }
-
-        public static Grid2<char> ReadLinesAsGrid(string[] lines)
+        public static Grid2<T> ReadLinesAsGrid<T>(string[] lines, Func<char, T> parser)
         {
             Point2 bounds = new Point2(lines[0].Length, lines.Length);
-            Grid2<char> grid = new Grid2<char>(bounds);
+            Grid2<T> grid = new Grid2<T>(bounds);
 
             foreach (Point2 p in Point2.Quadrant(bounds))
             {
-                grid[p] = lines[p.Y][p.X];
+                grid[p] = parser(lines[p.Y][p.X]);
             }
 
             return grid;
