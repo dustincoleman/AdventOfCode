@@ -79,9 +79,9 @@ public class Day12
         private void CountPossibleArrangementsHelper(int totalSpringsAdded, int operationalGroupsAdded, int remainingOperationalSprings, ref long count)
         {
             int totalOperationalGroups = DamagedGroupSizes.Length + 1; // First and last can be zero length
-            int remainingOperationalGroups = totalOperationalGroups - operationalGroupsAdded;
+            int remainingOperationalGroups = totalOperationalGroups - operationalGroupsAdded - 1;
 
-            if (remainingOperationalGroups == 1)
+            if (remainingOperationalGroups == 0)
             {
                 if (IsMatching(operationalToAdd: remainingOperationalSprings, damagedToAdd: 0, totalSpringsAdded))
                 {
@@ -91,14 +91,6 @@ public class Day12
             }
 
             long countAtStart = count;
-            bool allowZero = (operationalGroupsAdded == 0);
-            int maxForThisGroup = remainingOperationalSprings - remainingOperationalGroups + 2;
-
-            if (maxForThisGroup < 0 || (!allowZero && maxForThisGroup < 1))
-            {
-                throw new Exception("Unexpected");
-            }
-
             Tuple<int, int> key = new Tuple<int, int>(totalSpringsAdded, remainingOperationalGroups);
 
             if (cache.TryGetValue(key, out long value))
@@ -107,13 +99,15 @@ public class Day12
                 return;
             }
 
-            int damagedToAdd = DamagedGroupSizes[operationalGroupsAdded];
+            int minOperationalSpringsToAdd = (operationalGroupsAdded == 0) ? 0 : 1; // First group can be zero length
+            int maxOperationalSpringsToAdd = remainingOperationalSprings - remainingOperationalGroups + 1; // Last group can be zero length
+            int damagedSpringsToAdd = DamagedGroupSizes[operationalGroupsAdded];
 
-            for (int i = allowZero ? 0 : 1; i <= maxForThisGroup; i++)
+            for (int i = minOperationalSpringsToAdd; i <= maxOperationalSpringsToAdd; i++)
             {
-                if (IsMatching(operationalToAdd: i, damagedToAdd, totalSpringsAdded))
+                if (IsMatching(operationalToAdd: i, damagedSpringsToAdd, totalSpringsAdded))
                 {
-                    CountPossibleArrangementsHelper(totalSpringsAdded + i + damagedToAdd, operationalGroupsAdded + 1, remainingOperationalSprings - i, ref count);
+                    CountPossibleArrangementsHelper(totalSpringsAdded + i + damagedSpringsToAdd, operationalGroupsAdded + 1, remainingOperationalSprings - i, ref count);
                 }
             }
 
