@@ -151,18 +151,26 @@ namespace AdventOfCode.Common
         public Point2<U> As<U>() where U : INumber<U> => new Point2<U>(U.CreateChecked(X), U.CreateChecked(Y));
 
         public static Point2<T> operator +(Point2<T> p) => p;
-        public static Point2<T> operator -(Point2<T> p) => new Point2<T>(-p.X, -p.Y);
-        public static Point2<T> operator ~(Point2<T> p) => new Point2<T>(p.Y, p.X);
         public static Point2<T> operator +(Point2<T> p, T i) => new Point2<T>(p.X + i, p.Y + i);
+        public static Point2<T> operator +(Point2<T> p, Direction d) => p + d.Unit.As<T>();
         public static Point2<T> operator +(Point2<T> left, Point2<T> right) => new Point2<T>(left.X + right.X, left.Y + right.Y);
+
+        public static Point2<T> operator -(Point2<T> p) => new Point2<T>(-p.X, -p.Y);
         public static Point2<T> operator -(Point2<T> p, T i) => new Point2<T>(p.X - i, p.Y - i);
+        public static Point2<T> operator -(Point2<T> p, Direction d) => p - d.Unit.As<T>();
         public static Point2<T> operator -(Point2<T> left, Point2<T> right) => new Point2<T>(left.X - right.X, left.Y - right.Y);
+
         public static Point2<T> operator *(Point2<T> p, T i) => new Point2<T>(p.X * i, p.Y * i);
         public static Point2<T> operator *(Point2<T> left, Point2<T> right) => new Point2<T>(left.X * right.X, left.Y * right.Y);
+
         public static Point2<T> operator /(Point2<T> p, T i) => new Point2<T>(p.X / i, p.Y / i);
         public static Point2<T> operator /(Point2<T> left, Point2<T> right) => new Point2<T>(left.X / right.X, left.Y / right.Y);
+
         public static Point2<T> operator %(Point2<T> p, T i) => new Point2<T>(p.X % i, p.Y % i);
         public static Point2<T> operator %(Point2<T> left, Point2<T> right) => new Point2<T>(left.X % right.X, left.Y % right.Y);
+
+        public static Point2<T> operator ~(Point2<T> p) => new Point2<T>(p.Y, p.X);
+
         public static bool operator ==(Point2<T> left, Point2<T> right) => (left.X == right.X && left.Y == right.Y);
         public static bool operator !=(Point2<T> left, Point2<T> right) => !(left == right);
         public static bool operator <(Point2<T> left, Point2<T> right) => (left.X < right.X && left.Y < right.Y);

@@ -46,143 +46,94 @@ public class Day16
     {
         foreach (Cell cell in puzzle)
         {
-            cell.EntryDirections = Direction.None;
+            cell.EntryDirections.Clear();
         }
 
         Reflect(puzzle, entryPoint, entryDirection);
 
-        int answer = puzzle.Count(cell => cell.EntryDirections != Direction.None);
+        int answer = puzzle.Count(cell => cell.EntryDirections.Any());
         return answer;
     }
 
-    private void Reflect(Grid2<Cell> puzzle, Point2 entryPoint, Direction entryDirection)
+    private void Reflect(Grid2<Cell> puzzle, Point2 startingPoint, Direction startingDirection)
     {
-        if (!puzzle.InBounds(entryPoint))
+        Queue<(Point2, Direction)> queue = new Queue<(Point2<int>, Direction)>();
+        queue.Enqueue((startingPoint, startingDirection));
+
+        while (queue.Any())
         {
-            return;
+            (Point2 point, Direction direction) = queue.Dequeue();
+
+            if (!puzzle.InBounds(point))
+            {
+                continue;
+            }
+
+            Cell cell = puzzle[point];
+
+            if (!cell.EntryDirections.Add(direction))
+            {
+                continue;
+            }
+
+            switch (cell.Type)
+            {
+                case '.':
+                    queue.Enqueue(Next(point, direction));
+                    break;
+                case '/':
+                    if (direction.IsNorthOrSouth())
+                    {
+                        queue.Enqueue(Next(point, direction.TurnRight()));
+                    }
+                    else
+                    {
+                        queue.Enqueue(Next(point, direction.TurnLeft()));
+                    }
+                    break;
+                case '\\':
+                    if (direction.IsNorthOrSouth())
+                    {
+                        queue.Enqueue(Next(point, direction.TurnLeft()));
+                    }
+                    else
+                    {
+                        queue.Enqueue(Next(point, direction.TurnRight()));
+                    }
+                    break;
+                case '|':
+                    if (direction.IsNorthOrSouth())
+                    {
+                        queue.Enqueue(Next(point, direction));
+                    }
+                    else
+                    {
+                        queue.Enqueue(Next(point, direction.TurnLeft()));
+                        queue.Enqueue(Next(point, direction.TurnRight()));
+                    }
+                    break;
+                case '-':
+                    if (direction.IsNorthOrSouth())
+                    {
+                        queue.Enqueue(Next(point, direction.TurnLeft()));
+                        queue.Enqueue(Next(point, direction.TurnRight()));
+                    }
+                    else
+                    {
+                        queue.Enqueue(Next(point, direction));
+                    }
+                    break;
+                default:
+                    throw new Exception("Unknown Cell Type");
+            }
         }
-
-        Cell cell = puzzle[entryPoint];
-
-        if (cell.EntryDirections.HasFlag(entryDirection))
-        {
-            return;
-        }
-
-        cell.EntryDirections |= entryDirection;
-
-        switch (cell.Type)
-        {
-            case '.':
-                ReflectStraight(puzzle, entryPoint, entryDirection);
-                break;
-            case '/':
-                if (entryDirection is Direction.North or Direction.South)
-                {
-                    ReflectRight(puzzle, entryPoint, entryDirection);
-                }
-                else
-                {
-                    ReflectLeft(puzzle, entryPoint, entryDirection);
-                }
-                break;
-            case '\\':
-                if (entryDirection is Direction.North or Direction.South)
-                {
-                    ReflectLeft(puzzle, entryPoint, entryDirection);
-                }
-                else
-                {
-                    ReflectRight(puzzle, entryPoint, entryDirection);
-                }
-                break;
-            case '|':
-                if (entryDirection is Direction.North or Direction.South)
-                {
-                    ReflectStraight(puzzle, entryPoint, entryDirection);
-                }
-                else
-                {
-                    ReflectLeft(puzzle, entryPoint, entryDirection);
-                    ReflectRight(puzzle, entryPoint, entryDirection);
-                }
-                break;
-            case '-':
-                if (entryDirection is Direction.North or Direction.South)
-                {
-                    ReflectLeft(puzzle, entryPoint, entryDirection);
-                    ReflectRight(puzzle, entryPoint, entryDirection);
-                }
-                else
-                {
-                    ReflectStraight(puzzle, entryPoint, entryDirection);
-                }
-                break;
-            default:
-                throw new Exception("Unknown Cell Type");
-        }
     }
 
-    private void ReflectStraight(Grid2<Cell> puzzle, Point2 entryPoint, Direction entryDirection)
-    {
-        Reflect(puzzle, Next(entryPoint, entryDirection), entryDirection);
-    }
-
-    private void ReflectLeft(Grid2<Cell> puzzle, Point2 entryPoint, Direction entryDirection)
-    {
-        Direction direction = TurnLeft(entryDirection);
-        Reflect(puzzle, Next(entryPoint, direction), direction);
-    }
-
-    private void ReflectRight(Grid2<Cell> puzzle, Point2 entryPoint, Direction entryDirection)
-    {
-        Direction direction = TurnRight(entryDirection);
-        Reflect(puzzle, Next(entryPoint, direction), direction);
-    }
-
-    private Point2 Next(Point2 point, Direction direction)
-    {
-        return point + direction switch
-        {
-            Direction.North => -Point2.UnitY,
-            Direction.South => Point2.UnitY,
-            Direction.West => -Point2.UnitX,
-            Direction.East => Point2.UnitX,
-            _ => throw new Exception("No Direction")
-        };
-    }
-
-    private Direction TurnLeft(Direction direction) => direction switch
-    {
-        Direction.North => Direction.West,
-        Direction.South => Direction.East,
-        Direction.West => Direction.South,
-        Direction.East => Direction.North,
-        _ => throw new Exception("No Direction")
-    };
-
-    private Direction TurnRight(Direction direction) => direction switch
-    {
-        Direction.North => Direction.East,
-        Direction.South => Direction.West,
-        Direction.West => Direction.North,
-        Direction.East => Direction.South,
-        _ => throw new Exception("No Direction")
-    };
+    private (Point2, Direction) Next(Point2 point, Direction direction) => (point + direction, direction);
 
     private class Cell
     {
         public char Type;
-        public Direction EntryDirections;
-    }
-
-    [Flags]
-    private enum Direction
-    {
-        None = 0,
-        North = 1,
-        South = 2,
-        East = 4,
-        West = 8
+        public HashSet<Direction> EntryDirections = new HashSet<Direction>();
     }
 }
