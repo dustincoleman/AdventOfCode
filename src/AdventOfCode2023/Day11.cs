@@ -61,7 +61,7 @@ public class Day11
             if (puzzle[point] == '#')
             {
                 Point2<long> offset = new Point2<long>(emptyColumns.Count(x => x < point.X), emptyRows.Count(y => y < point.Y)) * (expansion - 1);
-                list.Add(new Point2<long>(point.X, point.Y) + offset);
+                list.Add(point.As<long>() + offset);
             }
         }
 
