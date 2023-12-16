@@ -18,7 +18,7 @@ public class Day11
 
     private long RunPuzzle(long expansion)
     {
-        List<Point2Big> puzzle = LoadPuzzle(expansion);
+        List<Point2<long>> puzzle = LoadPuzzle(expansion);
         long answer = 0;
 
         for (int i = 0; i < puzzle.Count; i++)
@@ -32,9 +32,9 @@ public class Day11
         return answer;
     }
 
-    private List<Point2Big> LoadPuzzle(long expansion)
+    private List<Point2<long>> LoadPuzzle(long expansion)
     {
-        List<Point2Big> list = new List<Point2Big>();
+        List<Point2<long>> list = new List<Point2<long>>();
         Grid2<char> puzzle = PuzzleFile.ReadAsGrid("Day11.txt");
 
         List<int> emptyRows = new List<int>();
@@ -60,8 +60,8 @@ public class Day11
         {
             if (puzzle[point] == '#')
             {
-                Point2Big offset = new Point2Big(emptyColumns.Count(x => x < point.X), emptyRows.Count(y => y < point.Y)) * (expansion - 1);
-                list.Add(new Point2Big(point.X, point.Y) + offset);
+                Point2<long> offset = new Point2<long>(emptyColumns.Count(x => x < point.X), emptyRows.Count(y => y < point.Y)) * (expansion - 1);
+                list.Add(new Point2<long>(point.X, point.Y) + offset);
             }
         }
 
