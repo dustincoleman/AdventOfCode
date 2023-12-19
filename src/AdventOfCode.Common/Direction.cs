@@ -19,8 +19,8 @@ namespace AdventOfCode.Common
         public static readonly Direction Left = West;
         public static readonly Direction Right = East;
 
-        internal readonly Point2 Unit;
-        internal readonly string Name;
+        public readonly Point2 Unit;
+        public readonly string Name;
 
         private Direction(Point2 unit, string name)
         {
@@ -111,5 +111,14 @@ namespace AdventOfCode.Common
         {
             return Name;
         }
+
+        public static Direction Parse(string str) => str.ToLower() switch
+        {
+            "n" or "north" or "u" or "up" => North,
+            "s" or "south" or "d" or "down" => South,
+            "w" or "west" or "l" or "left" => West,
+            "e" or "east" or "r" or "right" => East,
+            _ => throw new ArgumentException("Unknown Direction")
+        };
     }
 }
