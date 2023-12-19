@@ -153,6 +153,17 @@ namespace AdventOfCode.Common
 
         public IEnumerable<Point2> SurroundingPoints(Point2 point) => point.Surrounding(Bounds);
 
+        public IEnumerable<Direction> DirectionsInBounds(Point2 point)
+        {
+            foreach (Direction direction in Direction.All())
+            {
+                if (InBounds(point + direction))
+                {
+                    yield return direction;
+                }
+            }
+        }
+
         public IEnumerable<T> TraverseLeft(Point2 point)
         {
             int x = point.X;

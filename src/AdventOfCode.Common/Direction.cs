@@ -28,6 +28,14 @@ namespace AdventOfCode.Common
             Name = name;
         }
 
+        public static IEnumerable<Direction> All()
+        {
+            yield return North;
+            yield return East;
+            yield return South;
+            yield return West;
+        }
+
         public Direction TurnLeft()
         {
             if (this == North)
@@ -67,6 +75,28 @@ namespace AdventOfCode.Common
             if (this == East)
             {
                 return South;
+            }
+
+            throw new Exception("Unknown Direction");
+        }
+
+        public Direction Reverse()
+        {
+            if (this == North)
+            {
+                return South;
+            }
+            if (this == South)
+            {
+                return North;
+            }
+            if (this == West)
+            {
+                return East;
+            }
+            if (this == East)
+            {
+                return West;
             }
 
             throw new Exception("Unknown Direction");
