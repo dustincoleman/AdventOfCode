@@ -10,23 +10,16 @@ public class Day20
     {
         Dictionary<string, Module> modulesByName = LoadPuzzle();
         Queue<Message> queue = new Queue<Message>();
-        List<string> trace = new List<string>();
         int times = 1000;
         long low = 0;
         long high = 0;
-        int count = 0;
 
         while (times-- > 0)
         {
-            //trace.Add($"--- Iteration: {count++} ---");
-            trace.Clear();
-
             queue.Enqueue(new Message() { From = "button", To = "broadcaster" });
 
             while (queue.TryDequeue(out Message msg))
             {
-                trace.Add($"{msg.From} -{(msg.High ? "high" : "low")}-> {msg.To}");
-
                 if (msg.High)
                 {
                     high++;
@@ -52,128 +45,74 @@ public class Day20
     [Fact]
     public void Part2()
     {
-        long answer = 0;
         Dictionary<string, Module> modulesByName = LoadPuzzle();
         Queue<Message> queue = new Queue<Message>();
 
         Broadcast broadcaster = (Broadcast)modulesByName["broadcaster"];
-
         FlipFlop rx = (FlipFlop)modulesByName["rx"];
-        List<string> history = new List<string>();
 
-        while (!rx.On)
+        foreach (string name in broadcaster.Destinations.ToArray())
         {
-            answer++;
-
-            //List<string> states = GetStates(root: broadcaster, modulesByName);
-            List<string> states = GetStatesReverse(rx, modulesByName);
-            history.Add(states[3]);
-
-            queue.Enqueue(new Message() { From = "button", To = "broadcaster" });
-
-            while (queue.TryDequeue(out Message msg))
-            {
-                if (modulesByName.TryGetValue(msg.To, out Module m))
-                {
-                    m.Send(msg, queue);
-                }
-
-                if (rx.On)
-                {
-                    break;
-                }
-            }
+            SimplifyCounter(name, broadcaster.Name, modulesByName);
         }
 
-        Assert.Equal(0, answer);
+        long answer = modulesByName.Values.OfType<Counter>().Select(c => (long)c.Mask).LeastCommonMultiple();
+
+        Assert.Equal(244178746156661, answer);
     }
 
-    private List<string> GetStatesReverse(Module leaf, Dictionary<string, Module> modulesByName)
+    private void SimplifyCounter(string startingName, string parentName, Dictionary<string, Module> modulesByName)
     {
-        List<string> levels = new List<string>();
-        StringBuilder sb = new StringBuilder();
-        HashSet<string> visited = new HashSet<string>();
+        Conjunction c = null;
+        FlipFlop ff = (FlipFlop)modulesByName[startingName];
 
-        Queue<Module> currentLevel = null;
-        Queue<Module> nextLevel = new Queue<Module>();
+        int shift = 1;
+        int mask = 0;
 
-        nextLevel.Enqueue(leaf);
+        List<(string Name, int Mask)> externalInputs = new();
 
-        while (nextLevel.Count > 0)
+        while (ff != null)
         {
-            sb.Clear();
-            currentLevel = nextLevel;
-            nextLevel = new Queue<Module>();
+            FlipFlop nextFF = null;
+            Conjunction nextC = null;
 
-            while (currentLevel.TryDequeue(out Module cur))
+            // Remove the current flip flop from the puzzle
+            var references = modulesByName.Values.Where(m => m.Name != parentName && m.Destinations.Contains(ff.Name)).Select(input => input.Name).ToArray();
+            externalInputs.AddRange(references.Select(name => (name, mask)));
+            modulesByName.Remove(ff.Name);
+
+            // Extract the branches
+            foreach (string name in ff.Destinations)
             {
-                if (visited.Add(cur.Name))
-                {
-                    if (sb.Length > 0)
-                    {
-                        sb.Append("|");
-                    }
-
-                    sb.Append(cur.State);
-
-                    foreach (string name in cur.Input.Keys)
-                    {
-                        if (modulesByName.ContainsKey(name))
-                            nextLevel.Enqueue(modulesByName[name]);
-                    }
-                }
+                if (modulesByName[name] is FlipFlop tempFF) nextFF = (nextFF == null) ? tempFF : throw new Exception("Found multiple branches in counter");
+                else if (modulesByName[name] is Conjunction tempC) nextC = (nextC == null) ? tempC : throw new Exception("Found multiple branches in counter"); 
+                else throw new Exception();
             }
 
-            if (sb.Length > 0)
-                levels.Add(sb.ToString());
+            // Validate that Conjunction is the same
+            if (c == null) c = nextC;
+            else if (nextC != null && c != nextC) throw new Exception("Found multiple outputs in counter");
+
+            // Record if there is a connection
+            if (nextC != null) mask |= shift;
+
+            ff = nextFF;
+            shift <<= 1;
         }
 
-        return levels;
-    }
+        string counterName = $"counter:{startingName}";
+        modulesByName.Add(counterName, new Counter(mask, externalInputs));
 
-    private List<string> GetStates(Module root, Dictionary<string, Module> modulesByName)
-    {
-        List<string> levels = new List<string>();
-        StringBuilder sb = new StringBuilder();
-        HashSet<string> visited = new HashSet<string>();
-
-        Queue<Module> currentLevel = null;
-        Queue<Module> nextLevel = new Queue<Module>();
-
-        foreach (string name in root.Destinations)
+        foreach (Module m in modulesByName.Values)
         {
-            nextLevel.Enqueue(modulesByName[name]);
-        }
-
-        while (nextLevel.Count > 0)
-        {
-            sb.Clear();
-            currentLevel = nextLevel;
-            nextLevel = new Queue<Module>();
-
-            while (currentLevel.TryDequeue(out Module cur))
+            for (int i = 0; i < m.Destinations.Count; i++)
             {
-                if (visited.Add(cur.Name))
+                if (m.Destinations[i] == startingName)
                 {
-                    if (sb.Length > 0)
-                    {
-                        sb.Append("|");
-                    }
-
-                    sb.Append(cur.State);
-
-                    foreach (string name in cur.Destinations)
-                    {
-                        nextLevel.Enqueue(modulesByName[name]);
-                    }
+                    m.Destinations[i] = counterName;
                 }
             }
-
-            if (sb.Length > 0)
-                levels.Add(sb.ToString());
         }
-
-        return levels;
     }
 
     private Dictionary<string, Module> LoadPuzzle()
@@ -308,6 +247,30 @@ public class Day20
         public override string ToString()
         {
             return Name;
+        }
+    }
+
+    private class Counter : Module
+    {
+        public Counter(int mask)
+        {
+            Mask = mask;
+        }
+
+        public Counter(int mask, List<(string Name, int Mask)> externalInputs) : this(mask)
+        {
+            ExternalInputs = externalInputs;
+        }
+
+        public override string State => throw new NotImplementedException();
+
+        public int Mask { get; }
+        public List<(string Name, int Mask)> ExternalInputs { get; }
+        public List<string> FlipFlops = new List<string>();
+
+        protected override void DoSend(bool high, Queue<Message> queue)
+        {
+            throw new NotImplementedException();
         }
     }
 
