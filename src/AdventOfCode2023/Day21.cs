@@ -34,7 +34,38 @@ public class Day21
     [Fact]
     public void Part2()
     {
+        Grid2<Cell> puzzle = PuzzleFile.ReadAsGrid("Day21.txt", (ch, pt) => new Cell() { Char = ch, Point = pt });
+        Cell startingPoint = puzzle.Where(c => c.Char == 'S').Single();
+        HashSet<Cell> set = new HashSet<Cell>() { startingPoint };
+        startingPoint.Distance = 0;
+
+        while(set.Count > 0)
+        {
+            Cell cell = set.OrderBy(c => c.Distance).First();
+            set.Remove(cell);
+
+            foreach (Cell neighbor in puzzle.Adjacent(cell.Point).Where(c => c.Char != '#'))
+            {
+                int distance = cell.Distance + 1;
+                if (neighbor.Distance > distance)
+                {
+                    neighbor.Distance = distance;
+                    set.Add(neighbor);
+                }
+            }
+        }
+
+        Cell[] all = puzzle.OrderBy(c => c.Distance).ToArray();
+        Cell[] perimeter = puzzle.EdgePoints.Select(p => puzzle[p]).OrderBy(c => c.Distance).ToArray();
+
         int answer = 1;
         Assert.Equal(0, answer);
+    }
+
+    private class Cell
+    {
+        public char Char;
+        public Point2 Point;
+        public int Distance = int.MaxValue;
     }
 }
