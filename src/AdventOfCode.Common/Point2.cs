@@ -5,6 +5,7 @@ namespace AdventOfCode.Common
     public struct Point2<T> : IEquatable<Point2<T>> where T : INumber<T>
     {
         public static readonly Point2<T> Zero = new Point2<T>(T.Zero, T.Zero);
+        public static readonly Point2<T> One = new Point2<T>(T.One, T.One);
         public static readonly Point2<T> UnitX = new Point2<T>(T.One, T.Zero);
         public static readonly Point2<T> UnitY = new Point2<T>(T.Zero, T.One);
 

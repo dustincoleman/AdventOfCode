@@ -24,7 +24,7 @@ public class Day14
 
         Dictionary<Grid2<char>, int> remainingTurnsByGrid = new Dictionary<Grid2<char>, int>()
         {
-            { new Grid2<char>(puzzle), remainingTurns }
+            { Grid2<char>.Copy(puzzle), remainingTurns }
         };
 
         while (remainingTurns-- > 0)
@@ -36,7 +36,7 @@ public class Day14
                 break;
             }
 
-            remainingTurnsByGrid.Add(new Grid2<char>(puzzle), remainingTurns);
+            remainingTurnsByGrid.Add(Grid2<char>.Copy(puzzle), remainingTurns);
         }
 
         remainingTurns = remainingTurns % (firstSeenRemainingTurns - remainingTurns);

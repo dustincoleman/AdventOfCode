@@ -28,18 +28,9 @@ namespace AdventOfCode.Common
             this.Bounds = bounds;
         }
 
-        public Grid2(Grid2<T> copyFrom)
+        protected Grid2(T[,] grid, Point2 bounds)
+            : this(grid, bounds, pointTransform: null, valueTransform: null)
         {
-            this.grid = new T[copyFrom.Bounds.X, copyFrom.Bounds.Y]; 
-            this.Bounds = copyFrom.Bounds;
-            this.pointTransform = copyFrom.pointTransform;
-            this.valueTransform = copyFrom.valueTransform;
-            this.hashcode = copyFrom.hashcode;
-
-            foreach (Point2 point in copyFrom.Points)
-            {
-                this[point] = copyFrom[point];
-            }
         }
 
         private Grid2(T[,] grid, Point2 bounds, Func<Point2, Point2> pointTransform, Func<T, T> valueTransform)
@@ -48,6 +39,21 @@ namespace AdventOfCode.Common
             this.Bounds = bounds;
             this.pointTransform = pointTransform;
             this.valueTransform = valueTransform;
+        }
+
+        public static Grid2<T> Copy(Grid2<T> copyFrom, Func<T, T> factory = null)
+        {
+            factory ??= cell => cell;
+
+            Grid2<T> copyTo = new Grid2<T>(new T[copyFrom.Bounds.X, copyFrom.Bounds.Y], copyFrom.Bounds, copyFrom.pointTransform, copyFrom.valueTransform);
+            copyTo.hashcode = copyFrom.hashcode;
+
+            foreach (Point2 point in copyFrom.Points)
+            {
+                copyTo[point] = factory(copyFrom[point]);
+            }
+
+            return copyTo;
         }
 
         public T this[int x, int y]
@@ -90,6 +96,24 @@ namespace AdventOfCode.Common
         }
 
         public Point2 Bounds { get; }
+
+        public Point2 CenterPoint => (Bounds % 2 == Point2.One) ? Bounds / 2 : throw new InvalidOperationException("Grid does not have center");
+
+        public Point2 NWCorner => (0, Bounds.Y - 1);
+
+        public Point2 NECorner => Bounds - 1;
+
+        public Point2 SWCorner => Point2.Zero;
+
+        public Point2 SECorner => (Bounds.X - 1, 0);
+
+        public Point2 NorthCenter => (Bounds.X % 2 == 1) ? (Bounds.X / 2, Bounds.Y - 1) : throw new InvalidOperationException("Grid does not have center");
+
+        public Point2 SouthCenter => (Bounds.X % 2 == 1) ? (Bounds.X / 2, 0) : throw new InvalidOperationException("Grid does not have center");
+
+        public Point2 WestCenter => (Bounds.Y % 2 == 1) ? (0, Bounds.Y / 2) : throw new InvalidOperationException("Grid does not have center");
+
+        public Point2 EastCenter => (Bounds.Y % 2 == 1) ? (Bounds.X - 1, Bounds.Y / 2) : throw new InvalidOperationException("Grid does not have center");
 
         public IEnumerable<Point2> Points => Point2.Quadrant(Bounds);
 
@@ -294,6 +318,30 @@ namespace AdventOfCode.Common
                 this.Bounds, 
                 this.pointTransform,
                 (this.valueTransform != null) ? v => transform(this.valueTransform(v)) : transform);
+        }
+
+        public string ToString(Func<T, string> printCell)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int y = 0; y < this.Bounds.Y; y++)
+            {
+                for (int x = 0; x < this.Bounds.X; x++)
+                {
+                    sb.Append(printCell(this[x, y]));
+                    if (x < this.Bounds.X - 1)
+                    {
+                        sb.Append(' ');
+                    }
+                }
+
+                if (y < this.Bounds.Y - 1)
+                {
+                    sb.AppendLine();
+                }
+            }
+
+            return sb.ToString();
         }
 
         public IEnumerator<T> GetEnumerator() => Enumerate().GetEnumerator();
