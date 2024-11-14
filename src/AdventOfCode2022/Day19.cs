@@ -72,25 +72,25 @@
             {
                 int typesBuilt = 0;
 
-                if (resources.AllGreaterThanOrEqual(blueprint.OreRobotCost) && resources.X + (robots.X * remainingTime) < blueprint.Max.X * remainingTime)
+                if (resources >= blueprint.OreRobotCost && resources.X + (robots.X * remainingTime) < blueprint.Max.X * remainingTime)
                 {
                     totalGeodes = Math.Max(totalGeodes, Solve(blueprint, remainingTime - 1, robots + Point3.UnitX, geodeRobots, resources + robots - blueprint.OreRobotCost, runningTotal));
                     typesBuilt++;
                 }
 
-                if (resources.AllGreaterThanOrEqual(blueprint.ClayRobotCost) && resources.Y + (robots.Y * remainingTime) < blueprint.Max.Y * remainingTime)
+                if (resources >= blueprint.ClayRobotCost && resources.Y + (robots.Y * remainingTime) < blueprint.Max.Y * remainingTime)
                 {
                     totalGeodes = Math.Max(totalGeodes, Solve(blueprint, remainingTime - 1, robots + Point3.UnitY, geodeRobots, resources + robots - blueprint.ClayRobotCost, runningTotal));
                     typesBuilt++;
                 }
 
-                if (resources.AllGreaterThanOrEqual(blueprint.ObsidianRobotCost) && resources.Z + (robots.Z * remainingTime) < blueprint.Max.Z * remainingTime)
+                if (resources >= blueprint.ObsidianRobotCost && resources.Z + (robots.Z * remainingTime) < blueprint.Max.Z * remainingTime)
                 {
                     totalGeodes = Math.Max(totalGeodes, Solve(blueprint, remainingTime - 1, robots + Point3.UnitZ, geodeRobots, resources + robots - blueprint.ObsidianRobotCost, runningTotal));
                     typesBuilt++;
                 }
 
-                if (resources.AllGreaterThanOrEqual(blueprint.GeodeRobotCost))
+                if (resources >= blueprint.GeodeRobotCost)
                 {
                     totalGeodes = Math.Max(totalGeodes, Solve(blueprint, remainingTime - 1, robots, geodeRobots + 1, resources + robots - blueprint.GeodeRobotCost, runningTotal));
                     typesBuilt++;

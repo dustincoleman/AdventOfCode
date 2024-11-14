@@ -43,7 +43,7 @@
                     return false;
                 }
 
-                if (!(current.AllGreaterThanOrEqual(min) && current.AllLessThanOrEqual(max)))
+                if (!(current >= min && current <= max))
                 {
                     return true;
                 }

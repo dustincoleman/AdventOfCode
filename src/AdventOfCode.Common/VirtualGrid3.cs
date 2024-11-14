@@ -26,7 +26,7 @@ namespace AdventOfCode.Common
                     continue;
                 }
 
-                if (existingRegion.Intersects(regionToSet, out VirtualGrid3Region<T> intersection))
+                if (existingRegion.Bounds.Intersects(regionToSet.Bounds, out Rect3 intersection))
                 {
                     newRegions.AddRange(existingRegion.Without(intersection));
                 }

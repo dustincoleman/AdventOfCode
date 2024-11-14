@@ -58,11 +58,9 @@ namespace AdventOfCode2021
                 int y2 = int.Parse(match.Groups["y2"].Value);
                 int z1 = int.Parse(match.Groups["z1"].Value);
                 int z2 = int.Parse(match.Groups["z2"].Value);
+                bool on = (match.Groups["command"].Value == "on");
 
-                list.Add(new VirtualGrid3Region<bool>(
-                        new Point3(Math.Min(x1, x2), Math.Min(y1, y2), Math.Min(z1, z2)),
-                        new Point3(Math.Max(x1, x2), Math.Max(y1, y2), Math.Max(z1, z2)),
-                        (match.Groups["command"].Value == "on")));
+                list.Add(new VirtualGrid3Region<bool>(Rect3.Normalize((x1, y1, z1), (x2, y2, z2)), on));
             }
 
             return list;
@@ -70,12 +68,7 @@ namespace AdventOfCode2021
 
         private bool IsWithinBounds(VirtualGrid3Region<bool> region, Point3 lower, Point3 upper)
         {
-            return region.LowerBounds.X >= lower.X &&
-                   region.LowerBounds.Y >= lower.Y &&
-                   region.LowerBounds.Z >= lower.Z &&
-                   region.UpperBounds.X <= upper.X &&
-                   region.UpperBounds.Y <= upper.Y &&
-                   region.UpperBounds.Z <= upper.Z;
+            return region.Bounds.Lower >= lower && region.Bounds.Upper <= upper;
         }
     }
 }

@@ -66,27 +66,6 @@ namespace AdventOfCode.Common
             yield return this + UnitZ;
         }
 
-
-        public bool AllGreaterThan(Point3 other)
-        {
-            return (X > other.X && Y > other.Y && Z > other.Z);
-        }
-
-        public bool AllLessThan(Point3 other)
-        {
-            return (X < other.X && Y < other.Y && Z < other.Z);
-        }
-
-        public bool AllGreaterThanOrEqual(Point3 other)
-        {
-            return (X >= other.X && Y >= other.Y && Z >= other.Z);
-        }
-
-        public bool AllLessThanOrEqual(Point3 other)
-        {
-            return (X <= other.X && Y <= other.Y && Z <= other.Z);
-        }
-
         public Point3 Orient(Orientation3 orientation)
         {
             switch (orientation)
@@ -204,5 +183,12 @@ namespace AdventOfCode.Common
         public static Point3 operator %(Point3 left, Point3 right) => new Point3(left.X % right.X, left.Y % right.Y, left.Z % right.Z);
         public static bool operator ==(Point3 left, Point3 right) => (left.X == right.X && left.Y == right.Y && left.Z == right.Z);
         public static bool operator !=(Point3 left, Point3 right) => !(left == right);
+        public static bool operator <(Point3 left, Point3 right) => (left.X < right.X && left.Y < right.Y && left.Z < right.Z);
+        public static bool operator <=(Point3 left, Point3 right) => (left.X <= right.X && left.Y <= right.Y && left.Z <= right.Z);
+        public static bool operator >(Point3 left, Point3 right) => (left.X > right.X && left.Y > right.Y && left.Z > right.Z);
+        public static bool operator >=(Point3 left, Point3 right) => (left.X >= right.X && left.Y >= right.Y && left.Z >= right.Z);
+
+        public static implicit operator (int X, int Y, int Z)(Point3 point) => (point.X, point.Y, point.Z);
+        public static implicit operator Point3((int X, int Y, int Z) tuple) => new Point3(tuple.X, tuple.Y, tuple.Z);
     }
 }
