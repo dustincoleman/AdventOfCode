@@ -120,6 +120,8 @@ public class Day22
             stack.Add(this);
             queue.Enqueue(this);
 
+            // NOTE: Chuck pointed out that this should be a priority queue based on Brick.Top to avoid
+            //       a case where a tall brick causes us to have supports we have not yet reached.
             while (queue.TryDequeue(out Brick current))
             {
                 foreach (Brick supported in current.Supports)
