@@ -360,12 +360,6 @@ public class Day19
         }
     }
 
-    private class RuleList
-    {
-        public string Pos;
-        public List<Rule> Rules = new List<Rule>();
-    }
-
     private class PartRange
     {
         public string State;

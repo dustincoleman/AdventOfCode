@@ -97,24 +97,6 @@ namespace AdventOfCode.Common
 
         public Point2 Bounds { get; }
 
-        public Point2 CenterPoint => (Bounds % 2 == Point2.One) ? Bounds / 2 : throw new InvalidOperationException("Grid does not have center");
-
-        public Point2 NWCorner => (0, Bounds.Y - 1);
-
-        public Point2 NECorner => Bounds - 1;
-
-        public Point2 SWCorner => Point2.Zero;
-
-        public Point2 SECorner => (Bounds.X - 1, 0);
-
-        public Point2 NorthCenter => (Bounds.X % 2 == 1) ? (Bounds.X / 2, Bounds.Y - 1) : throw new InvalidOperationException("Grid does not have center");
-
-        public Point2 SouthCenter => (Bounds.X % 2 == 1) ? (Bounds.X / 2, 0) : throw new InvalidOperationException("Grid does not have center");
-
-        public Point2 WestCenter => (Bounds.Y % 2 == 1) ? (0, Bounds.Y / 2) : throw new InvalidOperationException("Grid does not have center");
-
-        public Point2 EastCenter => (Bounds.Y % 2 == 1) ? (Bounds.X - 1, Bounds.Y / 2) : throw new InvalidOperationException("Grid does not have center");
-
         public IEnumerable<Point2> Points => Point2.Quadrant(Bounds);
 
         public IEnumerable<Point2> EdgePoints => Points.Where(IsEdge);
@@ -124,6 +106,8 @@ namespace AdventOfCode.Common
         public Grid2ColumnCollection<T> Columns => new Grid2ColumnCollection<T>(this);
 
         public Grid2RowCollection<T> Rows => new Grid2RowCollection<T>(this);
+
+        public Grid2Locations Locations => new Grid2Locations(this);
 
         public static Grid2<T> Combine(Grid2<Grid2<T>> pieces)
         {

@@ -48,7 +48,7 @@ public class Day21
         //int cnt = expansion.Count(c => c.MinDistance < int.MaxValue && (c.MinDistance % 2) == oddSteps);
 
         int size = puzzle.Bounds.X;
-        int center = puzzle.CenterPoint.X;
+        int center = puzzle.Locations.CenterPoint.X;
 
         // Puzzle input is a square map
         if (puzzle.Bounds.X != puzzle.Bounds.Y)
@@ -85,8 +85,8 @@ public class Day21
         long n = reach - 1;
 
         // Full Gardens
-        int count = Count(puzzle, puzzle.CenterPoint, int.MaxValue);
-        int altCount = Count(puzzle, puzzle.CenterPoint, int.MaxValue, alternates: true);
+        int count = Count(puzzle, puzzle.Locations.CenterPoint, int.MaxValue);
+        int altCount = Count(puzzle, puzzle.Locations.CenterPoint, int.MaxValue, alternates: true);
 
         // "Rings" moving outward alternate visited plots
         for (int i = 0; i <= n; i++)
@@ -97,22 +97,22 @@ public class Day21
         }
 
         // Poles (N, E, S, W)
-        answer += Count(puzzle, puzzle.SouthCenter, size - 1, alternates: reach % 2 == 0); // North
-        answer += Count(puzzle, puzzle.EastCenter, size - 1, alternates: reach % 2 == 0); // West
-        answer += Count(puzzle, puzzle.NorthCenter, size - 1, alternates: reach % 2 == 0); // South
-        answer += Count(puzzle, puzzle.WestCenter, size - 1, alternates: reach % 2 == 0); // East
+        answer += Count(puzzle, puzzle.Locations.SouthCenter, size - 1, alternates: reach % 2 == 0); // North
+        answer += Count(puzzle, puzzle.Locations.EastCenter, size - 1, alternates: reach % 2 == 0); // West
+        answer += Count(puzzle, puzzle.Locations.NorthCenter, size - 1, alternates: reach % 2 == 0); // South
+        answer += Count(puzzle, puzzle.Locations.WestCenter, size - 1, alternates: reach % 2 == 0); // East
 
         // Diagonal plots
         int small = (size / 2) - 1;
         int large = small + size;
-        answer += Count(puzzle, puzzle.SECorner, small, alternates: reach % 2 == 0) * (n + 1);
-        answer += Count(puzzle, puzzle.SECorner, large, alternates: reach % 2 == 1) * n;
-        answer += Count(puzzle, puzzle.SWCorner, small, alternates: reach % 2 == 0) * (n + 1);
-        answer += Count(puzzle, puzzle.SWCorner, large, alternates: reach % 2 == 1) * n;
-        answer += Count(puzzle, puzzle.NECorner, small, alternates: reach % 2 == 0) * (n + 1);
-        answer += Count(puzzle, puzzle.NECorner, large, alternates: reach % 2 == 1) * n;
-        answer += Count(puzzle, puzzle.NWCorner, small, alternates: reach % 2 == 0) * (n + 1);
-        answer += Count(puzzle, puzzle.NWCorner, large, alternates: reach % 2 == 1) * n;
+        answer += Count(puzzle, puzzle.Locations.SECorner, small, alternates: reach % 2 == 0) * (n + 1);
+        answer += Count(puzzle, puzzle.Locations.SECorner, large, alternates: reach % 2 == 1) * n;
+        answer += Count(puzzle, puzzle.Locations.SWCorner, small, alternates: reach % 2 == 0) * (n + 1);
+        answer += Count(puzzle, puzzle.Locations.SWCorner, large, alternates: reach % 2 == 1) * n;
+        answer += Count(puzzle, puzzle.Locations.NECorner, small, alternates: reach % 2 == 0) * (n + 1);
+        answer += Count(puzzle, puzzle.Locations.NECorner, large, alternates: reach % 2 == 1) * n;
+        answer += Count(puzzle, puzzle.Locations.NWCorner, small, alternates: reach % 2 == 0) * (n + 1);
+        answer += Count(puzzle, puzzle.Locations.NWCorner, large, alternates: reach % 2 == 1) * n;
 
         Assert.Equal(617565692567199, answer);
     }
