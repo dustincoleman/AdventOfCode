@@ -19,7 +19,7 @@ public class Day22
         SettleBricks(bricks);
 
         int answer = bricks.Sum(b => b.CountSupported());
-        Assert.Equal(0, answer);
+        Assert.Equal(71002, answer);
     }
 
     private List<Brick> LoadPuzzle()
