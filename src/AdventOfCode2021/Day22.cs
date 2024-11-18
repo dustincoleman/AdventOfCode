@@ -22,7 +22,7 @@ namespace AdventOfCode2021
                 reactor.Set(step);
             }
 
-            long result = reactor.Where(r => r.Value).Sum(r => r.Size);
+            long result = reactor.Where(r => r.Value).Sum(Size);
 
             Assert.Equal(612714, result);
         }
@@ -37,7 +37,7 @@ namespace AdventOfCode2021
                 reactor.Set(step);
             }
 
-            long result = reactor.Where(r => r.Value).Sum(r => r.Size);
+            long result = reactor.Where(r => r.Value).Sum(Size);
 
             Assert.Equal(1311612259117092, result);
         }
@@ -69,6 +69,11 @@ namespace AdventOfCode2021
         private bool IsWithinBounds(VirtualGrid3Region<bool> region, Point3 lower, Point3 upper)
         {
             return region.Bounds.Lower >= lower && region.Bounds.Upper <= upper;
+        }
+
+        private long Size(VirtualGrid3Region<bool> region)
+        {
+            return (region.Bounds.Upper - region.Bounds.Lower + Point3.One).Product();
         }
     }
 }

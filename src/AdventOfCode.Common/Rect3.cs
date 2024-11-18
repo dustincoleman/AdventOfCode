@@ -13,7 +13,7 @@
 
         public Point3 Upper { get; }
 
-        public long Size => (this.Upper - this.Lower + Point3.One).Product();
+        public long Size => (this.Upper - this.Lower).Product();
 
         public static Rect3 Normalize(Point3 p1, Point3 p2)
         {
@@ -25,6 +25,13 @@
         internal bool Contains(Rect3 other)
         {
             return (this.Lower <= other.Lower && this.Upper >= other.Upper);
+        }
+
+        internal bool Intersects(Rect3 other)
+        {
+            Point3 lowerMax = Point3.Max(this.Lower, other.Lower);
+            Point3 upperMin = Point3.Min(this.Upper, other.Upper);
+            return (upperMin >= lowerMax);
         }
 
         internal bool Intersects(Rect3 other, out Rect3 intersection)
