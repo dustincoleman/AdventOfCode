@@ -105,13 +105,40 @@
             return Name;
         }
 
+        public static Direction Parse(char ch) => char.ToLower(ch) switch
+        {
+            'n' or 'u' or '^' => North,
+            's' or 'd' or 'v' => South,
+            'w' or 'l' or '<' => West,
+            'e' or 'r' or '>' => East,
+            _ => throw new ArgumentException("Unknown Direction")
+        };
+
         public static Direction Parse(string str) => str.ToLower() switch
         {
-            "n" or "north" or "u" or "up" => North,
-            "s" or "south" or "d" or "down" => South,
-            "w" or "west" or "l" or "left" => West,
-            "e" or "east" or "r" or "right" => East,
+            "n" or "north" or "u" or "up" or "^" => North,
+            "s" or "south" or "d" or "down" or "v" => South,
+            "w" or "west" or "l" or "left" or "<" => West,
+            "e" or "east" or "r" or "right" or ">" => East,
             _ => throw new ArgumentException("Unknown Direction")
+        };
+
+        public static Direction ParseOrDefault(char ch) => char.ToLower(ch) switch
+        {
+            'n' or 'u' or '^' => North,
+            's' or 'd' or 'v' => South,
+            'w' or 'l' or '<' => West,
+            'e' or 'r' or '>' => East,
+            _ => null
+        };
+
+        public static Direction ParseOrDefault(string str) => str.ToLower() switch
+        {
+            "n" or "north" or "u" or "up" or "^" => North,
+            "s" or "south" or "d" or "down" or "v" => South,
+            "w" or "west" or "l" or "left" or "<" => West,
+            "e" or "east" or "r" or "right" or ">" => East,
+            _ => null
         };
     }
 }
