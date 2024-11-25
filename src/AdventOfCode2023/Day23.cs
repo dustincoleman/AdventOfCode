@@ -1,5 +1,4 @@
-﻿
-namespace AdventOfCode2023;
+﻿namespace AdventOfCode2023;
 
 public class Day23
 {
@@ -89,10 +88,11 @@ public class Day23
 
         internal Graph BuildGraph(bool ignoreDirections)
         {
+            int nextId = 0;
             Dictionary<Point2, Node> nodesByLocation = new Dictionary<Point2, Node>();
             Queue<Point2> waypoints = new Queue<Point2>();
 
-            nodesByLocation.Add(this.Start, new Node());
+            nodesByLocation.Add(this.Start, new Node() { Id = nextId++ });
             waypoints.Enqueue(this.Start);
 
             while (waypoints.TryDequeue(out Point2 pt))
@@ -105,7 +105,7 @@ public class Day23
                     {
                         if (!nodesByLocation.TryGetValue(destinationPt, out Node destination))
                         {
-                            destination = new Node();
+                            destination = new Node() { Id = nextId++ };
                             nodesByLocation.Add(destinationPt, destination);
                             waypoints.Enqueue(destinationPt);
                         }
@@ -178,9 +178,7 @@ public class Day23
 
     private class Node
     {
-        private static int nextId = 0;
-
-        internal int Id = nextId++;
+        internal int Id;
         internal List<Edge> Edges = new List<Edge>();
     }
 
