@@ -1,7 +1,4 @@
-﻿
-using System.Runtime.CompilerServices;
-
-namespace AdventOfCode2023;
+﻿namespace AdventOfCode2023;
 
 public class Day24
 {
@@ -55,36 +52,42 @@ public class Day24
         Equation x = new Equation() { LeftLinear = stone1.Velocity.X, LeftConstant = stone1.Position.X, RightLinear = stone2.Velocity.X, RightConstant = stone2.Position.X };
         Equation y = new Equation() { LeftLinear = stone1.Velocity.Y, LeftConstant = stone1.Position.Y, RightLinear = stone2.Velocity.Y, RightConstant = stone2.Position.Y };
 
-        x = x.NormalizeRight();
-        y = y.NormalizeRight();
+        // Ensure the linear nomials on the right side are signed the same
+        if (x.RightLinear < 0)
+        {
+            x = x * -1;
+        }
+        if (y.RightLinear < 0)
+        {
+            y = y * -1;
+        }
 
+        // Make the linear nomials on the right side the same
         long lcm = MathHelpers.LeastCommonMultiple(x.RightLinear, y.RightLinear);
+        x = x * (lcm / x.RightLinear);
+        y = y * (lcm / y.RightLinear);
 
-        long xM = lcm / x.RightLinear;
-        long yM = lcm / y.RightLinear;
-
-        x = x * xM;
-        y = y * yM;
-
+        // Subtract the equations
         Equation diff = x - y;
-
         if (diff.RightLinear != 0)
         {
             throw new Exception("Unexpected");
         }
 
+        // Move the constant nomial from the left side to the right side
         diff = diff - diff.LeftConstant;
-
         if (diff.LeftConstant != 0 || diff.RightLinear != 0)
         {
             throw new Exception("Unexpected");
         }
 
+        // Check if an intersection exists
         if (diff.LeftLinear == 0)
         {
             return null;
         }
 
+        // Move the linear nomial from the left side to the right side to solve
         double t = double.Round((double)diff.RightConstant / diff.LeftLinear, 3);
 
         return t;
@@ -120,16 +123,6 @@ public class Day24
         internal long LeftConstant { get; init; }
         internal long RightLinear { get; init; }
         internal long RightConstant { get; init; }
-
-        internal Equation NormalizeRight()
-        {
-            if (RightLinear < 0)
-            {
-                return this * -1;
-            }
-
-            return this;
-        }
 
         public static Equation operator -(Equation left, Equation right) =>
             new Equation()
