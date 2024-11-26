@@ -20,7 +20,7 @@ namespace AdventOfCode.Common
 
         public static Point2<T> Parse(string input)
         {
-            string[] parts = input.Split(',');
+            string[] parts = input.Split([',', ' '], StringSplitOptions.RemoveEmptyEntries);
             return new Point2<T>(T.Parse(parts[0], provider: null), T.Parse(parts[1], provider: null));
         }
 
@@ -135,6 +135,12 @@ namespace AdventOfCode.Common
             if (X > T.Zero) yield return this - UnitX; // Left
         }
 
+        public void Deconstruct(out T x, out T y)
+        {
+            x = X;
+            y = Y;
+        }
+
         public Point2 Sign() => new Point2(T.Sign(X), T.Sign(Y));
 
         public T Sum() => X + Y;
@@ -142,6 +148,8 @@ namespace AdventOfCode.Common
         public T Product() => X * Y;
 
         public T Manhattan() => T.Abs(X) + T.Abs(Y);
+
+        public bool IsUniform() => (X == Y);
 
         public bool Equals(Point2<T> other) => (this == other);
 

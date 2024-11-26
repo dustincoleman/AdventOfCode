@@ -1,62 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Numerics;
 
 namespace AdventOfCode.Common
 {
-    public struct Point3 : IEquatable<Point3>
+    public struct Point3<T> : IEquatable<Point3<T>> where T : INumber<T>
     {
-        public static readonly Point3 Zero = new Point3(0, 0, 0);
-        public static readonly Point3 One = new Point3(1, 1, 1);
-        public static readonly Point3 UnitX = new Point3(1, 0, 0);
-        public static readonly Point3 UnitY = new Point3(0, 1, 0);
-        public static readonly Point3 UnitZ = new Point3(0, 0, 1);
+        public static readonly Point3<T> Zero = new Point3<T>(T.Zero, T.Zero, T.Zero);
+        public static readonly Point3<T> One = new Point3<T>(T.One, T.One, T.One);
+        public static readonly Point3<T> UnitX = new Point3<T>(T.One, T.Zero, T.Zero);
+        public static readonly Point3<T> UnitY = new Point3<T>(T.Zero, T.One, T.Zero);
+        public static readonly Point3<T> UnitZ = new Point3<T>(T.Zero, T.Zero, T.One);
 
-        public readonly int X;
-        public readonly int Y;
-        public readonly int Z;
+        public readonly T X;
+        public readonly T Y;
+        public readonly T Z;
 
-        public Point3(int x, int y, int z)
+        public Point3(T x, T y, T z)
         {
             X = x;
             Y = y;
             Z = z;
         }
 
-        public static IEnumerable<Point3> GetPointsInRange(Point3 upper)
+        public Point2<T> XY => (X, Y);
+        public Point2<T> XZ => (X, Z);
+        public Point2<T> YZ => (Y, Z);
+
+        public static Point3<T> Parse(string input)
+        {
+            string[] parts = input.Split([',', ' '], StringSplitOptions.RemoveEmptyEntries);
+            return new Point3<T>(T.Parse(parts[0], provider: null), T.Parse(parts[1], provider: null), T.Parse(parts[2], provider: null));
+        }
+
+        public static IEnumerable<Point3<T>> GetPointsInRange(Point3<T> upper)
         {
             return GetPointsInRange(Zero, upper);
         }
 
-        public static IEnumerable<Point3> GetPointsInRange(Point3 lower, Point3 upper)
+        public static IEnumerable<Point3<T>> GetPointsInRange(Point3<T> lower, Point3<T> upper)
         {
-            for (int z = lower.Z; z <= upper.Z; z++)
+            for (T z = lower.Z; z <= upper.Z; z++)
             {
-                for (int y = lower.Y; y <= upper.Y; y++)
+                for (T y = lower.Y; y <= upper.Y; y++)
                 {
-                    for (int x = lower.X; x <= upper.X; x++)
+                    for (T x = lower.X; x <= upper.X; x++)
                     {
-                        yield return new Point3(x, y, z);
+                        yield return new Point3<T>(x, y, z);
                     }
                 }
             }
         }
 
-        public static Point3 Min(Point3 left, Point3 right)
+        public static Point3<T> Min(Point3<T> left, Point3<T> right)
         {
-            return new Point3(Math.Min(left.X, right.X), Math.Min(left.Y, right.Y), Math.Min(left.Z, right.Z));
+            return new Point3<T>(T.Min(left.X, right.X), T.Min(left.Y, right.Y), T.Min(left.Z, right.Z));
         }
 
-        public static Point3 Max(Point3 left, Point3 right)
+        public static Point3<T> Max(Point3<T> left, Point3<T> right)
         {
-            return new Point3(Math.Max(left.X, right.X), Math.Max(left.Y, right.Y), Math.Max(left.Z, right.Z));
+            return new Point3<T>(T.Max(left.X, right.X), T.Max(left.Y, right.Y), T.Max(left.Z, right.Z));
         }
 
-        public int Sum() => X + Y + Z;
+        public T Sum() => X + Y + Z;
 
-        public long Product() => (long)X * (long)Y * (long)Z;
+        public T Product() => X * Y * Z;
 
-        public IEnumerable<Point3> Adjacent()
+        public T Manhattan() => T.Abs(X) + T.Abs(Y) + T.Abs(Z);
+
+        public bool IsUniform() => (X == Y && Y == Z);
+
+        public IEnumerable<Point3<T>> Adjacent()
         {
             yield return this - UnitX;
             yield return this - UnitY;
@@ -66,7 +78,7 @@ namespace AdventOfCode.Common
             yield return this + UnitZ;
         }
 
-        public Point3 Orient(Orientation3 orientation)
+        public Point3<T> Orient(Orientation3 orientation)
         {
             switch (orientation)
             {
@@ -129,31 +141,31 @@ namespace AdventOfCode.Common
             }
         }
 
-        public Point3 RotateXClockwise() => new Point3(X, -Z, Y);
-        public Point3 RotateXCounterclockwise() => new Point3(X, Z, -Y);
-        public Point3 RotateX180Degrees() => new Point3(X, -Y, -Z);
-        public Point3 RotateYClockwise() => new Point3(-Z, Y, X);
-        public Point3 RotateYCounterclockwise() => new Point3(Z, Y, -X);
-        public Point3 RotateY180Degrees() => new Point3(-X, Y, -Z);
-        public Point3 RotateZClockwise() => new Point3(Y, -X, Z);
-        public Point3 RotateZCounterclockwise() => new Point3(-Y, X, Z);
-        public Point3 RotateZ180Degrees() => new Point3(-X, -Y, Z);
+        public Point3<T> RotateXClockwise() => new Point3<T>(X, -Z, Y);
+        public Point3<T> RotateXCounterclockwise() => new Point3<T>(X, Z, -Y);
+        public Point3<T> RotateX180Degrees() => new Point3<T>(X, -Y, -Z);
+        public Point3<T> RotateYClockwise() => new Point3<T>(-Z, Y, X);
+        public Point3<T> RotateYCounterclockwise() => new Point3<T>(Z, Y, -X);
+        public Point3<T> RotateY180Degrees() => new Point3<T>(-X, Y, -Z);
+        public Point3<T> RotateZClockwise() => new Point3<T>(Y, -X, Z);
+        public Point3<T> RotateZCounterclockwise() => new Point3<T>(-Y, X, Z);
+        public Point3<T> RotateZ180Degrees() => new Point3<T>(-X, -Y, Z);
 
-        public Point3 Rotate(Point3 times)
+        public Point3<T> Rotate(Point3<T> times)
         {
-            Point3 point3 = this;
+            Point3<T> point3 = this;
 
-            for (int x = 0; x < times.X; x++)
+            for (T x = T.Zero; x < times.X; x++)
             {
                 point3 = point3.RotateXClockwise();
             }
 
-            for (int y = 0; y < times.Y; y++)
+            for (T y = T.Zero; y < times.Y; y++)
             {
                 point3 = point3.RotateYClockwise();
             }
 
-            for (int z = 0; z < times.Z; z++)
+            for (T z = T.Zero; z < times.Z; z++)
             {
                 point3 = point3.RotateZClockwise();
             }
@@ -161,34 +173,39 @@ namespace AdventOfCode.Common
             return point3;
         }
 
-        public int Manhattan() => Math.Abs(X) + Math.Abs(Y) + Math.Abs(Z);
+        public void Deconstruct(out T x, out T y, out T z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
 
-        public bool Equals(Point3 other) => (this == other);
+        public bool Equals(Point3<T> other) => (this == other);
 
-        public override bool Equals(object obj) => (obj is Point3 other && this.Equals(other));
+        public override bool Equals(object obj) => (obj is Point3<T> other && this.Equals(other));
 
         public override int GetHashCode() => HashCode.Combine(X, Y, Z);
 
-        public static Point3 operator +(Point3 p) => p;
-        public static Point3 operator -(Point3 p) => new Point3(-p.X, -p.Y, -p.Z);
-        public static Point3 operator +(Point3 p, int i) => new Point3(p.X + i, p.Y + i, p.Z + i);
-        public static Point3 operator +(Point3 left, Point3 right) => new Point3(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
-        public static Point3 operator -(Point3 p, int i) => new Point3(p.X - i, p.Y - i, p.Z - i);
-        public static Point3 operator -(Point3 left, Point3 right) => new Point3(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
-        public static Point3 operator *(Point3 p, int i) => new Point3(p.X * i, p.Y * i, p.Z * i);
-        public static Point3 operator *(Point3 left, Point3 right) => new Point3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
-        public static Point3 operator /(Point3 p, int i) => new Point3(p.X / i, p.Y / i, p.Z / i);
-        public static Point3 operator /(Point3 left, Point3 right) => new Point3(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
-        public static Point3 operator %(Point3 p, int i) => new Point3(p.X % i, p.Y % i, p.Z % i);
-        public static Point3 operator %(Point3 left, Point3 right) => new Point3(left.X % right.X, left.Y % right.Y, left.Z % right.Z);
-        public static bool operator ==(Point3 left, Point3 right) => (left.X == right.X && left.Y == right.Y && left.Z == right.Z);
-        public static bool operator !=(Point3 left, Point3 right) => !(left == right);
-        public static bool operator <(Point3 left, Point3 right) => (left.X < right.X && left.Y < right.Y && left.Z < right.Z);
-        public static bool operator <=(Point3 left, Point3 right) => (left.X <= right.X && left.Y <= right.Y && left.Z <= right.Z);
-        public static bool operator >(Point3 left, Point3 right) => (left.X > right.X && left.Y > right.Y && left.Z > right.Z);
-        public static bool operator >=(Point3 left, Point3 right) => (left.X >= right.X && left.Y >= right.Y && left.Z >= right.Z);
+        public static Point3<T> operator +(Point3<T> p) => p;
+        public static Point3<T> operator -(Point3<T> p) => new Point3<T>(-p.X, -p.Y, -p.Z);
+        public static Point3<T> operator +(Point3<T> p, T i) => new Point3<T>(p.X + i, p.Y + i, p.Z + i);
+        public static Point3<T> operator +(Point3<T> left, Point3<T> right) => new Point3<T>(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+        public static Point3<T> operator -(Point3<T> p, T i) => new Point3<T>(p.X - i, p.Y - i, p.Z - i);
+        public static Point3<T> operator -(Point3<T> left, Point3<T> right) => new Point3<T>(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+        public static Point3<T> operator *(Point3<T> p, T i) => new Point3<T>(p.X * i, p.Y * i, p.Z * i);
+        public static Point3<T> operator *(Point3<T> left, Point3<T> right) => new Point3<T>(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+        public static Point3<T> operator /(Point3<T> p, T i) => new Point3<T>(p.X / i, p.Y / i, p.Z / i);
+        public static Point3<T> operator /(Point3<T> left, Point3<T> right) => new Point3<T>(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+        public static Point3<T> operator %(Point3<T> p, T i) => new Point3<T>(p.X % i, p.Y % i, p.Z % i);
+        public static Point3<T> operator %(Point3<T> left, Point3<T> right) => new Point3<T>(left.X % right.X, left.Y % right.Y, left.Z % right.Z);
+        public static bool operator ==(Point3<T> left, Point3<T> right) => (left.X == right.X && left.Y == right.Y && left.Z == right.Z);
+        public static bool operator !=(Point3<T> left, Point3<T> right) => !(left == right);
+        public static bool operator <(Point3<T> left, Point3<T> right) => (left.X < right.X && left.Y < right.Y && left.Z < right.Z);
+        public static bool operator <=(Point3<T> left, Point3<T> right) => (left.X <= right.X && left.Y <= right.Y && left.Z <= right.Z);
+        public static bool operator >(Point3<T> left, Point3<T> right) => (left.X > right.X && left.Y > right.Y && left.Z > right.Z);
+        public static bool operator >=(Point3<T> left, Point3<T> right) => (left.X >= right.X && left.Y >= right.Y && left.Z >= right.Z);
 
-        public static implicit operator (int X, int Y, int Z)(Point3 point) => (point.X, point.Y, point.Z);
-        public static implicit operator Point3((int X, int Y, int Z) tuple) => new Point3(tuple.X, tuple.Y, tuple.Z);
+        public static implicit operator (T X, T Y, T Z)(Point3<T> point) => (point.X, point.Y, point.Z);
+        public static implicit operator Point3<T>((T X, T Y, T Z) tuple) => new Point3<T>(tuple.X, tuple.Y, tuple.Z);
     }
 }
