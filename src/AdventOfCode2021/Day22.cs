@@ -73,7 +73,7 @@ namespace AdventOfCode2021
 
         private long Size(VirtualGrid3Region<bool> region)
         {
-            return (region.Bounds.Upper - region.Bounds.Lower + Point3.One).Product();
+            return (region.Bounds.Upper - region.Bounds.Lower + Point3.One).As<long>().Product();
         }
     }
 }

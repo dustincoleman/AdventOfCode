@@ -186,6 +186,8 @@ namespace AdventOfCode.Common
 
         public override int GetHashCode() => HashCode.Combine(X, Y, Z);
 
+        public Point3<U> As<U>() where U : INumber<U> => new Point3<U>(U.CreateChecked(X), U.CreateChecked(Y), U.CreateChecked(Z));
+
         public static Point3<T> operator +(Point3<T> p) => p;
         public static Point3<T> operator -(Point3<T> p) => new Point3<T>(-p.X, -p.Y, -p.Z);
         public static Point3<T> operator +(Point3<T> p, T i) => new Point3<T>(p.X + i, p.Y + i, p.Z + i);
