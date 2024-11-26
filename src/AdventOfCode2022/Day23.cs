@@ -113,7 +113,7 @@ namespace AdventOfCode2022
             string[] lines = File.ReadAllLines("Day23.txt");
             VirtualGrid2<Elf> grid = new VirtualGrid2<Elf>();
 
-            foreach (Point2 p in Point2.Quadrant(new Point2(lines[0].Length, lines.Length)))
+            foreach (Point2 p in Points.All(new Point2(lines[0].Length, lines.Length)))
             {
                 if (lines[p.Y][p.X] == '#')
                 {

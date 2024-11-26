@@ -80,8 +80,8 @@ public class Day23
                     }, 
                 bounds => new Puzzle(bounds));
 
-            puzzle.Start = puzzle.Rows.First().Points.FirstOrDefault(pt => !puzzle[pt].IsWall);
-            puzzle.End = puzzle.Rows.Last().Points.FirstOrDefault(pt => !puzzle[pt].IsWall);
+            puzzle.Start = puzzle.Rows.First().AllPoints.FirstOrDefault(pt => !puzzle[pt].IsWall);
+            puzzle.End = puzzle.Rows.Last().AllPoints.FirstOrDefault(pt => !puzzle[pt].IsWall);
 
             return puzzle;
         }

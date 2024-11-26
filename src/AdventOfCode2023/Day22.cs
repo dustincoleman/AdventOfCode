@@ -37,7 +37,7 @@ public class Day22
 
         Grid2<BrickTop> tops = new Grid2<BrickTop>(max + 1);
 
-        foreach (Point2 pt in tops.Points)
+        foreach (Point2 pt in tops.AllPoints)
         {
             tops[pt] = new BrickTop();
         }
@@ -49,7 +49,7 @@ public class Day22
 
             while (falling)
             {
-                foreach (Point2 pt in current.CrossSection.Points())
+                foreach (Point2 pt in current.CrossSection.AllPoints())
                 {
                     if (tops[pt].Top > current.Bottom)
                     {
@@ -75,7 +75,7 @@ public class Day22
                 }
                 else
                 {
-                    foreach (Point2 pt in current.CrossSection.Points())
+                    foreach (Point2 pt in current.CrossSection.AllPoints())
                     {
                         tops[pt].Top = current.Top;
                         tops[pt].Brick = current;

@@ -56,7 +56,7 @@ namespace AdventOfCode.Common
             Point2 bounds = new Point2(lines[0].Length, lines.Length);
             TGrid grid = factory(bounds);
 
-            foreach (Point2 p in Point2.Quadrant(bounds))
+            foreach (Point2 p in Points.All(bounds))
             {
                 grid[p] = parser(lines[p.Y][p.X], p);
             }

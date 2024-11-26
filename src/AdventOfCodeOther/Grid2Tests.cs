@@ -92,7 +92,7 @@ namespace AdventOfCodeOther
             Point2 bounds = new Point2(values[0].Length, values.Length);
             Grid2<int> grid = new Grid2<int>(bounds);
 
-            foreach (Point2 point in Point2.Quadrant(bounds))
+            foreach (Point2 point in Points.All(bounds))
             {
                 grid[point] = values[point.Y][point.X];
             }

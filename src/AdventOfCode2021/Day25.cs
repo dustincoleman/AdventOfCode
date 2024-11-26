@@ -35,7 +35,7 @@ namespace AdventOfCode2021
 
             Grid2<char> map = new Grid2<char>(input[0].Length, input.Length);
 
-            foreach (Point2 point in map.Points)
+            foreach (Point2 point in map.AllPoints)
             {
                 char c = input[point.Y][point.X];
                 map[point] = (c == '>' || c == 'v') ? c : default(char);
@@ -60,7 +60,7 @@ namespace AdventOfCode2021
 
             Grid2<char> newMap = new Grid2<char>(map.Bounds);
 
-            foreach (Point2 source in map.Points)
+            foreach (Point2 source in map.AllPoints)
             {
                 if (map[source] == '>')
                 {
@@ -91,7 +91,7 @@ namespace AdventOfCode2021
 
             Grid2<char> newMap = new Grid2<char>(map.Bounds);
 
-            foreach (Point2 source in map.Points)
+            foreach (Point2 source in map.AllPoints)
             {
                 if (map[source] == 'v')
                 {

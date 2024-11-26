@@ -8,7 +8,7 @@
             Puzzle puzzle = LoadPuzzle();
             Grid2<Tile> map = puzzle.Map;
 
-            Point2 position = map.Rows.Skip(1).First().Points.First(p => map[p] == Tile.Open);
+            Point2 position = map.Rows.Skip(1).First().AllPoints.First(p => map[p] == Tile.Open);
             Direction direction = Direction.Right;
 
             foreach (string step in puzzle.Path)
@@ -87,10 +87,10 @@
                 {
                     next = direction switch
                     {
-                        Direction.Right => map.Rows[position.Y].Points.First(p => map[p] is Tile.Open or Tile.Wall),
-                        Direction.Down => map.Columns[position.X].Points.First(p => map[p] is Tile.Open or Tile.Wall),
-                        Direction.Left => map.Rows[position.Y].Points.Reverse().First(p => map[p] is Tile.Open or Tile.Wall),
-                        Direction.Up => map.Columns[position.X].Points.Reverse().First(p => map[p] is Tile.Open or Tile.Wall),
+                        Direction.Right => map.Rows[position.Y].AllPoints.First(p => map[p] is Tile.Open or Tile.Wall),
+                        Direction.Down => map.Columns[position.X].AllPoints.First(p => map[p] is Tile.Open or Tile.Wall),
+                        Direction.Left => map.Rows[position.Y].AllPoints.Reverse().First(p => map[p] is Tile.Open or Tile.Wall),
+                        Direction.Up => map.Columns[position.X].AllPoints.Reverse().First(p => map[p] is Tile.Open or Tile.Wall),
                         _ => throw new Exception()
                     };
                 }
@@ -161,7 +161,7 @@
 
             Grid2<Tile> map = new Grid2<Tile>(width, input[0].Length);
 
-            foreach (Point2 p in map.Points)
+            foreach (Point2 p in map.AllPoints)
             {
                 if (p.X < input[0][p.Y].Length)
                 {
@@ -224,7 +224,7 @@
 
             Grid2<TilePoint> grid = new Grid2<TilePoint>(totalOrder, totalOrder);
 
-            foreach (Point2 p in grid.Points)
+            foreach (Point2 p in grid.AllPoints)
             {
                 Tile tile;
 
@@ -257,7 +257,7 @@
             int column0 = 0;
 
             // Find the column of the first region on the map
-            foreach (Point2 p in regions.Rows[0].Points)
+            foreach (Point2 p in regions.Rows[0].AllPoints)
             {
                 if (regions[p][0, 0].Tile != Tile.None)
                 {
@@ -278,7 +278,7 @@
                     // Copy this region if it contains data
                     if (region[0, 0].Tile != Tile.None)
                     {
-                        foreach (Point2 p in orientedCube.Face.Points)
+                        foreach (Point2 p in orientedCube.Face.AllPoints)
                         {
                             if (orientedCube[p].Point != Point2.Zero || orientedCube[p].Tile != Tile.None)
                             {
@@ -286,7 +286,7 @@
                             }
                         }
 
-                        foreach (Point2 p in region.Points)
+                        foreach (Point2 p in region.AllPoints)
                         {
                             orientedCube[p] = region[p];
                         }

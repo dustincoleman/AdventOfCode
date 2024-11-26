@@ -50,9 +50,9 @@ namespace AdventOfCode.Common
             return false;
         }
 
-        public IEnumerable<Point2<int>> Points()
+        public IEnumerable<Point2<int>> AllPoints()
         {
-            foreach (Point2 shift in Point2.Quadrant(Upper - Lower))
+            foreach (Point2 shift in Points.All(Upper - Lower))
             {
                 yield return (Lower + shift);
             }

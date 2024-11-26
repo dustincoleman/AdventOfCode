@@ -26,7 +26,7 @@ namespace AdventOfCode2021
 
             mapPieces[Point2.Zero] = ParseInput();
 
-            foreach (Point2 point in mapPieces.Points.Skip(1))
+            foreach (Point2 point in mapPieces.AllPoints.Skip(1))
             {
                 Point2 source = (point.X > 0) ? point - Point2.UnitX : point - Point2.UnitY;
                 mapPieces[point] = mapPieces[source].Transform(i => (i < 9) ? i + 1 : 1);
@@ -42,7 +42,7 @@ namespace AdventOfCode2021
             string[] lines = File.ReadAllLines("Day15Input.txt");
             Grid2<int> map = new Grid2<int>(lines[0].Length, lines.Length);
 
-            foreach (Point2 point in map.Points)
+            foreach (Point2 point in map.AllPoints)
             {
                 map[point] = int.Parse(lines[point.Y][point.X].ToString());
             }

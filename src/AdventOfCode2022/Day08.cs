@@ -97,7 +97,7 @@
             string[] lines = File.ReadAllLines("Day08.txt");
             Grid2<Tree> grid = new Grid2<Tree>(lines[0].Length, lines.Length);
 
-            foreach (Point2 point in grid.Points)
+            foreach (Point2 point in grid.AllPoints)
             {
                 grid[point] = new Tree() { Height = int.Parse(lines[point.Y][point.X].ToString()) };
             }

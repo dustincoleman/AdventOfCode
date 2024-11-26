@@ -6,7 +6,7 @@ public class Day21
     public void Part1()
     {
         Grid2<char> puzzle = PuzzleFile.ReadAsGrid("Day21.txt");
-        HashSet<Point2> positions = new HashSet<Point2>() { puzzle.Points.Where(p => puzzle[p] == 'S').Single() };
+        HashSet<Point2> positions = new HashSet<Point2>() { puzzle.AllPoints.Where(p => puzzle[p] == 'S').Single() };
         int steps = 64;
 
         while (steps-- > 0)
@@ -138,7 +138,7 @@ public class Day21
     private Grid2<Cell> Expand(Grid2<Cell> puzzle)
     {
         Grid2<Cell> expansion = new Grid2<Cell>(puzzle.Bounds * 3);
-        foreach (Point2 point in puzzle.Points)
+        foreach (Point2 point in puzzle.AllPoints)
         {
             for (int y = 0; y < 3; y++)
             {

@@ -43,7 +43,7 @@ public class Day10
             MarkOutsidePoints(edgePoint, searchGrid);
         }
 
-        int answer = searchGrid.Points.Count(p => p % 2 == Point2.Zero && searchGrid[p] is SearchState.None);
+        int answer = searchGrid.AllPoints.Count(p => p % 2 == Point2.Zero && searchGrid[p] is SearchState.None);
 
         Assert.Equal(443, answer);
     }
@@ -62,7 +62,7 @@ public class Day10
 
     private void TraversePuzzle(Grid2<Pipe> map, Action<Point2, Direction> action)
     {
-        Point2 pos = map.Points.First(p => map[p] is Pipe.AnimalStartPos);
+        Point2 pos = map.AllPoints.First(p => map[p] is Pipe.AnimalStartPos);
         Direction direction = Direction.None;
 
         if (map.InBounds(pos - Point2.UnitY) && map[pos - Point2.UnitY] is Pipe.Vertical or Pipe.BendSW or Pipe.BendSE)
@@ -187,7 +187,7 @@ public class Day10
         Point2 bounds = new Point2(input[0].Length, input.Length);
         Grid2<Pipe> grid = new Grid2<Pipe>(bounds);
         
-        foreach (Point2 p in Point2.Quadrant(bounds))
+        foreach (Point2 p in Points.All(bounds))
         {
             grid[p] = input[p.Y][p.X] switch
             {

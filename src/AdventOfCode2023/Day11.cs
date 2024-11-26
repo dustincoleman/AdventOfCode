@@ -56,7 +56,7 @@ public class Day11
             }
         }
 
-        foreach (Point2 point in puzzle.Points)
+        foreach (Point2 point in puzzle.AllPoints)
         {
             if (puzzle[point] == '#')
             {

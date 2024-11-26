@@ -15,7 +15,7 @@ namespace AdventOfCode.Common
 
         public Grid2<T> Grid { get; }
 
-        public IEnumerable<Point2> Points => Point2.Line(new Point2(Index, 0), new Point2(Index, Grid.Bounds.Y - 1));
+        public IEnumerable<Point2> AllPoints => Points.Line(new Point2(Index, 0), new Point2(Index, Grid.Bounds.Y - 1));
 
         public int Index { get; }
 

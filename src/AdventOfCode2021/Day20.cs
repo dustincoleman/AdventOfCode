@@ -36,12 +36,12 @@ namespace AdventOfCode2021
             Point2 origin = new Point2(times, times);
             Grid2<char> map = new Grid2<char>(lines[2].Length + origin.X * 2, lines.Length - 2 + origin.Y * 2);
 
-            foreach (Point2 p in map.Points)
+            foreach (Point2 p in map.AllPoints)
             {
                 map[p] = '.';
             }
 
-            foreach (Point2 p in Point2.Quadrant(new Point2(lines[2].Length, lines.Length - 2)))
+            foreach (Point2 p in Points.All(new Point2(lines[2].Length, lines.Length - 2)))
             {
                 map[p + origin] = lines[p.Y + 2][p.X];
             }
@@ -50,7 +50,7 @@ namespace AdventOfCode2021
             {
                 Grid2<char> newMap = new Grid2<char>(map.Bounds);
 
-                foreach (Point2 p in map.Points)
+                foreach (Point2 p in map.AllPoints)
                 {
                     newMap[p] = GetPixel(map, p, lookupTable);
                 }

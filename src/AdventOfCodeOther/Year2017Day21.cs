@@ -49,7 +49,7 @@ namespace AdventOfCodeOther
 
             Grid2<bool> grid = new Grid2<bool>(rows[0].Length, rows.Length);
 
-            foreach (Point2 point in grid.Points)
+            foreach (Point2 point in grid.AllPoints)
             {
                 grid[point] = (rows[point.Y][point.X] == '#');
             }
@@ -62,7 +62,7 @@ namespace AdventOfCodeOther
             Point2 sliceSize = (fractal.Bounds.X % 2 == 0) ? new Point2(2, 2) : new Point2(3, 3);
             Grid2<Grid2<bool>> pieces = fractal.Split(sliceSize);
             
-            foreach (Point2 point in pieces.Points)
+            foreach (Point2 point in pieces.AllPoints)
             {
                 pieces[point] = EnhancePiece(pieces[point], rules);
             }

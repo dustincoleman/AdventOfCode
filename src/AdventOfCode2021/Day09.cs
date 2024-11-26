@@ -18,12 +18,12 @@ namespace AdventOfCode2021
             Point2 bounds = new Point2(input[0].Length, input.Length);
             Grid2<int> grid = new Grid2<int>(bounds);
 
-            foreach (Point2 point in Point2.Quadrant(bounds))
+            foreach (Point2 point in Points.All(bounds))
             {
                 grid[point] = input[point.Y][point.X] - '0';
             }
 
-            long result = Point2.Quadrant(bounds)
+            long result = Points.All(bounds)
                                 .Where(point => grid.Adjacent(point).All(value => value > grid[point]))
                                 .Sum(point => grid[point] + 1);
 
@@ -38,12 +38,12 @@ namespace AdventOfCode2021
             Point2 bounds = new Point2(input[0].Length, input.Length);
             Grid2<int> grid = new Grid2<int>(bounds);
 
-            foreach (Point2 point in Point2.Quadrant(bounds))
+            foreach (Point2 point in Points.All(bounds))
             {
                 grid[point] = input[point.Y][point.X] - '0';
             }
 
-            long result = Point2.Quadrant(bounds)
+            long result = Points.All(bounds)
                                 .Where(point => grid.Adjacent(point).All(value => value > grid[point]))
                                 .Select(point => SizeOfBasin(point, grid, new bool[bounds.X, bounds.Y]))
                                 .OrderByDescending(i => i)

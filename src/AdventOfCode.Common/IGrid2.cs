@@ -12,6 +12,6 @@ namespace AdventOfCode.Common
 
         Point2 Bounds { get; }
 
-        IEnumerable<Point2> Points { get; }
+        IEnumerable<Point2> AllPoints { get; }
     }
 }

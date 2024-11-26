@@ -120,7 +120,7 @@ namespace AdventOfCode2021
 
             Grid2<bool> foldedGrid = new Grid2<bool>(foldedBounds);
 
-            foreach (Point2 destination in foldedGrid.Points)
+            foreach (Point2 destination in foldedGrid.AllPoints)
             {
                 Point2 first = getFirst(destination);
                 Point2 second = getSecond(destination);

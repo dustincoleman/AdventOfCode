@@ -69,7 +69,7 @@
 
                 for (int i = 0; i < points.Length - 1; i++)
                 {
-                    foreach (Point2 p in Point2.Line(points[i], points[i + 1]))
+                    foreach (Point2 p in Points.Line(points[i], points[i + 1]))
                     {
                         cave[p] = true;
                         lowest = Math.Max(p.Y, lowest);

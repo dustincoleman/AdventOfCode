@@ -20,7 +20,7 @@
             Puzzle puzzle = LoadPuzzle();
             Grid2<Node> map = puzzle.Map;
 
-            foreach (Point2 p in puzzle.Map.Points)
+            foreach (Point2 p in puzzle.Map.AllPoints)
             {
                 if (map[p].Height == 0)
                 {
@@ -54,7 +54,7 @@
             Grid2<Node> map = new Grid2<Node>(lines[0].Length, lines.Length);
             Puzzle puzzle = new Puzzle() { Map = map };
 
-            foreach (Point2 p in map.Points)
+            foreach (Point2 p in map.AllPoints)
             {
                 char ch = lines[p.Y][p.X];
 

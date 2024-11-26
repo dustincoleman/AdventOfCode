@@ -26,7 +26,7 @@ public class Day13
         {
             int withSmudge = Summarize(grid);
 
-            foreach (Point2 point in grid.Points)
+            foreach (Point2 point in grid.AllPoints)
             {
                 char temp = grid[point];
                 grid[point] = (temp == '.') ? '#' : '.';

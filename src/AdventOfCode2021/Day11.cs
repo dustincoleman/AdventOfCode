@@ -47,7 +47,7 @@ namespace AdventOfCode2021
             string[] input = File.ReadAllLines("Day11Input.txt");
             Grid2<Octopus> grid = new Grid2<Octopus>(input[0].Length, input.Length);
 
-            foreach (Point2 point in grid.Points)
+            foreach (Point2 point in grid.AllPoints)
             {
                 grid[point] = new Octopus(input[point.Y][point.X] - '0');
             }
@@ -57,19 +57,19 @@ namespace AdventOfCode2021
 
         private long ProcessStep(Grid2<Octopus> grid)
         {
-            foreach (Point2 point in grid.Points)
+            foreach (Point2 point in grid.AllPoints)
             {
                 grid[point].Energy++;
             }
 
-            foreach (Point2 point in grid.Points)
+            foreach (Point2 point in grid.AllPoints)
             {
                 TryFlash(grid, point);
             }
 
-            long flashes = grid.Points.Count(p => grid[p].HasFlashed);
+            long flashes = grid.AllPoints.Count(p => grid[p].HasFlashed);
 
-            foreach (Point2 point in grid.Points)
+            foreach (Point2 point in grid.AllPoints)
             {
                 if (grid[point].HasFlashed)
                 {

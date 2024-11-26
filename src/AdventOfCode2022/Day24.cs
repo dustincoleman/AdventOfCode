@@ -69,7 +69,7 @@ namespace AdventOfCode2022
 
             puzzle.Bounds = new Point2(lines[0].Length - 2, lines.Length - 2);
 
-            foreach (Point2 p in Point2.Quadrant(puzzle.Bounds))
+            foreach (Point2 p in Points.All(puzzle.Bounds))
             {
                 char ch = lines[p.Y + 1][p.X + 1];
                 Blizzard b = null;

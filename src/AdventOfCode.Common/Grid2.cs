@@ -48,7 +48,7 @@ namespace AdventOfCode.Common
             Grid2<T> copyTo = new Grid2<T>(new T[copyFrom.Bounds.X, copyFrom.Bounds.Y], copyFrom.Bounds, copyFrom.pointTransform, copyFrom.valueTransform);
             copyTo.hashcode = copyFrom.hashcode;
 
-            foreach (Point2 point in copyFrom.Points)
+            foreach (Point2 point in copyFrom.AllPoints)
             {
                 copyTo[point] = factory(copyFrom[point]);
             }
@@ -97,11 +97,11 @@ namespace AdventOfCode.Common
 
         public Point2 Bounds { get; }
 
-        public IEnumerable<Point2> Points => Point2.Quadrant(Bounds);
+        public IEnumerable<Point2> AllPoints => Points.All(Bounds);
 
-        public IEnumerable<Point2> EdgePoints => Points.Where(IsEdge);
+        public IEnumerable<Point2> EdgePoints => AllPoints.Where(IsEdge);
 
-        public IEnumerable<Point2> InteriorPoints => Points.Where(p => !IsEdge(p));
+        public IEnumerable<Point2> InteriorPoints => AllPoints.Where(p => !IsEdge(p));
 
         public Grid2ColumnCollection<T> Columns => new Grid2ColumnCollection<T>(this);
 
@@ -120,9 +120,9 @@ namespace AdventOfCode.Common
 
             Grid2<T> output = new Grid2<T>(pieces.Bounds * pieceBounds);
 
-            foreach (Point2 outerPoint in Point2.Quadrant(pieces.Bounds))
+            foreach (Point2 outerPoint in Points.All(pieces.Bounds))
             {
-                foreach (Point2 innerPoint in Point2.Quadrant(pieceBounds))
+                foreach (Point2 innerPoint in Points.All(pieceBounds))
                 {
                     output[(outerPoint * pieceBounds) + innerPoint] = pieces[outerPoint][innerPoint];
                 }
@@ -212,7 +212,7 @@ namespace AdventOfCode.Common
         {
             Grid2<T> newGrid = new Grid2<T>(Bounds + 2);
 
-            foreach (Point2 point in newGrid.Points)
+            foreach (Point2 point in newGrid.AllPoints)
             {
                 if (newGrid.IsEdge(point))
                 {
@@ -256,7 +256,7 @@ namespace AdventOfCode.Common
 
             Grid2<Grid2<T>> pieces = new Grid2<Grid2<T>>(Bounds / pieceSize);
 
-            foreach(Point2 point in Point2.Quadrant(pieces.Bounds))
+            foreach(Point2 point in Points.All(pieces.Bounds))
             {
                 pieces[point] = SubGrid(point * pieceSize, pieceSize);
             }
@@ -268,7 +268,7 @@ namespace AdventOfCode.Common
         {
             Grid2<T> subGrid = new Grid2<T>(size);
 
-            foreach (Point2 point in Point2.Quadrant(size))
+            foreach (Point2 point in Points.All(size))
             {
                 subGrid[point] = this[origin + point];
             }
@@ -334,7 +334,7 @@ namespace AdventOfCode.Common
 
         public IEnumerable<T> Enumerate()
         {
-            foreach (Point2 p in Points)
+            foreach (Point2 p in AllPoints)
             {
                 yield return this[p];
             }
@@ -367,7 +367,7 @@ namespace AdventOfCode.Common
 
             if (left is null || right is null || left.Bounds != right.Bounds) return false;
 
-            foreach (Point2 point in Point2.Quadrant(left.Bounds))
+            foreach (Point2 point in Points.All(left.Bounds))
             {
                 if (!EqualityComparer<T>.Default.Equals(left[point], right[point]))
                 {
