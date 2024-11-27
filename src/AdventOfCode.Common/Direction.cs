@@ -100,6 +100,28 @@
         public bool IsUpOrDown() => IsNorthOrSouth();
         public bool IsLeftOrRight() => IsWestOrEast();
 
+        public string ToArrow()
+        {
+            if (this == Up)
+            {
+                return "^";
+            }
+            if (this == Down)
+            {
+                return "v";
+            }
+            if (this == Left)
+            {
+                return "<";
+            }
+            if (this == Right)
+            {
+                return ">";
+            }
+
+            throw new Exception("Unknown Direction");
+        }
+
         public override string ToString()
         {
             return Name;

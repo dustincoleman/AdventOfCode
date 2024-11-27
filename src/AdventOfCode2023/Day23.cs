@@ -168,6 +168,8 @@ public class Day23
         internal bool IsWall;
         internal Direction Direction;
         internal Point2 Point;
+
+        public override string ToString() => IsWall ? "#" : Direction != null ? Direction.ToArrow() : " ";
     }
 
     private class Graph

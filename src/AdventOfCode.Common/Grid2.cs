@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -302,6 +303,32 @@ namespace AdventOfCode.Common
                 this.Bounds, 
                 this.pointTransform,
                 (this.valueTransform != null) ? v => transform(this.valueTransform(v)) : transform);
+        }
+
+        public DataTable ToDataTable()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add(" ");
+
+            for (int x = 0; x < this.Bounds.X; x++)
+            {
+                dt.Columns.Add(x.ToString());
+            }
+
+            for (int y = 0; y < this.Bounds.Y; ++y)
+            {
+                DataRow row = dt.NewRow();
+                row[0] = y.ToString();
+
+                for (int x = 0; x < this.Bounds.X; x++)
+                {
+                    row[x + 1] = this[x, y];
+                }
+
+                dt.Rows.Add(row);
+            }
+
+            return dt;
         }
 
         public string ToString(Func<T, string> printCell)
