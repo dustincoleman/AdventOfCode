@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023;
+﻿using System.Numerics;
+
+namespace AdventOfCode2023;
 
 public class Day24
 {
@@ -43,14 +45,22 @@ public class Day24
     [Fact]
     public void Part2()
     {
+        List<Stone3> puzzle = File.ReadAllLines("Day24.txt").Select(Stone3.Parse).ToList();
+        List<Equation7> equations = new List<Equation7>();
+
+        BuildEquations(equations, puzzle[0], puzzle[1]);
+        BuildEquations(equations, puzzle[0], puzzle[2]);
+
+        // Solve
+
         int answer = 0;
         Assert.Equal(0, answer);
     }
 
     private double? FindIntersection(Stone2 stone1, Stone2 stone2)
     {
-        Equation x = new Equation() { LeftLinear = stone1.Velocity.X, LeftConstant = stone1.Position.X, RightLinear = stone2.Velocity.X, RightConstant = stone2.Position.X };
-        Equation y = new Equation() { LeftLinear = stone1.Velocity.Y, LeftConstant = stone1.Position.Y, RightLinear = stone2.Velocity.Y, RightConstant = stone2.Position.Y };
+        Equation2 x = new Equation2() { LeftLinear = stone1.Velocity.X, LeftConstant = stone1.Position.X, RightLinear = stone2.Velocity.X, RightConstant = stone2.Position.X };
+        Equation2 y = new Equation2() { LeftLinear = stone1.Velocity.Y, LeftConstant = stone1.Position.Y, RightLinear = stone2.Velocity.Y, RightConstant = stone2.Position.Y };
 
         // Ensure the linear nomials on the right side are signed the same
         if (x.RightLinear < 0)
@@ -68,7 +78,7 @@ public class Day24
         y = y * (lcm / y.RightLinear);
 
         // Subtract the equations
-        Equation diff = x - y;
+        Equation2 diff = x - y;
         if (diff.RightLinear != 0)
         {
             throw new Exception("Unexpected");
@@ -93,6 +103,64 @@ public class Day24
         return t;
     }
 
+    private void BuildEquations(List<Equation7> equations, Stone3 stone1, Stone3 stone2)
+    {
+        // I can't take credit for this one. Chuck shared the following learning:
+        //
+        // Intersection points: p + vt = p' + v't  =>  (p - p') = (v' - v)t
+        // T is just a scalar value, so they are colinear: (p - p') X (v' - v) = 0  =>  (p X v) = (p' X v) + (p X v') - (p' X v')
+        //
+        // Since (p X v) is the same, regardless of which intersection point, the right hand is equatable between all intersections:
+        // (p1 X v) + (p X v1) - (p1 X v1) = (p2 X v) + (p X v2) - (p2 X v2)
+        //
+        // Simplifying:
+        // (p1 X v) - (p2 X v) + (p X v1) - (p X v2) = (p1 X v1) - (p2 X v2)  [Solvable to Right]
+        // ((p1 - p2) X v) + (p X (v1 - v2))         = (p1 X v1) - (p2 X v2)  [X Distributive]
+        // (v X (p2 - p1)) + (p X (v1 - v2))         = (p1 X v1) - (p2 X v2)  [X Anticommutative]
+        // (p X (v1 - v2)) + (v X (p2 - p1))         = (p1 X v1) - (p2 X v2)  [p before v]
+        //
+        // By component: let pDiff = p2 - p1, vDiff = v1 - v2, and cDiff = (p1 X v1) - (p2 X v2).
+        // We have: (p X vDiff) + (v X pDiff) = cDiff
+        //
+        // x:  (p.x * 0)       + (p.y * vDiff.z) - (p.z * vDiff.y) + (v.x * 0) +       (v.y * pDiff.z) - (v.z * pDiff.y) = cDiff.x
+        // y: -(p.x * vDiff.z) + (p.y * 0)       + (p.z * vDiff.x) - (v.x * pDiff.z) + (v.y * 0)       + (v.z * pDiff.x) = cDiff.y
+        // z:  (p.x * vDiff.y) - (p.y * vDiff.x) + (p.z * 0)       + (v.x * pDiff.y) - (v.y * pDiff.x) + (v.z * 0)       = cDiff.z
+
+        Point3<long> pDiff = stone2.Position - stone1.Position;
+        Point3<long> vDiff = stone1.Velocity - stone2.Velocity;
+        Point3<long> cDiff = stone1.Position.Cross(stone1.Velocity) - stone2.Position.Cross(stone2.Velocity);
+
+        equations.Add(
+            new Equation7()
+            {
+                Y = vDiff.Z,
+                Z = -vDiff.Y,
+                Vy = pDiff.Z,
+                Vz = pDiff.Y,
+                Answer = cDiff.X
+            });
+
+        equations.Add(
+            new Equation7()
+            {
+                X = -vDiff.Z,
+                Z = vDiff.X,
+                Vx = -pDiff.Z,
+                Vz = pDiff.X,
+                Answer = cDiff.Y
+            });
+
+        equations.Add(
+            new Equation7()
+            {
+                X = vDiff.Z,
+                Y = -vDiff.X,
+                Vx = pDiff.Z,
+                Vz = -pDiff.X,
+                Answer = cDiff.Z
+            });
+    }
+
 
     internal class Stone2
     {
@@ -115,7 +183,28 @@ public class Day24
         }
     }
 
-    internal class Equation
+    internal class Stone3
+    {
+        internal Point3<long> Position;
+        internal Point3<long> Velocity;
+
+        internal static Stone3 Parse(string line)
+        {
+            string[] parts = line.Split('@');
+            return new Stone3()
+            {
+                Position = Point3<long>.Parse(parts[0]),
+                Velocity = Point3<long>.Parse(parts[1])
+            };
+        }
+
+        internal Point3<double> At(double time)
+        {
+            return (Velocity.As<double>() * time) + Position.As<double>();
+        }
+    }
+
+    internal class Equation2
     {
         private static StringBuilder sb = new StringBuilder();
 
@@ -124,8 +213,8 @@ public class Day24
         internal long RightLinear { get; init; }
         internal long RightConstant { get; init; }
 
-        public static Equation operator -(Equation left, Equation right) =>
-            new Equation()
+        public static Equation2 operator -(Equation2 left, Equation2 right) =>
+            new Equation2()
             {
                 LeftLinear = left.LeftLinear - right.LeftLinear,
                 LeftConstant = left.LeftConstant - right.LeftConstant,
@@ -133,8 +222,8 @@ public class Day24
                 RightConstant = left.RightConstant - right.RightConstant
             };
 
-        public static Equation operator -(Equation e, long i) =>
-            new Equation()
+        public static Equation2 operator -(Equation2 e, long i) =>
+            new Equation2()
             {
                 LeftLinear = e.LeftLinear,
                 LeftConstant = e.LeftConstant - i,
@@ -142,8 +231,8 @@ public class Day24
                 RightConstant = e.RightConstant - i
             };
 
-        public static Equation operator *(Equation e, long i) =>
-            new Equation()
+        public static Equation2 operator *(Equation2 e, long i) =>
+            new Equation2()
             {
                 LeftLinear = e.LeftLinear * i,
                 LeftConstant = e.LeftConstant * i,
@@ -231,5 +320,18 @@ public class Day24
 
             return str;
         }
+    }
+
+    internal class Equation7
+    {
+        internal double X { get; init; }
+        internal double Y { get; init; }
+        internal double Z { get; init; }
+        internal double Vx { get; init; }
+        internal double Vy { get; init; }
+        internal double Vz { get; init; }
+        internal double Answer { get; init; }
+
+        public override string ToString() => $"X:{X}, Y:{Y}, Z:{Z}, Vx:{Vx}, Vy:{Vy}, Vz:{Vz} = {Answer}";
     }
 }

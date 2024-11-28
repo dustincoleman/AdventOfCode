@@ -49,6 +49,14 @@ namespace AdventOfCode.Common
 
         public bool IsUniform() => (X == Y && Y == Z);
 
+        public Point3<T> Cross(Point3<T> other)
+        {
+            return new Point3<T>(
+                x: this.Y * other.Z - this.Z * other.Y,
+                y: this.Z * other.X - this.X * other.Z,
+                z: this.X * other.Y - this.Y * other.X);
+        }
+
         public void Deconstruct(out T x, out T y, out T z)
         {
             x = X;
