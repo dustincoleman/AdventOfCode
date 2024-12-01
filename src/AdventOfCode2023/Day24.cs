@@ -50,10 +50,9 @@ public class Day24
 
         BuildEquations(equations, puzzle[0], puzzle[1]);
         BuildEquations(equations, puzzle[0], puzzle[2]);
+        SolveSystem(equations);
 
-        // Solve
-
-        int answer = 0;
+        long answer = equations.Take(3).Sum(eq => Convert.ToInt64(eq.Answer));
         Assert.Equal(0, answer);
     }
 
@@ -136,7 +135,7 @@ public class Day24
                 Y = vDiff.Z,
                 Z = -vDiff.Y,
                 Vy = pDiff.Z,
-                Vz = pDiff.Y,
+                Vz = -pDiff.Y,
                 Answer = cDiff.X
             });
 
@@ -153,14 +152,84 @@ public class Day24
         equations.Add(
             new Equation7()
             {
-                X = vDiff.Z,
+                X = vDiff.Y,
                 Y = -vDiff.X,
-                Vx = pDiff.Z,
+                Vx = pDiff.Y,
                 Vz = -pDiff.X,
                 Answer = cDiff.Z
             });
     }
 
+    private void SolveSystem(List<Equation7> equations)
+    {
+        // Reduce to row echelon form
+        int pivotRow = 0;
+        int pivotColumn = 0;
+
+        while (pivotRow < 6 && pivotColumn < 7)
+        {
+            int rowMax = RowMax(pivotRow, pivotColumn, equations);
+
+            if (equations[rowMax][pivotColumn] == 0)
+            {
+                pivotColumn++;
+            }
+            else
+            {
+                (equations[pivotRow], equations[rowMax]) = (equations[rowMax], equations[pivotRow]);
+
+                for (int row = pivotRow + 1; row < 6; row++)
+                {
+                    double div = equations[row][pivotColumn] / equations[pivotRow][pivotColumn];
+
+                    equations[row][pivotColumn] = 0;
+
+                    for (int col = pivotColumn + 1; col < 7; col++)
+                    {
+                        equations[row][col] = equations[row][col] - equations[pivotRow][col] * div;
+                    }
+                }
+
+                pivotRow++;
+                pivotColumn++;
+            }
+        }
+
+        // Solve
+        for (int pivot = 5; pivot >= 0; pivot--)
+        {
+            Equation7 eq = equations[pivot];
+
+            for (int col = 5; col > pivot; col--)
+            {
+                double subst = eq[col] * equations[col].Answer;
+                eq.Answer -= subst;
+                eq[col] = 0;
+            }
+
+            long answer = Convert.ToInt64(eq.Answer / eq[pivot]);
+            eq[pivot] = 1;
+            eq.Answer = Convert.ToDouble(answer);
+        }
+    }
+
+    private int RowMax(int pivotRow, int pivotColumn, List<Equation7> equations)
+    {
+        int rowMax = pivotRow;
+        double max = 0;
+
+        for (int row = pivotRow; row < equations.Count; row++)
+        {
+            double value = Math.Abs(equations[row][pivotColumn]);
+            if (value > max)
+            {
+                rowMax = row;
+                max = value;
+            }
+        }
+
+        return rowMax;
+    }
 
     internal class Stone2
     {
@@ -324,13 +393,45 @@ public class Day24
 
     internal class Equation7
     {
-        internal double X { get; init; }
-        internal double Y { get; init; }
-        internal double Z { get; init; }
-        internal double Vx { get; init; }
-        internal double Vy { get; init; }
-        internal double Vz { get; init; }
-        internal double Answer { get; init; }
+        internal double X;
+        internal double Y;
+        internal double Z;
+        internal double Vx;
+        internal double Vy;
+        internal double Vz;
+        internal double Answer;
+
+        internal double this[int pos]
+        {
+            get
+            {
+                switch (pos)
+                {
+                    case 0: return X;
+                    case 1: return Y;
+                    case 2: return Z;
+                    case 3: return Vx;
+                    case 4: return Vy;
+                    case 5: return Vz;
+                    case 6: return Answer;
+                    default: throw new ArgumentOutOfRangeException();
+                }
+            }
+            set
+            {
+                switch (pos)
+                {
+                    case 0: X = value; break;
+                    case 1: Y = value; break;
+                    case 2: Z = value; break;
+                    case 3: Vx = value; break;
+                    case 4: Vy = value; break;
+                    case 5: Vz = value; break;
+                    case 6: Answer = value; break;
+                    default: throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
 
         public override string ToString() => $"X:{X}, Y:{Y}, Z:{Z}, Vx:{Vx}, Vy:{Vy}, Vz:{Vz} = {Answer}";
     }
