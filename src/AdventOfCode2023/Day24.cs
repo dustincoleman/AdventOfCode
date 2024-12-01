@@ -53,7 +53,7 @@ public class Day24
         SolveSystem(equations);
 
         long answer = equations.Take(3).Sum(eq => Convert.ToInt64(eq.Answer));
-        Assert.Equal(0, answer);
+        Assert.Equal(871983857253169, answer);
     }
 
     private double? FindIntersection(Stone2 stone1, Stone2 stone2)
@@ -155,7 +155,7 @@ public class Day24
                 X = vDiff.Y,
                 Y = -vDiff.X,
                 Vx = pDiff.Y,
-                Vz = -pDiff.X,
+                Vy = -pDiff.X,
                 Answer = cDiff.Z
             });
     }
@@ -433,6 +433,6 @@ public class Day24
             }
         }
 
-        public override string ToString() => $"X:{X}, Y:{Y}, Z:{Z}, Vx:{Vx}, Vy:{Vy}, Vz:{Vz} = {Answer}";
+        public override string ToString() => $"X:{X:0.0000}, Y:{Y:0.0000}, Z:{Z:0.0000}, Vx:{Vx:0.0000}, Vy:{Vy:0.0000}, Vz:{Vz:0.0000} = {Answer:0.0000}";
     }
 }
