@@ -6,13 +6,12 @@
         public void Part1()
         {
             string input = File.ReadAllText("Day03.txt");
-            Regex regex = new Regex(@"mul\(\d+,\d+\)");
+            Regex regex = new Regex(@"mul\((\d+,\d+)\)");
             int answer = 0;
 
             foreach (Match match in regex.Matches(input))
             {
-                int[] ints = match.Value.Substring(4, match.Length - 5).Split(',').Select(int.Parse).ToArray();
-                answer += ints[0] * ints[1];
+                answer += Point2.Parse(match.Groups[1].Value).Product();
             }
 
             Assert.Equal(expected: 166357705, answer);
@@ -22,7 +21,7 @@
         public void Part2()
         {
             string input = File.ReadAllText("Day03.txt");
-            Regex regex = new Regex(@"(mul\(\d+,\d+\))|(do\(\))|(don't\(\))");
+            Regex regex = new Regex(@"mul\((\d+,\d+)\)|do\(\)|don't\(\)");
             int answer = 0;
             bool enabled = true;
 
@@ -38,8 +37,7 @@
                 }
                 else if (enabled)
                 {
-                    int[] ints = match.Value.Substring(4, match.Length - 5).Split(',').Select(int.Parse).ToArray();
-                    answer += ints[0] * ints[1];
+                    answer += Point2.Parse(match.Groups[1].Value).Product();
                 }
             }
 
