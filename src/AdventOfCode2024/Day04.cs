@@ -13,11 +13,17 @@ namespace AdventOfCode2024
 
             bool IsMatch(Point2<int> pt, Point2<int> direction, Grid2<char> puzzle)
             {
-                return
-                    puzzle[pt] == 'X' &&
-                    puzzle.InBounds(pt + direction) && puzzle[pt + direction] == 'M' &&
-                    puzzle.InBounds(pt + (direction * 2)) && puzzle[pt + (direction * 2)] == 'A' &&
-                    puzzle.InBounds(pt + (direction * 3)) && puzzle[pt + (direction * 3)] == 'S';
+                foreach (char ch in "XMAS")
+                {
+                    if (!puzzle.InBounds(pt) || puzzle[pt] != ch)
+                    {
+                        return false;
+                    }
+
+                    pt += direction;
+                }
+
+                return true;
             }
 
             int answer = puzzle.AllPoints.Sum(pt => Point2.Zero.Surrounding().Count(dir => IsMatch(pt, dir, puzzle)));
