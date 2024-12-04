@@ -17,7 +17,7 @@ namespace AdventOfCode2024
                     puzzle[pt] == 'X' &&
                     puzzle.InBounds(pt + direction) && puzzle[pt + direction] == 'M' &&
                     puzzle.InBounds(pt + (direction * 2)) && puzzle[pt + (direction * 2)] == 'A' &&
-                    puzzle.InBounds(pt + direction * 3) && puzzle[pt + (direction * 3)] == 'S';
+                    puzzle.InBounds(pt + (direction * 3)) && puzzle[pt + (direction * 3)] == 'S';
             }
 
             int answer = puzzle.AllPoints.Sum(pt => Point2.Zero.Surrounding().Count(dir => IsMatch(pt, dir, puzzle)));
