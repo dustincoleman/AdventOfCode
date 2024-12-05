@@ -20,7 +20,7 @@ namespace AdventOfCode.Common
 
         public static Point2<T> Parse(string input)
         {
-            string[] parts = input.Split([',', ' '], StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = input.Split(['|', ',', ' '], StringSplitOptions.RemoveEmptyEntries);
             return new Point2<T>(T.Parse(parts[0], provider: null), T.Parse(parts[1], provider: null));
         }
 
