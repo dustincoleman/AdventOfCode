@@ -6,8 +6,8 @@
         public void Part1()
         {
             string[][] puzzle = PuzzleFile.ReadAllLineGroups("Day05.txt");
-            Dictionary<int, HashSet<int>> rules = LoadRules(puzzle[0]);
-            List<int[]> updates = LoadUpdates(puzzle[1]);
+            HashSet<Point2> rules = new HashSet<Point2>(puzzle[0].Select(Point2.Parse));
+            List<int[]> updates = puzzle[1].Select(line => line.Split(',').Select(int.Parse).ToArray()).ToList();
 
             int answer = 0;
 
@@ -17,7 +17,7 @@
 
                 for (int i = 0; i < update.Length - 1; i++)
                 {
-                    if (rules.TryGetValue(update[i + 1], out HashSet<int> hashSet) && hashSet.Contains(update[i]))
+                    if (rules.Contains((update[i + 1], update[i])))
                     {
                         correct = false;
                     }
@@ -36,8 +36,8 @@
         public void Part2()
         {
             string[][] puzzle = PuzzleFile.ReadAllLineGroups("Day05.txt");
-            Dictionary<int, HashSet<int>> rules = LoadRules(puzzle[0]);
-            List<int[]> updates = LoadUpdates(puzzle[1]);
+            HashSet<Point2> rules = new HashSet<Point2>(puzzle[0].Select(Point2.Parse));
+            List<int[]> updates = puzzle[1].Select(line => line.Split(',').Select(int.Parse).ToArray()).ToList();
 
             int answer = 0;
 
@@ -51,7 +51,7 @@
 
                     for (int i = 0; i < update.Length - 1; i++)
                     {
-                        if (rules.TryGetValue(update[i + 1], out HashSet<int> hashSet) && hashSet.Contains(update[i]))
+                        if (rules.Contains((update[i + 1], update[i])))
                         {
                             correct = false;
                             corrected = true;
@@ -67,38 +67,6 @@
             }
 
             Assert.Equal(5331, answer);
-        }
-
-        private Dictionary<int, HashSet<int>> LoadRules(string[] rulesText)
-        {
-            Dictionary<int, HashSet<int>> rules = new Dictionary<int, HashSet<int>>();
-
-            foreach (string line in rulesText)
-            {
-                int[] rule = line.Split('|').Select(int.Parse).ToArray();
-
-                if (!rules.TryGetValue(rule[0], out HashSet<int> hashSet))
-                {
-                    hashSet = new HashSet<int>();
-                    rules.Add(rule[0], hashSet);
-                }
-
-                hashSet.Add(rule[1]);
-            }
-
-            return rules;
-        }
-
-        private List<int[]> LoadUpdates(string[] updatesText)
-        {
-            List<int[]> updates = new List<int[]>();
-
-            foreach (string line in updatesText)
-            {
-                updates.Add(line.Split(',').Select(int.Parse).ToArray());
-            }
-
-            return updates;
         }
     }
 }
