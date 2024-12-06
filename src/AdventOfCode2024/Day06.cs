@@ -41,24 +41,10 @@
             {
                 visited.Add(pos);
 
-                Point2 next = pos + direction;
-                if (!puzzle.InBounds(next))
+                if (!TryMoveNext(puzzle, ref pos, ref direction))
                 {
-                    return visited;
+                    break;
                 }
-
-                while (puzzle[next] == '#')
-                {
-                    direction = direction.TurnRight();
-                    next = pos + direction;
-
-                    if (!puzzle.InBounds(next))
-                    {
-                        return visited;
-                    }
-                }
-
-                pos = next;
             }
 
             return visited;
@@ -79,27 +65,36 @@
                 bitVector[(int)direction] = true;
                 visited[pos] = bitVector;
 
-                Point2 next = pos + direction;
+                if (!TryMoveNext(puzzle, ref pos, ref direction, obstruction))
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        private bool TryMoveNext(Grid2<char> puzzle, ref Point2 pos, ref Direction direction, Point2? obstruction = null)
+        {
+            Point2 next = pos + direction;
+            if (!puzzle.InBounds(next))
+            {
+                return false;
+            }
+
+            while (puzzle[next] == '#' || (obstruction.HasValue && next == obstruction))
+            {
+                direction = direction.TurnRight();
+                next = pos + direction;
+
                 if (!puzzle.InBounds(next))
                 {
                     return false;
                 }
-
-                while (puzzle[next] == '#' || next == obstruction)
-                {
-                    direction = direction.TurnRight();
-                    next = pos + direction;
-
-                    if (!puzzle.InBounds(next))
-                    {
-                        return false;
-                    }
-                }
-
-                pos = next;
             }
 
-            return false;
+            pos = next;
+            return true;
         }
     }
 }
