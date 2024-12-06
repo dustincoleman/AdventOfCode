@@ -162,5 +162,30 @@
             "e" or "east" or "r" or "right" or ">" => East,
             _ => null
         };
+
+        public static explicit operator int(Direction direction)
+        {
+            if (direction == Up)
+            {
+                return 0;
+            }
+            if (direction == Down)
+            {
+                return 1;
+            }
+            if (direction == Left)
+            {
+                return 2;
+            }
+            if (direction == Right)
+            {
+                return 3;
+            }
+
+            throw new Exception("Unknown Direction");
+        }
+
+        public static Point2 operator +(Point2 p, Direction d) => p + d.Unit;
+        public static Point2 operator -(Point2 p, Direction d) => p - d.Unit;
     }
 }

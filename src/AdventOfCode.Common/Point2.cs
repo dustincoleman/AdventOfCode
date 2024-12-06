@@ -60,12 +60,10 @@ namespace AdventOfCode.Common
 
         public static Point2<T> operator +(Point2<T> p) => p;
         public static Point2<T> operator +(Point2<T> p, T i) => new Point2<T>(p.X + i, p.Y + i);
-        public static Point2<T> operator +(Point2<T> p, Direction d) => p + d.Unit.As<T>();
         public static Point2<T> operator +(Point2<T> left, Point2<T> right) => new Point2<T>(left.X + right.X, left.Y + right.Y);
 
         public static Point2<T> operator -(Point2<T> p) => new Point2<T>(-p.X, -p.Y);
         public static Point2<T> operator -(Point2<T> p, T i) => new Point2<T>(p.X - i, p.Y - i);
-        public static Point2<T> operator -(Point2<T> p, Direction d) => p - d.Unit.As<T>();
         public static Point2<T> operator -(Point2<T> left, Point2<T> right) => new Point2<T>(left.X - right.X, left.Y - right.Y);
 
         public static Point2<T> operator *(Point2<T> p, T i) => new Point2<T>(p.X * i, p.Y * i);
