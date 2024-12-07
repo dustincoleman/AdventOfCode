@@ -55,5 +55,28 @@ namespace AdventOfCode.Common
             }
             if (pt.X > T.Zero) yield return pt - Point2<T>.UnitX; // Left
         }
+
+        public static IEnumerable<Point2<T>> LineTo<T>(this Point2<T> pt, Point2<T> other) where T : INumber<T>
+        {
+            if (pt.X != other.X && pt.Y != other.Y)
+            {
+                throw new InvalidOperationException("Only supported for vertical and horizontal lines");
+            }
+
+            Point2<T> increment = pt.SignToward(other);
+
+            yield return pt;
+
+            while (pt != other)
+            {
+                pt += increment;
+                yield return pt;
+            }
+        }
+
+        public static Point2<T> SignToward<T>(this Point2<T> pt, Point2<T> other) where T : INumber<T>
+        {
+            return (other - pt).Sign().As<T>();
+        }
     }
 }

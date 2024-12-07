@@ -34,6 +34,17 @@ namespace AdventOfCode.Common
             (IsHorizontal) ? T.Abs(First.X - Second.X) :
             throw new InvalidOperationException("Only supported for vertical and horizontal lines");
 
+        public IEnumerable<Point2<T>> AllPoints => First.LineTo(Second);
+
+        public bool Contains(Point2<T> point)
+        {
+            return
+                IsPoint ? (point == First) :
+                IsVertical ? (point.X == First.X && ((point.Y >= First.Y && point.Y <= Second.Y) || (point.Y <= First.Y && point.Y >= Second.Y))) :
+                IsHorizontal ? (point.Y == First.Y && ((point.X >= First.X && point.X <= Second.X) || (point.X <= First.X && point.X >= Second.X))) :
+                throw new InvalidOperationException("Only supported for vertical and horizontal lines");
+        }
+
         public bool Equals(Line2<T> other) => (this == other);
 
         public override bool Equals([NotNullWhen(true)] object obj) => (obj is Line2<T> other && this.Equals(other));
