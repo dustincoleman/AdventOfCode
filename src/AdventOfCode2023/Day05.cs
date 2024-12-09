@@ -30,7 +30,7 @@ public class Day05
     {
         Puzzle puzzle = LoadPuzzle();
         PuzzleMap flatMap = FlattenMaps(puzzle.Maps);
-        BigInteger answer = long.MaxValue << 64 | long.MaxValue;
+        BigInteger answer = ulong.MaxValue << 64 | ulong.MaxValue;
 
         for (int i = 0; i < puzzle.Seeds.Count; i += 2)
         {
