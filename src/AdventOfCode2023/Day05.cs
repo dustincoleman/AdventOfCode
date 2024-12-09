@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023;
+﻿using System.Numerics;
+
+namespace AdventOfCode2023;
 
 public class Day05
 {
@@ -6,18 +8,18 @@ public class Day05
     public void Part1()
     {
         Puzzle puzzle = LoadPuzzle();
-        long answer = long.MaxValue;
+        BigInteger answer = long.MaxValue;
 
         foreach (long seed in puzzle.Seeds)
         {
-            long l = seed;
+            BigInteger l = seed;
 
             foreach (PuzzleMap map in puzzle.Maps)
             {
                 l = map.MapValue(l);
             }
 
-            answer = Math.Min(answer, l);
+            answer = BigInteger.Min(answer, l);
         }
 
         Assert.Equal(289863851, answer);
@@ -28,7 +30,7 @@ public class Day05
     {
         Puzzle puzzle = LoadPuzzle();
         PuzzleMap flatMap = FlattenMaps(puzzle.Maps);
-        long answer = long.MaxValue;
+        BigInteger answer = long.MaxValue << 64 | long.MaxValue;
 
         for (int i = 0; i < puzzle.Seeds.Count; i += 2)
         {
@@ -41,7 +43,7 @@ public class Day05
 
             foreach (PuzzleMapEntry entry in flatMap.MapRange(seedEntry))
             {
-                answer = Math.Min(answer, entry.Destination.Begin);
+                answer = BigInteger.Min(answer, entry.Destination.Begin);
             }
         }
 
@@ -189,7 +191,7 @@ public class Day05
             return newMap;
         }
 
-        public long MapValue(long value)
+        public BigInteger MapValue(BigInteger value)
         {
             foreach (var entry in Entries)
             {
@@ -206,14 +208,14 @@ public class Day05
         {
             List<PuzzleMapEntry> list = new List<PuzzleMapEntry>();
 
-            long sourcePos = source.Source.Begin;
-            long destPos = source.Destination.Begin;
+            BigInteger sourcePos = source.Source.Begin;
+            BigInteger destPos = source.Destination.Begin;
 
             while (sourcePos <= source.Source.End)
             {
                 PuzzleMapEntry match = Entries.First(e => e.Source.Begin <= destPos && e.Source.End >= destPos);
-                long matchLength = Math.Min(match.Source.End - destPos + 1, source.Source.End - sourcePos + 1);
-                long offset = destPos - match.Source.Begin;
+                BigInteger matchLength = BigInteger.Min(match.Source.End - destPos + 1, source.Source.End - sourcePos + 1);
+                BigInteger offset = destPos - match.Source.Begin;
 
                 PuzzleMapEntry mappedEntry = new PuzzleMapEntry()
                 {
@@ -244,10 +246,10 @@ public class Day05
 
     private class PuzzleMapRange
     {
-        public long Begin;
-        public long End;
+        public BigInteger Begin;
+        public BigInteger End;
 
-        public PuzzleMapRange(long begin, long end)
+        public PuzzleMapRange(BigInteger begin, BigInteger end)
         {
             Begin = begin;
             End = end;
