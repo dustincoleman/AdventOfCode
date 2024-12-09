@@ -42,11 +42,11 @@ namespace AdventOfCode.Common
 
         public Point2 Sign() => new Point2(T.Sign(X), T.Sign(Y));
 
-        public T Sum() => checked(X + Y);
+        public T Sum() => X + Y;
 
-        public T Product() => checked(X * Y);
+        public T Product() => X * Y;
 
-        public T Manhattan() => checked(T.Abs(X) + T.Abs(Y));
+        public T Manhattan() => T.Abs(X) + T.Abs(Y);
 
         public bool IsUniform() => (X == Y);
 

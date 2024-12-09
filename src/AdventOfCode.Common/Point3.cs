@@ -41,20 +41,20 @@ namespace AdventOfCode.Common
             return new Point3<T>(T.Max(left.X, right.X), T.Max(left.Y, right.Y), T.Max(left.Z, right.Z));
         }
 
-        public T Sum() => checked(X + Y + Z);
+        public T Sum() => X + Y + Z;
 
-        public T Product() => checked(X * Y * Z);
+        public T Product() => X * Y * Z;
 
-        public T Manhattan() => checked(T.Abs(X) + T.Abs(Y) + T.Abs(Z));
+        public T Manhattan() => T.Abs(X) + T.Abs(Y) + T.Abs(Z);
 
         public bool IsUniform() => (X == Y && Y == Z);
 
         public Point3<T> Cross(Point3<T> other)
         {
             return new Point3<T>(
-                x: checked(this.Y * other.Z - this.Z * other.Y),
-                y: checked(this.Z * other.X - this.X * other.Z),
-                z: checked(this.X * other.Y - this.Y * other.X));
+                x: this.Y * other.Z - this.Z * other.Y,
+                y: this.Z * other.X - this.X * other.Z,
+                z: this.X * other.Y - this.Y * other.X);
         }
 
         public void Deconstruct(out T x, out T y, out T z)
