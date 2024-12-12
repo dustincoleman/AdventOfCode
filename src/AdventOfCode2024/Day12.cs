@@ -85,27 +85,23 @@
         private int CountSides(Grid2<Plot> puzzle, List<Plot> plotGroup)
         {
             int sides = 0;
-            List<Plot>[] fencePointsBySide = [new List<Plot>(), new List<Plot>(), new List<Plot>(), new List<Plot>()];
-
-            // Find all of the fence segments for each side of the plots
-            foreach (Plot plot in plotGroup)
+            
+            foreach (Direction side in Direction.All())
             {
-                foreach (Direction side in Direction.All())
+                List<Plot> fencePoints = new List<Plot>();
+                Direction direction = side.TurnRight();
+
+                // Find all the fence segments for this side of the plots
+                foreach (Plot plot in plotGroup)
                 {
                     Point2 pt = plot.Location + side;
                     if (!puzzle.InBounds(pt) || puzzle[pt].Plant != plot.Plant)
                     {
-                        fencePointsBySide[(int)side].Add(new Plot(plot.Location, plot.Plant));
+                        fencePoints.Add(new Plot(plot.Location, plot.Plant));
                     }
                 }
-            }
 
-            // Count the fences
-            foreach (Direction side in Direction.All())
-            {
-                List<Plot> fencePoints = fencePointsBySide[(int)side];
-                Direction direction = side.TurnRight();
-
+                // Count the distinct sides
                 foreach (Plot plot in fencePoints)
                 {
                     // Find the next segment we haven't visited
