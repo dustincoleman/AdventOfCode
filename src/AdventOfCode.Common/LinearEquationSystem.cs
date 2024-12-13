@@ -23,7 +23,7 @@ namespace AdventOfCode.Common
             this.equations.Add(equation);
         }
 
-        public bool SolveAsInteger()
+        public bool SolveAsIntegers()
         {
             if (this.equations.Count + 1 != this.equationLength)
             {
@@ -47,12 +47,8 @@ namespace AdventOfCode.Common
                     (equations[pivot], equations[rowMax]) = (equations[rowMax], equations[pivot]);
 
                     // Find the least common multiple of all the coefficients in the current column
-                    List<BigInteger> coefficients = new List<BigInteger>();
-                    for (int row = pivot; row < this.equations.Count; row++)
-                    {
-                        coefficients.Add(equations[row][pivot]);
-                    }
-                    BigInteger lcm = MathHelpers.LeastCommonMultiple(coefficients.Where(c => c != 0));
+                    IEnumerable<BigInteger> coefficients = this.Select(eq => eq[pivot]).Where(i => i != 0);
+                    BigInteger lcm = MathHelpers.LeastCommonMultiple(coefficients);
 
                     // Scale all the rows such that the current column coefficients are the same
                     for (int row = pivot; row < this.equations.Count; row++)

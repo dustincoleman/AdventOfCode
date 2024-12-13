@@ -50,7 +50,7 @@ public class Day24
 
         BuildEquations(system, puzzle[0], puzzle[1]);
         BuildEquations(system, puzzle[0], puzzle[2]);
-        Assert.True(system.SolveAsInteger());
+        Assert.True(system.SolveAsIntegers());
 
         long answer = system.Take(3).Sum(eq => (long)eq.Answer);
         Assert.Equal(871983857253169, answer);
