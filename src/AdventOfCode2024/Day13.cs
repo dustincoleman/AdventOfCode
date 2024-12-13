@@ -42,13 +42,13 @@ namespace AdventOfCode2024
 
             foreach (Machine machine in puzzle)
             {
-                List<Equation3> system = new List<Equation3>()
+                LinearEquationSystem system = new LinearEquationSystem()
                 {
-                    new Equation3() { A = machine.A.X, B = machine.B.X, Answer = machine.Prize.X },
-                    new Equation3() { A = machine.A.Y, B = machine.B.Y, Answer = machine.Prize.Y },
+                    new LinearEquation(machine.A.X, machine.B.X, machine.Prize.X),
+                    new LinearEquation(machine.A.Y, machine.B.Y, machine.Prize.Y ),
                 };
 
-                SolveSystem(system);
+                system.Solve();
 
                 if (system[0].Answer > 0 && system[1].Answer > 0)
                 {
@@ -66,110 +66,6 @@ namespace AdventOfCode2024
             return result;
         }
 
-        private void SolveSystem(List<Equation3> equations)
-        {
-            // Reduce to row echelon form
-            int pivotRow = 0;
-            int pivotColumn = 0;
-
-            while (pivotRow < 2 && pivotColumn < 3)
-            {
-                int rowMax = RowMax(pivotRow, pivotColumn, equations);
-
-                if (equations[rowMax][pivotColumn] == 0)
-                {
-                    pivotColumn++;
-                }
-                else
-                {
-                    (equations[pivotRow], equations[rowMax]) = (equations[rowMax], equations[pivotRow]);
-
-                    for (int row = pivotRow + 1; row < 2; row++)
-                    {
-                        double div = equations[row][pivotColumn] / equations[pivotRow][pivotColumn];
-
-                        equations[row][pivotColumn] = 0;
-
-                        for (int col = pivotColumn + 1; col < 3; col++)
-                        {
-                            equations[row][col] = equations[row][col] - equations[pivotRow][col] * div;
-                        }
-                    }
-
-                    pivotRow++;
-                    pivotColumn++;
-                }
-            }
-
-            // Solve
-            for (int pivot = 1; pivot >= 0; pivot--)
-            {
-                Equation3 eq = equations[pivot];
-
-                for (int col = 1; col > pivot; col--)
-                {
-                    double subst = eq[col] * equations[col].Answer;
-                    eq.Answer -= subst;
-                    eq[col] = 0;
-                }
-
-                long answer = Convert.ToInt64(eq.Answer / eq[pivot]);
-                eq[pivot] = 1;
-                eq.Answer = Convert.ToDouble(answer);
-            }
-        }
-
-        private int RowMax(int pivotRow, int pivotColumn, List<Equation3> equations)
-        {
-            int rowMax = pivotRow;
-            double max = 0;
-
-            for (int row = pivotRow; row < equations.Count; row++)
-            {
-                double value = Math.Abs(equations[row][pivotColumn]);
-                if (value > max)
-                {
-                    rowMax = row;
-                    max = value;
-                }
-            }
-
-            return rowMax;
-        }
-
         private record Machine(Point2<long> A, Point2<long> B, Point2<long> Prize);
-
-        private class Equation3
-        {
-            internal double A;
-            internal double B;
-            internal double Answer;
-
-            internal double this[int pos]
-            {
-                get
-                {
-                    switch (pos)
-                    {
-                        case 0: return A;
-                        case 1: return B;
-                        case 2: return Answer;
-                        default: throw new ArgumentOutOfRangeException();
-                    }
-                }
-                set
-                {
-                    switch (pos)
-                    {
-                        case 0: A = value; break;
-                        case 1: B = value; break;
-                        case 2: Answer = value; break;
-                        default: throw new ArgumentOutOfRangeException();
-                    }
-                }
-            }
-
-            public override string ToString() => $"A:{A:0.0000}, B:{B:0.0000} = {Answer:0.0000}";
-        }
     }
 }

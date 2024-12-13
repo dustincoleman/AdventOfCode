@@ -46,13 +46,13 @@ public class Day24
     public void Part2()
     {
         List<Stone3> puzzle = File.ReadAllLines("Day24.txt").Select(Stone3.Parse).ToList();
-        List<Equation7> equations = new List<Equation7>();
+        LinearEquationSystem system = new LinearEquationSystem();
 
-        BuildEquations(equations, puzzle[0], puzzle[1]);
-        BuildEquations(equations, puzzle[0], puzzle[2]);
-        SolveSystem(equations);
+        BuildEquations(system, puzzle[0], puzzle[1]);
+        BuildEquations(system, puzzle[0], puzzle[2]);
+        system.Solve();
 
-        long answer = equations.Take(3).Sum(eq => Convert.ToInt64(eq.Answer));
+        long answer = system.Take(3).Sum(eq => Convert.ToInt64(eq.Answer));
         Assert.Equal(871983857253169, answer);
     }
 
@@ -102,7 +102,7 @@ public class Day24
         return t;
     }
 
-    private void BuildEquations(List<Equation7> equations, Stone3 stone1, Stone3 stone2)
+    private void BuildEquations(LinearEquationSystem system, Stone3 stone1, Stone3 stone2)
     {
         // I can't take credit for this one. Chuck shared the following learning:
         //
@@ -129,106 +129,9 @@ public class Day24
         Point3<long> vDiff = stone1.Velocity - stone2.Velocity;
         Point3<long> cDiff = stone1.Position.Cross(stone1.Velocity) - stone2.Position.Cross(stone2.Velocity);
 
-        equations.Add(
-            new Equation7()
-            {
-                Y = vDiff.Z,
-                Z = -vDiff.Y,
-                Vy = pDiff.Z,
-                Vz = -pDiff.Y,
-                Answer = cDiff.X
-            });
-
-        equations.Add(
-            new Equation7()
-            {
-                X = -vDiff.Z,
-                Z = vDiff.X,
-                Vx = -pDiff.Z,
-                Vz = pDiff.X,
-                Answer = cDiff.Y
-            });
-
-        equations.Add(
-            new Equation7()
-            {
-                X = vDiff.Y,
-                Y = -vDiff.X,
-                Vx = pDiff.Y,
-                Vy = -pDiff.X,
-                Answer = cDiff.Z
-            });
-    }
-
-    private void SolveSystem(List<Equation7> equations)
-    {
-        // Reduce to row echelon form
-        int pivotRow = 0;
-        int pivotColumn = 0;
-
-        while (pivotRow < 6 && pivotColumn < 7)
-        {
-            int rowMax = RowMax(pivotRow, pivotColumn, equations);
-
-            if (equations[rowMax][pivotColumn] == 0)
-            {
-                pivotColumn++;
-            }
-            else
-            {
-                (equations[pivotRow], equations[rowMax]) = (equations[rowMax], equations[pivotRow]);
-
-                for (int row = pivotRow + 1; row < 6; row++)
-                {
-                    double div = equations[row][pivotColumn] / equations[pivotRow][pivotColumn];
-
-                    equations[row][pivotColumn] = 0;
-
-                    for (int col = pivotColumn + 1; col < 7; col++)
-                    {
-                        equations[row][col] = equations[row][col] - equations[pivotRow][col] * div;
-                    }
-                }
-
-                pivotRow++;
-                pivotColumn++;
-            }
-        }
-
-        // Solve
-        for (int pivot = 5; pivot >= 0; pivot--)
-        {
-            Equation7 eq = equations[pivot];
-
-            for (int col = 5; col > pivot; col--)
-            {
-                double subst = eq[col] * equations[col].Answer;
-                eq.Answer -= subst;
-                eq[col] = 0;
-            }
-
-            long answer = Convert.ToInt64(eq.Answer / eq[pivot]);
-            eq[pivot] = 1;
-            eq.Answer = Convert.ToDouble(answer);
-        }
-    }
-
-    private int RowMax(int pivotRow, int pivotColumn, List<Equation7> equations)
-    {
-        int rowMax = pivotRow;
-        double max = 0;
-
-        for (int row = pivotRow; row < equations.Count; row++)
-        {
-            double value = Math.Abs(equations[row][pivotColumn]);
-            if (value > max)
-            {
-                rowMax = row;
-                max = value;
-            }
-        }
-
-        return rowMax;
+        system.Add(new LinearEquation(0, vDiff.Z, -vDiff.Y, 0, pDiff.Z, -pDiff.Y, cDiff.X));
+        system.Add(new LinearEquation(-vDiff.Z, 0, vDiff.X, -pDiff.Z, 0, pDiff.X, cDiff.Y));
+        system.Add(new LinearEquation(vDiff.Y, -vDiff.X, 0, pDiff.Y, -pDiff.X, 0, cDiff.Z));
     }
 
     internal class Stone2
@@ -389,50 +292,5 @@ public class Day24
 
             return str;
         }
-    }
-
-    internal class Equation7
-    {
-        internal double X;
-        internal double Y;
-        internal double Z;
-        internal double Vx;
-        internal double Vy;
-        internal double Vz;
-        internal double Answer;
-
-        internal double this[int pos]
-        {
-            get
-            {
-                switch (pos)
-                {
-                    case 0: return X;
-                    case 1: return Y;
-                    case 2: return Z;
-                    case 3: return Vx;
-                    case 4: return Vy;
-                    case 5: return Vz;
-                    case 6: return Answer;
-                    default: throw new ArgumentOutOfRangeException();
-                }
-            }
-            set
-            {
-                switch (pos)
-                {
-                    case 0: X = value; break;
-                    case 1: Y = value; break;
-                    case 2: Z = value; break;
-                    case 3: Vx = value; break;
-                    case 4: Vy = value; break;
-                    case 5: Vz = value; break;
-                    case 6: Answer = value; break;
-                    default: throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
-
-        public override string ToString() => $"X:{X:0.0000}, Y:{Y:0.0000}, Z:{Z:0.0000}, Vx:{Vx:0.0000}, Vy:{Vy:0.0000}, Vz:{Vz:0.0000} = {Answer:0.0000}";
     }
 }
