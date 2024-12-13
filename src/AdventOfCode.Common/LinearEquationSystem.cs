@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Numerics;
 
 namespace AdventOfCode.Common
 {
@@ -27,7 +23,7 @@ namespace AdventOfCode.Common
             this.equations.Add(equation);
         }
 
-        public void Solve()
+        public bool SolveAsInteger()
         {
             if (this.equations.Count + 1 != this.equationLength)
             {
@@ -35,63 +31,90 @@ namespace AdventOfCode.Common
             }
 
             // Reduce to row echelon form
-            int pivotRow = 0;
-            int pivotColumn = 0;
+            int pivot = 0;
 
-            while (pivotRow < this.equationLength - 1 && pivotColumn < this.equationLength)
+            while (pivot < this.equationLength - 1 && pivot < this.equationLength)
             {
-                int rowMax = RowMax(pivotRow, pivotColumn, equations);
+                int rowMax = RowMax(pivot, pivot, equations);
 
-                if (equations[rowMax][pivotColumn] == 0)
+                if (equations[rowMax][pivot] == 0)
                 {
-                    pivotColumn++;
+                    return false;
                 }
                 else
                 {
-                    (equations[pivotRow], equations[rowMax]) = (equations[rowMax], equations[pivotRow]);
+                    // Swap in the row with the maximum coefficient for the current column
+                    (equations[pivot], equations[rowMax]) = (equations[rowMax], equations[pivot]);
 
-                    for (int row = pivotRow + 1; row < this.equations.Count; row++)
+                    // Find the least common multiple of all the coefficients in the current column
+                    List<BigInteger> coefficients = new List<BigInteger>();
+                    for (int row = pivot; row < this.equations.Count; row++)
                     {
-                        double div = equations[row][pivotColumn] / equations[pivotRow][pivotColumn];
+                        coefficients.Add(equations[row][pivot]);
+                    }
+                    BigInteger lcm = MathHelpers.LeastCommonMultiple(coefficients.Where(c => c != 0));
 
-                        equations[row][pivotColumn] = 0;
-
-                        for (int col = pivotColumn + 1; col < this.equationLength; col++)
+                    // Scale all the rows such that the current column coefficients are the same
+                    for (int row = pivot; row < this.equations.Count; row++)
+                    {
+                        if (equations[row][pivot] != 0)
                         {
-                            equations[row][col] = equations[row][col] - equations[pivotRow][col] * div;
+                            BigInteger rowMultiple = lcm / equations[row][pivot];
+                            for (int col = pivot; col < this.equationLength; col++)
+                            {
+                                equations[row][col] = equations[row][col] * rowMultiple;
+                            }
                         }
                     }
 
-                    pivotRow++;
-                    pivotColumn++;
+                    // Perform row subtraction to zero the remaining coefficients in the current row
+                    for (int row = pivot + 1; row < this.equations.Count; row++)
+                    {
+                        if (equations[row][pivot] != 0)
+                        {
+                            for (int col = pivot; col < this.equationLength; col++)
+                            {
+                                equations[row][col] = equations[row][col] - equations[pivot][col];
+                            }
+                        }
+                    }
+
+                    pivot++;
                 }
             }
 
             // Solve
-            for (int pivot = this.equations.Count - 1; pivot >= 0; pivot--)
+            for (pivot = this.equations.Count - 1; pivot >= 0; pivot--)
             {
                 LinearEquation eq = equations[pivot];
 
                 for (int col = this.equations.Count - 1; col > pivot; col--)
                 {
-                    double subst = eq[col] * equations[col].Answer;
+                    BigInteger subst = eq[col] * equations[col].Answer;
                     eq.Answer -= subst;
                     eq[col] = 0;
                 }
 
-                long answer = Convert.ToInt64(eq.Answer / eq[pivot]);
+                if (eq.Answer % eq[pivot] != 0)
+                {
+                    return false; // Can't solve as an integer
+                }
+
+                BigInteger answer = eq.Answer / eq[pivot];
                 eq[pivot] = 1;
-                eq.Answer = Convert.ToDouble(answer);
+                eq.Answer = answer;
             }
+
+            return true;
         }
         private int RowMax(int pivotRow, int pivotColumn, List<LinearEquation> equations)
         {
             int rowMax = pivotRow;
-            double max = 0;
+            BigInteger max = 0;
 
             for (int row = pivotRow; row < equations.Count; row++)
             {
-                double value = Math.Abs(equations[row][pivotColumn]);
+                BigInteger value = BigInteger.Abs(equations[row][pivotColumn]);
                 if (value > max)
                 {
                     rowMax = row;

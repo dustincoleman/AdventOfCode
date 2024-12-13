@@ -50,9 +50,9 @@ public class Day24
 
         BuildEquations(system, puzzle[0], puzzle[1]);
         BuildEquations(system, puzzle[0], puzzle[2]);
-        system.Solve();
+        Assert.True(system.SolveAsInteger());
 
-        long answer = system.Take(3).Sum(eq => Convert.ToInt64(eq.Answer));
+        long answer = system.Take(3).Sum(eq => (long)eq.Answer);
         Assert.Equal(871983857253169, answer);
     }
 

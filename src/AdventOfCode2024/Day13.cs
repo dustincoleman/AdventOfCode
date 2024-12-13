@@ -48,18 +48,9 @@ namespace AdventOfCode2024
                     new LinearEquation(machine.A.Y, machine.B.Y, machine.Prize.Y ),
                 };
 
-                system.Solve();
-
-                if (system[0].Answer > 0 && system[1].Answer > 0)
+                if (system.SolveAsInteger() && system[0].Answer >= 0 && system[1].Answer >= 0)
                 {
-                    long a = Convert.ToInt64(system[0].Answer);
-                    long b = Convert.ToInt64(system[1].Answer);
-
-                    Point2<long> destination = machine.A * a + machine.B * b;
-                    if (destination == machine.Prize)
-                    {
-                        result += a * 3 + b;
-                    }
+                    result += (long)system[0].Answer * 3 + (long)system[1].Answer;
                 }
             }
 
