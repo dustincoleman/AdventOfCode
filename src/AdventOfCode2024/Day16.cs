@@ -7,162 +7,121 @@ namespace AdventOfCode2024
         [Fact]
         public void Part1()
         {
-            Grid2<char> puzzle = PuzzleFile.ReadAsGrid("Day16.txt");
-            Point2 start = puzzle.AllPoints.First(p => puzzle[p] == 'S');
-            Point2 end = puzzle.AllPoints.First(p => puzzle[p] == 'E');
+            Grid2<Cell> puzzle = PuzzleFile.ReadAsGrid("Day16.txt", ch => new Cell(ch));
+            Point2 start = puzzle.AllPoints.First(p => puzzle[p].Char == 'S');
+            Point2 end = puzzle.AllPoints.First(p => puzzle[p].Char == 'E');
 
-            Queue<Path> queue = new Queue<Path>();
-            queue.Enqueue(
-                new Path()
-                {
-                    Position = start,
-                    Direction = Direction.East,
-                    Visited = new HashSet<Point2<int>>()
-                });
+            FindShortestPath(puzzle, start, Direction.East, end);
 
-            long result = long.MaxValue;
-            List<Path> paths = new List<Path>();
-            Grid2<long> minScores = new Grid2<long>(puzzle.Bounds);
-
-            while (queue.TryDequeue(out Path path))
-            {
-                if (path.Position == end)
-                {
-                    result = Math.Min(result, path.Score);
-                    paths.Add(path);
-                    continue;
-                }
-
-                long minScore = minScores[path.Position];
-                if (minScore == 0 || path.Score < minScore)
-                {
-                    minScores[path.Position] = path.Score;
-                }
-                else
-                {
-                    continue;
-                }
-
-                Point2 next = path.Position + path.Direction;
-                if (!path.Visited.Contains(next) && puzzle[next] != '#')
-                {
-                    queue.Enqueue(path.Move(path.Direction));
-                }
-
-                next = path.Position + path.Direction.TurnLeft();
-                if (!path.Visited.Contains(next) && puzzle[next] != '#')
-                {
-                    queue.Enqueue(path.Move(path.Direction.TurnLeft()));
-                }
-
-                next = path.Position + path.Direction.TurnRight();
-                if (!path.Visited.Contains(next) && puzzle[next] != '#')
-                {
-                    queue.Enqueue(path.Move(path.Direction.TurnRight()));
-                }
-            }
-
-            Assert.Equal(95444, actual: result);
+            long result = puzzle[end].MinDistance;
+            Assert.Equal(95444, result);
         }
 
         [Fact]
         public void Part2()
         {
-            Grid2<char> puzzle = PuzzleFile.ReadAsGrid("Day16.txt");
-            Point2 start = puzzle.AllPoints.First(p => puzzle[p] == 'S');
-            Point2 end = puzzle.AllPoints.First(p => puzzle[p] == 'E');
+            Grid2<Cell> puzzle = PuzzleFile.ReadAsGrid("Day16.txt", ch => new Cell(ch));
+            Point2 start = puzzle.AllPoints.First(p => puzzle[p].Char == 'S');
+            Point2 end = puzzle.AllPoints.First(p => puzzle[p].Char == 'E');
 
-            Queue<Path> queue = new Queue<Path>();
-            queue.Enqueue(
-                new Path()
-                {
-                    Position = start,
-                    Direction = Direction.East,
-                    Visited = new HashSet<Point2<int>>()
-                });
+            FindShortestPath(puzzle, start, Direction.East, end);
+            MarkShortestPaths(puzzle, start, Direction.East, end);
 
-            long minScore = long.MaxValue;
-            List<Path> paths = new List<Path>();
-            Grid2<long> minScoresSoFar = new Grid2<long>(puzzle.Bounds);
-
-            while (queue.TryDequeue(out Path path))
-            {
-                if (path.Position == end)
-                {
-                    minScore = Math.Min(minScore, path.Score);
-                    paths.Add(path);
-                    continue;
-                }
-
-                long minScoreSoFar = minScoresSoFar[path.Position];
-                if (minScoreSoFar == 0 || path.Score < minScoreSoFar)
-                {
-                    minScoresSoFar[path.Position] = path.Score;
-                }
-                else if (path.Score >  minScoreSoFar + 1000)
-                {
-                    continue;
-                }
-
-                Point2 next = path.Position + path.Direction;
-                if (!path.Visited.Contains(next) && puzzle[next] != '#')
-                {
-                    queue.Enqueue(path.Move(path.Direction));
-                }
-
-                next = path.Position + path.Direction.TurnLeft();
-                if (!path.Visited.Contains(next) && puzzle[next] != '#')
-                {
-                    queue.Enqueue(path.Move(path.Direction.TurnLeft()));
-                }
-
-                next = path.Position + path.Direction.TurnRight();
-                if (!path.Visited.Contains(next) && puzzle[next] != '#')
-                {
-                    queue.Enqueue(path.Move(path.Direction.TurnRight()));
-                }
-            }
-
-            HashSet<Point2> bestTiles = new HashSet<Point2<int>>();
-            Grid2<char> map = PuzzleFile.ReadAsGrid("Day16.txt");
-
-            foreach (Path path in paths)
-            {
-                if (path.Score == minScore)
-                {
-                    foreach (Point2 p in path.Visited)
-                    {
-                        bestTiles.Add(p);
-                        map[p] = 'O';
-                    }
-                }
-            }
-
-            long result = bestTiles.Count + 1;
-            Assert.Equal(513, actual: result);
+            long result = puzzle.Where(c => c.OnShortestPath).Count();
+            Assert.Equal(513, result);
         }
 
-        private class Path
+        private void FindShortestPath(Grid2<Cell> puzzle, Point2 position, Direction direction, Point2 end, long distance = 0)
         {
-            internal Point2 Position;
-            internal Direction Direction;
-            internal HashSet<Point2> Visited;
-            internal int Rotations;
+            Cell cell = puzzle[position];
 
-            public long Score => (long)Rotations * 1000 + Visited.Count;
-
-            internal Path Move(Direction d)
+            if (distance >= cell.MinDistance)
             {
-                Path path = new Path()
-                {
-                    Position = Position + d,
-                    Direction = d,
-                    Visited = new HashSet<Point2>(Visited),
-                    Rotations = (d == Direction) ? Rotations : Rotations + 1,
-                };
-                path.Visited.Add(Position);
-                return path;
+                return;
             }
+
+            cell.MinDistance = distance;
+
+            if (position == end)
+            {
+                return;
+            }
+
+            cell.Visiting = true;
+
+            Point2 next = position + direction;
+            if (puzzle[next].CanVisit())
+            {
+                FindShortestPath(puzzle, next, direction, end, distance + 1);
+            }
+
+            next = position + direction.TurnLeft();
+            if (puzzle[next].CanVisit())
+            {
+                FindShortestPath(puzzle, next, direction.TurnLeft(), end, distance + 1001);
+            }
+
+            next = position + direction.TurnRight();
+            if (puzzle[next].CanVisit())
+            {
+                FindShortestPath(puzzle, next, direction.TurnRight(), end, distance + 1001);
+            }
+
+            cell.Visiting = false;
+        }
+
+        private bool MarkShortestPaths(Grid2<Cell> puzzle, Point2 position, Direction direction, Point2 end, long distance = 0)
+        {
+            Cell cell = puzzle[position];
+
+            if (distance - 1000 > cell.MinDistance)
+            {
+                return false;
+            }
+            if (position == end)
+            {
+                cell.OnShortestPath = true;
+                return (distance == cell.MinDistance);
+            }
+
+            cell.Visiting = true;
+            bool onShortestPath = false;
+
+            Point2 next = position + direction;
+            if (puzzle[next].CanVisit())
+            {
+                onShortestPath |= MarkShortestPaths(puzzle, next, direction, end, distance + 1);
+            }
+
+            next = position + direction.TurnLeft();
+            if (puzzle[next].CanVisit())
+            {
+                onShortestPath |= MarkShortestPaths(puzzle, next, direction.TurnLeft(), end, distance + 1001);
+            }
+
+            next = position + direction.TurnRight();
+            if (puzzle[next].CanVisit())
+            {
+                onShortestPath |= MarkShortestPaths(puzzle, next, direction.TurnRight(), end, distance + 1001);
+            }
+
+            cell.Visiting = false;
+
+            if (onShortestPath)
+            {
+                cell.OnShortestPath = true;
+            }
+
+            return onShortestPath;
+        }
+
+        private record Cell(char Char)
+        {
+            internal long MinDistance = long.MaxValue;
+            internal bool Visiting = false;
+            internal bool OnShortestPath = false;
+
+            internal bool CanVisit() => (Char != '#' && !Visiting);
         }
     }
 }
