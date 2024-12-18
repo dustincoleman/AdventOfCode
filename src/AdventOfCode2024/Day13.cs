@@ -1,6 +1,4 @@
-﻿using static AdventOfCode2024.Day13;
-
-namespace AdventOfCode2024
+﻿namespace AdventOfCode2024
 {
     public class Day13
     {

@@ -1,9 +1,4 @@
-﻿
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using System.Collections.Generic;
-using System.Numerics;
-
-namespace AdventOfCode2024
+﻿namespace AdventOfCode2024
 {
     public class Day17
     {

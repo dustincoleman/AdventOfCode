@@ -1,8 +1,4 @@
-﻿
-
-using AdventOfCode.Common;
-
-namespace AdventOfCode2024
+﻿namespace AdventOfCode2024
 {
     public class Day04
     {

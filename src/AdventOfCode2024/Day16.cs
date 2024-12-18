@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace AdventOfCode2024
+﻿namespace AdventOfCode2024
 {
     public class Day16
     {
