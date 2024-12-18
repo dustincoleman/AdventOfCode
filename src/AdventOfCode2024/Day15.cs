@@ -36,7 +36,7 @@
             }
 
             long result = map.AllPoints.Select(pt => (map[pt] == '[') ? pt.X + 100 * pt.Y : 0).Sum();
-            Assert.Equal(1425169, actual: result);
+            Assert.Equal(1425169, result);
         }
 
         private bool ScaledMove(Grid2<char> map, Point2 p, Direction d)
