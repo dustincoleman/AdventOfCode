@@ -56,6 +56,48 @@ namespace AdventOfCode.Common
             if (pt.X > T.Zero) yield return pt - Point2<T>.UnitX; // Left
         }
 
+        public static IEnumerable<Point2<T>> Reachable<T>(this Point2<T> pt, T manhattanDistance) where T : INumber<T>
+        {
+            T top = pt.Y - manhattanDistance;
+            T bottom = pt.Y + manhattanDistance;
+
+            for (T y = top; y <= bottom; y++)
+            {
+                T remainingDistance = manhattanDistance - T.Abs(pt.Y - y);
+                T left = pt.X - remainingDistance;
+                T right = pt.X + remainingDistance;
+
+                for (T x = left; x <= right; x++)
+                {
+                    if (x != pt.X || y != pt.Y)
+                    {
+                        yield return (x, y);
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<Point2<T>> Reachable<T>(this Point2<T> pt, T manhattanDistance, Point2<T> bounds) where T : INumber<T>
+        {
+            T top = T.Max(T.Zero, pt.Y - manhattanDistance);
+            T bottom = T.Min(bounds.Y - T.One, pt.Y + manhattanDistance);
+
+            for (T y = top; y <= bottom; y++)
+            {
+                T remainingDistance = manhattanDistance - T.Abs(pt.Y - y);
+                T left = T.Max(T.Zero, pt.X - remainingDistance);
+                T right = T.Min(bounds.X - T.One, pt.X + remainingDistance);
+
+                for (T x = left; x <= right; x++)
+                {
+                    if (x != pt.X || y != pt.Y)
+                    {
+                        yield return (x, y);
+                    }
+                }
+            }
+        }
+
         public static IEnumerable<Point2<T>> LineTo<T>(this Point2<T> pt, Point2<T> other) where T : INumber<T>
         {
             if (pt.X != other.X && pt.Y != other.Y)

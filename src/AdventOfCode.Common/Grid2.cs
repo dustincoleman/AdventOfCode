@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -161,6 +162,16 @@ namespace AdventOfCode.Common
         }
 
         public IEnumerable<Point2> SurroundingPoints(Point2 point) => point.Surrounding(Bounds);
+
+        public IEnumerable<T> Reachable(Point2 point, int manhattanDistance)
+        {
+            foreach (Point2 reachablePoint in point.Reachable(manhattanDistance, Bounds))
+            {
+                yield return this.grid[reachablePoint.X, reachablePoint.Y];
+            }
+        }
+
+        public IEnumerable<Point2> ReachablePoints(Point2 point, int manhattanDistance) => point.Reachable(manhattanDistance, Bounds);
 
         public IEnumerable<Direction> DirectionsInBounds(Point2 point)
         {
