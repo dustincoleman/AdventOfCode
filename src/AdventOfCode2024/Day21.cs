@@ -13,26 +13,11 @@
 
             foreach (string code in puzzle)
             {
-                long min = long.MaxValue;
-
-                foreach (string doorSequence in GetPermutations(door.GetSequences(code)))
-                {
-                    foreach (string robot1Sequence in GetPermutations(robot.GetSequences(doorSequence)))
-                    {
-                        List<List<string>> robot2Sequence = robot.GetSequences(robot1Sequence);
-                        int sequenceLength = robot2Sequence.Sum(list => list.Select(s => s.Length).Min());
-
-                        if (sequenceLength < min)
-                        {
-                            min = sequenceLength;
-                        }
-                    }
-                }
-
+                long min = GetMinButtonPresses(code, door, robot, 2, new Dictionary<ButtonKey, long>());
                 result += long.Parse(code.Substring(0, code.Length - 1)) * min;
             }
 
-            Assert.Equal(109758, actual: result);
+            Assert.Equal(109758, result);
         }
 
         [Fact]
@@ -44,43 +29,52 @@
 
             long result = 0;
 
-            
-
-            Assert.Equal(0, actual: result);
-        }
-
-        private IEnumerable<string> GetPermutations(List<List<string>> list)
-        {
-            int[] positions = new int[list.Count];
-            StringBuilder sb = new StringBuilder();
-
-            while (true)
+            foreach (string code in puzzle)
             {
-                for (int i = 0; i < list.Count; i++)
-                {
-                    sb.Append(list[i][positions[i]]);
-                }
-
-                yield return sb.ToString();
-                sb.Clear();
-
-                for (int i = list.Count - 1; i >= 0; i--)
-                {
-                    if (positions[i] < list[i].Count - 1)
-                    {
-                        positions[i]++;
-                        break;
-                    }
-
-                    if (i == 0)
-                    {
-                        yield break;
-                    }
-
-                    positions[i] = 0;
-                }
+                long min = GetMinButtonPresses(code, door, robot, 25, new Dictionary<ButtonKey, long>());
+                result += long.Parse(code.Substring(0, code.Length - 1)) * min;
             }
+
+            Assert.Equal(134341709499296, result);
         }
+
+        private long GetMinButtonPresses(string buttons, Keypad current, Keypad next, int robots, Dictionary<ButtonKey, long> minByButtonKey)
+        {
+            ButtonKey key = new ButtonKey(buttons, robots);
+
+            if (minByButtonKey.TryGetValue(key, out long cached))
+            {
+                return cached;
+            }
+
+            if (robots < 0)
+            {
+                return buttons.Length;
+            }
+
+            long result = 0;
+            char position = 'A';
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                long min = long.MaxValue;
+
+                foreach (string nextCombo in current.GetCombos(position, buttons[i]))
+                {
+                    long nextMin = GetMinButtonPresses(nextCombo, next, next, robots - 1, minByButtonKey);
+                    min = long.Min(min, nextMin);
+                }
+
+                result += min;
+                position = buttons[i];
+            }
+
+            minByButtonKey.Add(key, result);
+
+            return result;
+        }
+
+        private record struct ButtonKey(string Buttons, int Robots);
 
         private class Keypad
         {
@@ -121,32 +115,24 @@
                     Bounds = (3, 2)
                 };
             }
-
-            internal List<List<string>> GetSequences(string buttons)
+            internal List<string> GetCombos(char position, char target)
             {
-                List<List<string>> sequences = new List<List<string>>();
-                Point2 position = this['A'];
-                foreach (char button in buttons)
-                {
-                    List<string> subSequences = new List<string>();
-                    GetSequencesHelper(this[button], position, string.Empty, subSequences);
-                    sequences.Add(subSequences);
-                    position = this[button];
-                }
-                return sequences;
+                List<string> combos = new List<string>();
+                GetCombosHelper(this[position], this[target], string.Empty, combos);
+                return combos;
             }
 
-            internal void GetSequencesHelper(Point2 buttonPosition, Point2 position, string sequence, List<string> sequences)
+            internal void GetCombosHelper(Point2 position, Point2 target, string sequence, List<string> sequences)
             {
                 // Are we at the button?
-                if (position == buttonPosition)
+                if (position == target)
                 {
                     sequences.Add(sequence + 'A');
                     return;
                 }
 
                 // Figure out how far away we are
-                int remaining = (buttonPosition - position).Manhattan();
+                int remaining = (target - position).Manhattan();
 
                 // Recurse
                 foreach (Direction d in Direction.All())
@@ -154,10 +140,10 @@
                     Point2 next = position + d;
                     if (next >= Point2.Zero && next < Bounds && next != Gap)
                     {
-                        int nextRemaining = (buttonPosition - next).Manhattan();
+                        int nextRemaining = (target - next).Manhattan();
                         if (nextRemaining < remaining)
                         {
-                            GetSequencesHelper(buttonPosition, next, sequence + d.ToArrow(), sequences);
+                            GetCombosHelper(next, target, sequence + d.ToArrow(), sequences);
                         }
                     }
                 }
