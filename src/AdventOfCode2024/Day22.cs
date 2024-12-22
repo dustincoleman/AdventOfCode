@@ -1,4 +1,5 @@
-﻿namespace AdventOfCode2024
+﻿
+namespace AdventOfCode2024
 {
     public class Day22
     {
@@ -21,12 +22,12 @@
         public void Part2()
         {
             List<long> puzzle = File.ReadAllLines("Day22.txt").Select(long.Parse).ToList();
-            HashSet<SellSequence> allSequences = new HashSet<SellSequence>();
-            List<Dictionary<SellSequence, int>> buyers = new List<Dictionary<SellSequence, int>>();
+            HashSet<int> allSequences = new HashSet<int>();
+            List<int[]> buyers = new List<int[]>();
 
             foreach (long num in puzzle)
             {
-                Dictionary<SellSequence, int> priceBySequence = new Dictionary<SellSequence, int>();
+                int[] priceBySequence = new int[SellSequence.MaxKey];
                 SellSequence sequence = new SellSequence();
                 long last = num;
                 int remaining = 2000;
@@ -42,8 +43,13 @@
                 {
                     long next = Next(last);
                     sequence = sequence.Next((sbyte)((next % 10) - (last % 10)));
-                    priceBySequence.TryAdd(sequence, (int)(next % 10));
-                    allSequences.Add(sequence);
+
+                    int key = sequence.Key();
+                    if (priceBySequence[key] == 0)
+                    {
+                        priceBySequence[key] = (int)(next % 10);
+                        allSequences.Add(key);
+                    }
                     last = next;
                 }
 
@@ -52,16 +58,13 @@
 
             long result = 0;
 
-            foreach (SellSequence sequence in allSequences)
+            foreach (int sequence in allSequences)
             {
                 long total = 0;
 
-                foreach (Dictionary<SellSequence, int> priceBySequence in buyers)
+                foreach (int[] priceBySequence in buyers)
                 {
-                    if (priceBySequence.TryGetValue(sequence, out int price))
-                    {
-                        total += price;
-                    }
+                    total += priceBySequence[sequence];
                 }
 
                 if (total > result)
@@ -93,6 +96,10 @@
 
         private record struct SellSequence(sbyte First, sbyte Second, sbyte Third, sbyte Fourth)
         {
+            internal static int MaxKey => 1 << 20;
+
+            internal int Key() => (First + 10) << 15 | (Second + 10) << 10 | (Third + 10) << 5 | (Fourth + 10);
+
             internal SellSequence Next(sbyte next) => new SellSequence(Second, Third, Fourth, next);
         }
     }
