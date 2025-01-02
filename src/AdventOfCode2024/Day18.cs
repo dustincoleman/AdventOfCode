@@ -6,20 +6,14 @@
         public void Part1()
         {
             List<Point2> puzzle = File.ReadAllLines("Day18.txt").Select(Point2.Parse).ToList();
-            Grid2<Cell> grid = new Grid2<Cell>(71, 71);
-            foreach (Point2 pt in grid.AllPoints)
-            {
-                grid[pt] = new Cell();
-            }
+            Grid2<bool> grid = new Grid2<bool>(71, 71);
 
             foreach (Point2 address in puzzle.Take(1024))
             {
-                grid[address].IsCorrupt = true;
+                grid[address] = true;
             }
 
-            MinDistance(grid, Point2.Zero, 0);
-
-            long result = grid[grid.Bounds - 1].MinDistance;
+            long result = ShortestPath(grid).Count - 1;
             Assert.Equal(302, result);
         }
 
@@ -27,34 +21,24 @@
         public void Part2()
         {
             List<Point2> puzzle = File.ReadAllLines("Day18.txt").Select(Point2.Parse).ToList();
-            Grid2<Cell> grid = new Grid2<Cell>(71, 71);
-            foreach (Point2 pt in grid.AllPoints)
-            {
-                grid[pt] = new Cell();
-            }
+            Grid2<bool> grid = new Grid2<bool>(71, 71);
 
-            foreach (Point2 address in puzzle.Take(2850))
-            {
-                grid[address].IsCorrupt = true;
-            }
-
+            HashSet<Point2> path = null;
             Point2 answer = -Point2.One;
 
-            foreach (Point2 address in puzzle.Skip(2850))
+            foreach (Point2 address in puzzle)
             {
-                grid[address].IsCorrupt = true;
+                grid[address] = true;
 
-                foreach (Point2 pt in grid.AllPoints)
+                if (path == null || path.Contains(address))
                 {
-                    grid[pt].MinDistance = int.MaxValue;
-                }
+                    path = ShortestPath(grid);
 
-                MinDistance(grid, Point2.Zero, 0);
-
-                if (grid[grid.Bounds - 1].MinDistance == int.MaxValue)
-                {
-                    answer = address;
-                    break;
+                    if (path == null)
+                    {
+                        answer = address;
+                        break;
+                    }
                 }
             }
 
@@ -62,30 +46,45 @@
             Assert.Equal("24,32", result);
         }
 
-        private void MinDistance(Grid2<Cell> grid, Point2 pos, int distance = 0)
+        private HashSet<Point2> ShortestPath(Grid2<bool> corruptedMemory)
         {
-            if (grid[pos].IsCorrupt || grid[pos].MinDistance <= distance)
+            Grid2<bool> visited = new Grid2<bool>(corruptedMemory.Bounds);
+            Grid2<Point2?> previous = new Grid2<Point2?>(corruptedMemory.Bounds);
+
+            Queue<Point2> queue = new Queue<Point2>();
+            queue.Enqueue(Point2.Zero);
+
+            while (queue.TryDequeue(out Point2 pt))
             {
-                return;
+                if (pt == corruptedMemory.Bounds - 1)
+                {
+                    HashSet<Point2> path = new HashSet<Point2<int>>() { pt };
+
+                    while (previous[pt].HasValue)
+                    {
+                        pt = previous[pt].Value;
+                        path.Add(pt);
+                    }
+
+                    return path;
+                }
+
+                if (!corruptedMemory[pt] && !visited[pt])
+                {
+                    visited[pt] = true;
+
+                    foreach (Point2 next in corruptedMemory.AdjacentPoints(pt))
+                    {
+                        if (!visited[next])
+                        {
+                            previous[next] = pt;
+                            queue.Enqueue(next);
+                        }
+                    }
+                }
             }
 
-            grid[pos].MinDistance = distance;
-
-            if (pos == grid.Bounds - 1)
-            {
-                return;
-            }
-
-            foreach (Point2 adj in grid.AdjacentPoints(pos))
-            {
-                MinDistance(grid, adj, distance + 1);
-            }
-        }
-
-        private class Cell
-        {
-            internal bool IsCorrupt = false;
-            internal int MinDistance = int.MaxValue;
+            return null;
         }
     }
 }
