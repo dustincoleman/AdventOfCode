@@ -29,57 +29,69 @@
             Assert.Equal(513, result);
         }
 
-        private void FindShortestPath(Grid2<Cell> puzzle, Point2 position, Direction direction, Point2 end, long distance = 0)
+        private void FindShortestPath(Grid2<Cell> puzzle, Point2 startPos, Direction startDir, Point2 end)
         {
-            Cell cell = puzzle[position];
+            PriorityQueue<Step, int> queue = new PriorityQueue<Step, int>();
+            queue.Enqueue(new Step (startPos, startDir), 0);
 
-            if (distance >= cell.MinDistance)
+            while (queue.TryDequeue(out Step step, out int distance))
             {
-                return;
+                if (step.Point == end)
+                {
+                    return;
+                }
+
+                Cell c = puzzle[step.Point];
+
+                // Straight ahead
+                Point2 next = step.Point + step.Direction;
+                Cell nextCell = puzzle[next];
+                int alt = distance + 1;
+
+                if (nextCell.Char != '#' && alt < nextCell.MinDistance)
+                {
+                    nextCell.MinDistance = alt;
+                    queue.Enqueue(new Step(next, step.Direction), alt);
+                }
+
+                // Turn left
+                next = step.Point + step.Direction.TurnLeft();
+                nextCell = puzzle[next];
+                alt = distance + 1001;
+
+                if (nextCell.Char != '#' && alt < nextCell.MinDistance)
+                {
+                    nextCell.MinDistance = alt;
+                    queue.Enqueue(new Step(next, step.Direction.TurnLeft()), alt);
+                }
+
+                // Turn right
+                next = step.Point + step.Direction.TurnRight();
+                nextCell = puzzle[next];
+                alt = distance + 1001;
+
+                if (nextCell.Char != '#' && alt < nextCell.MinDistance)
+                {
+                    nextCell.MinDistance = alt;
+                    queue.Enqueue(new Step(next, step.Direction.TurnRight()), alt);
+                }
             }
-
-            cell.MinDistance = distance;
-
-            if (position == end)
-            {
-                return;
-            }
-
-            cell.Visiting = true;
-
-            Point2 next = position + direction;
-            if (puzzle[next].CanVisit())
-            {
-                FindShortestPath(puzzle, next, direction, end, distance + 1);
-            }
-
-            next = position + direction.TurnLeft();
-            if (puzzle[next].CanVisit())
-            {
-                FindShortestPath(puzzle, next, direction.TurnLeft(), end, distance + 1001);
-            }
-
-            next = position + direction.TurnRight();
-            if (puzzle[next].CanVisit())
-            {
-                FindShortestPath(puzzle, next, direction.TurnRight(), end, distance + 1001);
-            }
-
-            cell.Visiting = false;
         }
 
         private bool MarkShortestPaths(Grid2<Cell> puzzle, Point2 position, Direction direction, Point2 end, long distance = 0)
         {
             Cell cell = puzzle[position];
 
-            if (distance - 1000 > cell.MinDistance)
-            {
-                return false;
-            }
             if (position == end)
             {
                 cell.OnShortestPath = true;
                 return (distance == cell.MinDistance);
+            }
+
+            // Alternate routes will make their first turn earlier
+            if (distance > cell.MinDistance && distance - cell.MinDistance != 1000)
+            {
+                return false;
             }
 
             cell.Visiting = true;
@@ -121,5 +133,7 @@
 
             internal bool CanVisit() => (Char != '#' && !Visiting);
         }
+
+        private record struct Step(Point2 Point, Direction Direction, int Distance = 0);
     }
 }
