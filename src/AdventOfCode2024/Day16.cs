@@ -31,27 +31,40 @@
 
         private void FindShortestPath(Grid2<Cell> puzzle, Point2 startPos, Direction startDir, Point2 end)
         {
+            int minDistance = int.MaxValue;
             PriorityQueue<Step, int> queue = new PriorityQueue<Step, int>();
             queue.Enqueue(new Step (startPos, startDir), 0);
 
             while (queue.TryDequeue(out Step step, out int distance))
             {
+                if (distance > minDistance)
+                {
+                    continue;
+                }
+
                 if (step.Point == end)
                 {
-                    return;
+                    minDistance = distance;
+                    continue;
                 }
 
                 Cell c = puzzle[step.Point];
+                int directions = 0;
 
                 // Straight ahead
                 Point2 next = step.Point + step.Direction;
                 Cell nextCell = puzzle[next];
                 int alt = distance + 1;
 
-                if (nextCell.Char != '#' && alt < nextCell.MinDistance)
+                if (nextCell.Char != '#')
                 {
-                    nextCell.MinDistance = alt;
-                    queue.Enqueue(new Step(next, step.Direction), alt);
+                    if (alt < nextCell.MinDistance)
+                    {
+                        nextCell.MinDistance = alt;
+                        queue.Enqueue(new Step(next, step.Direction), alt);
+                    }
+
+                    directions++;
                 }
 
                 // Turn left
@@ -59,10 +72,15 @@
                 nextCell = puzzle[next];
                 alt = distance + 1001;
 
-                if (nextCell.Char != '#' && alt < nextCell.MinDistance)
+                if (nextCell.Char != '#')
                 {
-                    nextCell.MinDistance = alt;
-                    queue.Enqueue(new Step(next, step.Direction.TurnLeft()), alt);
+                    if (alt < nextCell.MinDistance)
+                    {
+                        nextCell.MinDistance = alt;
+                        queue.Enqueue(new Step(next, step.Direction.TurnLeft()), alt);
+                    }
+
+                    directions++;
                 }
 
                 // Turn right
@@ -70,17 +88,25 @@
                 nextCell = puzzle[next];
                 alt = distance + 1001;
 
-                if (nextCell.Char != '#' && alt < nextCell.MinDistance)
+                if (nextCell.Char != '#')
                 {
-                    nextCell.MinDistance = alt;
-                    queue.Enqueue(new Step(next, step.Direction.TurnRight()), alt);
+                    if (alt < nextCell.MinDistance)
+                    {
+                        nextCell.MinDistance = alt;
+                        queue.Enqueue(new Step(next, step.Direction.TurnRight()), alt);
+                    }
+
+                    directions++;
                 }
+
+                c.IsIntersection = (directions > 1);
             }
         }
 
         private bool MarkShortestPaths(Grid2<Cell> puzzle, Point2 position, Direction direction, Point2 end, long distance = 0)
         {
             Cell cell = puzzle[position];
+            long totalDistance = puzzle[end].MinDistance;
 
             if (position == end)
             {
@@ -88,10 +114,13 @@
                 return (distance == cell.MinDistance);
             }
 
-            // Alternate routes will make their first turn earlier
-            if (distance > cell.MinDistance && distance - cell.MinDistance != 1000)
+            if (distance > totalDistance || distance > cell.MinDistance)
             {
-                return false;
+                // Alternate routes may have crossed with a lesser distance
+                if (!cell.IsIntersection || distance - cell.MinDistance != 1000)
+                {
+                    return false;
+                }
             }
 
             cell.Visiting = true;
@@ -130,10 +159,11 @@
             internal long MinDistance = long.MaxValue;
             internal bool Visiting = false;
             internal bool OnShortestPath = false;
+            internal bool IsIntersection = false;
 
             internal bool CanVisit() => (Char != '#' && !Visiting);
         }
 
-        private record struct Step(Point2 Point, Direction Direction, int Distance = 0);
+        private record struct Step(Point2 Point, Direction Direction);
     }
 }
