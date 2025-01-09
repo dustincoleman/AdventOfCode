@@ -21,12 +21,13 @@
         public void Part2()
         {
             List<long> puzzle = File.ReadAllLines("Day22.txt").Select(long.Parse).ToList();
-            HashSet<int> allSequences = new HashSet<int>();
-            List<int[]> buyers = new List<int[]>();
+            int[] totalBySequence = new int[SellSequence.MaxKey];
+            int[] lastIndexSeen = new int[SellSequence.MaxKey];
 
-            foreach (long num in puzzle)
+            for (int i = 0; i < puzzle.Count; i++)
             {
-                int[] priceBySequence = new int[SellSequence.MaxKey];
+                long num = puzzle[i];
+
                 SellSequence sequence = new SellSequence();
                 long last = num;
                 int remaining = 2000;
@@ -44,34 +45,16 @@
                     sequence = sequence.Next((sbyte)((next % 10) - (last % 10)));
 
                     int key = sequence.Key();
-                    if (priceBySequence[key] == 0)
+                    if (lastIndexSeen[key] != i)
                     {
-                        priceBySequence[key] = (int)(next % 10);
-                        allSequences.Add(key);
+                        lastIndexSeen[key] = i;
+                        totalBySequence[key] += (int)(next % 10);
                     }
                     last = next;
                 }
-
-                buyers.Add(priceBySequence);
             }
 
-            long result = 0;
-
-            foreach (int sequence in allSequences)
-            {
-                long total = 0;
-
-                foreach (int[] priceBySequence in buyers)
-                {
-                    total += priceBySequence[sequence];
-                }
-
-                if (total > result)
-                {
-                    result = total;
-                }
-            }
-
+            long result = totalBySequence.Max();
             Assert.Equal(2121, result);
         }
 
